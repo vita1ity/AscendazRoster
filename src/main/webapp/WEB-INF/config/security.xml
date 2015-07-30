@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<!-- <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:security="http://www.springframework.org/schema/security"
@@ -24,12 +24,12 @@
 	  
 	<security:authentication-manager alias="authenticationManager" erase-credentials="false"> 
 	   <security:authentication-provider user-service-ref="userDetailsServiceImpl">
-	   	<!-- <security:password-encoder hash="sha-256">
+	   	<security:password-encoder hash="sha-256">
 	   		<security:salt-source user-property="username"/>
-	   	</security:password-encoder>  -->
+	   	</security:password-encoder> 
 	   </security:authentication-provider> 
 	</security:authentication-manager> 
 	
 </beans>
 
- 
+  -->
