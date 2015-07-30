@@ -1,0 +1,154 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>com.ascendaz</groupId>
+  <artifactId>roster</artifactId>
+  <packaging>war</packaging>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>Ascendaz Roster</name>
+  <url>http://maven.apache.org</url>
+  
+  <properties>
+	<java.version>1.8</java.version>
+	<spring.version>4.1.7.RELEASE</spring.version>
+	<spring.securiry>4.0.2.RELEASE</spring.securiry>
+	<hibernate.version>5.0.2.Final</hibernate.version>
+	<hibernate.entitymanager.version>4.3.10.Final</hibernate.entitymanager.version>
+	<mssql.version>4.2</mssql.version>
+	
+  </properties>
+  
+  
+  <dependencies>
+  
+  	<!-- Servlet Spec -->
+	<dependency>
+		<groupId>javax.servlet</groupId>
+		<artifactId>servlet-api</artifactId>
+		<version>2.4</version>
+		<scope>provided</scope>
+	</dependency>
+	<dependency>
+    	<groupId>javax.servlet</groupId>
+    	<artifactId>jstl</artifactId>
+    	<version>1.2</version>
+   	</dependency>
+	<dependency>
+		<groupId>javax.servlet.jsp</groupId>
+		<artifactId>jsp-api</artifactId>
+		<version>2.1</version>
+		<scope>provided</scope>
+	</dependency> 
+	
+	<!--  MSSQL -->
+	<dependency>
+	  	<groupId>com.microsoft.sqlserver</groupId>
+	  	<artifactId>sqljdbc42</artifactId>
+	  	<version>${mssql.version}</version>
+	</dependency>
+	
+	<!-- Spring core & mvc -->
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-context</artifactId>
+		<version>${spring.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-webmvc</artifactId>
+		<version>${spring.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-orm</artifactId>
+		<version>${spring.version}</version>
+		<type>jar</type>
+		<scope>compile</scope>
+	</dependency>
+
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-test</artifactId>
+		<version>${spring.version}</version>
+		<type>jar</type>
+		<scope>test</scope>
+	</dependency>
+
+	<!-- Spring Security -->
+	<dependency> 
+      		<groupId>org.springframework.security</groupId> 
+      		<artifactId>spring-security-core</artifactId>           
+		<version>${spring.securiry}</version> 
+	</dependency>   
+	<dependency>
+       	<groupId>org.springframework.security</groupId>
+       	<artifactId>spring-security-web</artifactId>
+       	<version>${spring.securiry}</version>
+   	</dependency>
+   	<dependency> 
+       	<groupId>org.springframework.security</groupId> 
+      		<artifactId>spring-security-config</artifactId>           
+		<version>${spring.securiry}</version> 
+	</dependency>
+	<dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-taglibs</artifactId>
+        <version>${spring.securiry}</version>
+    </dependency>
+	
+	<!-- Hibernate -->
+	<!-- Hibernate Validator -->
+	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-validator</artifactId>
+		<version>${hibernate.version}</version>
+	</dependency>	
+	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-entitymanager</artifactId>
+		<version>${hibernate.entitymanager.version}</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>javax.transaction</groupId>
+		<artifactId>jta</artifactId>
+		<version>1.1</version>
+	</dependency>
+	<dependency>
+		<groupId>javax.inject</groupId>
+		<artifactId>javax.inject</artifactId>
+		<version>1</version>
+	</dependency>
+  </dependencies>
+  
+  <build>
+    <finalName>roster</finalName>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+    <plugins>
+    	<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>2.3.2</version>
+			<configuration>
+				<source>${java.version}</source>
+				<target>${java.version}</target>
+			</configuration>
+		</plugin>
+		<plugin>
+			<artifactId>maven-war-plugin</artifactId>
+			<version>2.4</version>
+			<configuration>
+				<warSourceDirectory>src/main/webapp</warSourceDirectory>
+				<failOnMissingWebXml>false</failOnMissingWebXml>
+			</configuration>
+		</plugin>
+    </plugins>
+  </build>
+</project>
