@@ -16,6 +16,7 @@
 	<hibernate.version>5.0.2.Final</hibernate.version>
 	<hibernate.entitymanager.version>4.3.10.Final</hibernate.entitymanager.version>
 	<mssql.version>4.2</mssql.version>
+	<jackson.version>2.6.0</jackson.version>
 	
   </properties>
   
@@ -129,7 +130,32 @@
 		<artifactId>javax.inject</artifactId>
 		<version>1</version>
 	</dependency>
-  </dependencies>
+	
+	<!-- JSON Mapping -->
+	<dependency>
+		<groupId>org.codehaus.jackson</groupId>
+		<artifactId>jackson-mapper-asl</artifactId>
+		<version>1.9.13</version>
+	</dependency>
+	<dependency>
+		<groupId>com.fasterxml.jackson.core</groupId>
+		<artifactId>jackson-core</artifactId>
+		<version>${jackson.version}</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>com.fasterxml.jackson.core</groupId>
+	    <artifactId>jackson-databind</artifactId>
+	    <version>${jackson.version}</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>com.fasterxml.jackson.core</groupId>
+	    <artifactId>jackson-annotations</artifactId>
+	    <version>${jackson.version}</version>
+	</dependency>
+
+</dependencies>
   
   <build>
     <finalName>roster</finalName>

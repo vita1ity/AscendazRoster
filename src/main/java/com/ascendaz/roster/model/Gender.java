@@ -29,6 +29,9 @@ public class Gender {
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "gender")
 	private Set<Staff> staffSet = new HashSet<Staff>();
+	
+	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "gender")
+	private Set<TaskProfile> taskProfileSet = new HashSet<TaskProfile>();
 
 	public int getId() {
 		return id;

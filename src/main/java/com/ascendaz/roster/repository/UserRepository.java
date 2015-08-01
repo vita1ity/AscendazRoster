@@ -16,14 +16,12 @@ public class UserRepository {
 	@PersistenceContext
 	private EntityManager em;
 	
-	public RosterUser getUserByUsername(RosterUser user) {
+	public RosterUser getUserByUsername(String username) {
 		TypedQuery<RosterUser> query = em.createNamedQuery(RosterUser.GET_USER_BY_USERNAME, RosterUser.class);
-		query.setParameter("username", user.getUsername());
+		query.setParameter("username", username);
 		List<RosterUser> users = query.getResultList();
 		if (users.size() == 0) return null;
 		RosterUser userFromDB = users.get(0);
-		
-		System.out.println(user.getUsername() + "  " + user.getPassword());
 		
 		return userFromDB;
 	}

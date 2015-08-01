@@ -11,12 +11,12 @@ public class UserService {
 	@Autowired
 	private UserRepository userRepository;
 
-	public boolean checkUser(RosterUser user) {
-		RosterUser userFromDb = userRepository.getUserByUsername(user);
+	public boolean checkUser(String username, String password) {
+		RosterUser userFromDb = userRepository.getUserByUsername(username);
 		if (userFromDb == null)  {
 			return false;
 		}
-		if (userFromDb.getPassword().equals(user.getPassword())) {
+		if (userFromDb.getPassword().equals(password)) {
 			return true;
 		}
 		return false;

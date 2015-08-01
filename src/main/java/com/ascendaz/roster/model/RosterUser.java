@@ -32,6 +32,16 @@ public class RosterUser {
 	@Column(name="PASSWORD", nullable=false)
 	private String password;
 
+	public RosterUser() {
+		super();
+	}
+	
+	public RosterUser(String username, String password) {
+		super();
+		this.username = username;
+		this.password = password;
+	}
+
 	public int getUserId() {
 		return userId;
 	}
