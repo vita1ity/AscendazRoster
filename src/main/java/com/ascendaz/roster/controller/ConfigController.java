@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ascendaz.roster.model.RosterUser;
-import com.ascendaz.roster.model.SetupOption;
+import com.ascendaz.roster.model.config.Criteria;
+import com.ascendaz.roster.model.config.Rule;
+import com.ascendaz.roster.model.config.RuleType;
+import com.ascendaz.roster.model.config.SetupOption;
 import com.ascendaz.roster.service.ConfigService;
 import com.ascendaz.roster.service.UserService;
 
@@ -30,11 +33,19 @@ public class ConfigController {
 	
 	@RequestMapping(value = "config")
 	public String configPage(Model model){
-		RosterUser user = new RosterUser();
-		model.addAttribute("user", user);
+		/*RosterUser user = new RosterUser();
+		model.addAttribute("user", user);*/
 		System.out.println("Config Controller");
+		
 		List<SetupOption> selectedSetupOptions = configService.getSelectedSetupOptions();
 		model.addAttribute("selectedSetupOptions", selectedSetupOptions);
+		
+		Criteria[] criteriaList = configService.getCriteriaList();
+		model.addAttribute("criteriaList", criteriaList);
+		
+		RuleType[] typeList = configService.getRuleTypeList();
+		model.addAttribute("typeList", typeList);
+		
 		return "config";
 	}
 	/*@RequestMapping(value = "config/login", method = RequestMethod.POST)
@@ -66,7 +77,7 @@ public class ConfigController {
 			return "fail";
 		}
 	}
-	@RequestMapping(value = "/config/available-options")
+	@RequestMapping(value = "/config/available-options", method = RequestMethod.GET)
 	public @ResponseBody List<SetupOption> getAvailableOptions() {
 		
 		List<SetupOption> availableOptions = configService.getAvailableSetupOptions();
@@ -74,7 +85,7 @@ public class ConfigController {
 		return availableOptions;
 	}
 	
-	@RequestMapping(value = "/config/selected-options")
+	@RequestMapping(value = "/config/selected-options", method = RequestMethod.GET)
 	public @ResponseBody List<SetupOption> getSelectedOptions() {
 		
 		List<SetupOption> selectedOptions = configService.getSelectedSetupOptions();
@@ -82,17 +93,38 @@ public class ConfigController {
 		return selectedOptions;
 	}
 	
-	@RequestMapping(value = "/config/save-available-options")
+	@RequestMapping(value = "/config/save-available-options", method = RequestMethod.POST)
 	public @ResponseBody String saveAvailableOptions(@RequestBody List<String> options) {
 		configService.saveOptions(options, false);
 		
 		return "success";
 	}
 	
-	@RequestMapping(value = "/config/save-selected-options")
+	@RequestMapping(value = "/config/save-selected-options", method = RequestMethod.POST)
 	public @ResponseBody String saveSelectedOptions(@RequestBody List<String> options) {
 		configService.saveOptions(options, true);
 		
 		return "success";
 	}
+	
+	@RequestMapping(value = "/config/selected-rules", method = RequestMethod.GET)
+	public @ResponseBody List<Rule> getSelectedRules() {
+		List<SetupOption> selectedOptions = configService.getSelectedSetupOptions();
+		List<Rule> selectedRules = configService.getSelectedRules(selectedOptions);
+		
+		for (Rule rule: selectedRules) {
+			System.out.println("Controller: RULE: " + rule);
+		}
+		
+		return selectedRules;
+	}
+	
+	@RequestMapping(value = "/config/save-rules", method = RequestMethod.POST)
+	public @ResponseBody String saveRules(@RequestBody List<String> rules) {
+		
+		configService.saveRules(rules);
+		
+		return "success";
+	}
+	
 }

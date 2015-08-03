@@ -1,3 +1,5 @@
+
+//login
 $(document).ready(function() {
 	$("#loginform").submit(function(e){
 		var username = $(this).find('.first').val();
@@ -78,7 +80,7 @@ $(document).on('click', '.open_hidden_options', function (e) {
 });
 
 
-//save values of selected and available options in the db
+//save values of selected and available options in the db and get selected options
 $(document).on('click', '#save_setup', function (e) {
 	
 	e.preventDefault();
@@ -92,6 +94,7 @@ $(document).on('click', '#save_setup', function (e) {
     
     $('#sortable1').find('li').each(function(i){
     	var current = $(this);
+    	
     	option = current.text();
     	
     	avalOptionsArray[i] = option;
@@ -113,9 +116,14 @@ $(document).on('click', '#save_setup', function (e) {
 	});
     
     //selected options
+    
     var selecOptionsArray = new Array();
     var option = new Object();
     var selecurl = $(this).data("saveselec");
+    
+    console.log(JSON.stringify(selecOptionsArray));
+    
+    $('#sortable2').delay(1000);
     
     $('#sortable2').find('li').each(function(i){
     	var current = $(this);
@@ -125,7 +133,6 @@ $(document).on('click', '#save_setup', function (e) {
     	i++;
     });
     
-    console.log(JSON.stringify(selecOptionsArray));
     
     $.ajax({
         type: "POST",
@@ -139,4 +146,77 @@ $(document).on('click', '#save_setup', function (e) {
 		console.error(err);
 	});
     
+    var selectedOptions = $('#sortable2').html();
+    
+    $("#options-list").html(selectedOptions);
+    
 });
+
+
+//save rules in the db
+$(document).on('click', '#save_rules', function (e) {
+	
+	e.preventDefault();
+	
+    var rulesArray = new Array();
+    
+    var url = $(this).data("url");
+    
+    $('#rules-table-body').find('tr').each(function(i){
+    	var rule = "";
+    	$(this).find('td').each(function(j){
+    		//console.log($(this).html());
+    		var html = $(this).html();
+    		//console.log("this: " + $(html).prop("tagName"));
+    		
+    		if ($(html).prop("tagName") == "SELECT") {
+    			
+    			var id = $(html).attr("id");
+    			//console.log(id);
+    			var idIndex = id.slice(-1);
+    			console.log("index: " + idIndex);
+    			if (id.indexOf("rule-type") == 0) {
+    			//if (id == ("rule-type" + i)) {
+    				var ruleType = $("#rule-type" + idIndex + " option:selected").text();
+    				rule += ruleType;
+    				console.log("type: " + ruleType);
+    			}
+    			else {
+    				var criteria = $("#criteria" + idIndex + " option:selected").text();
+    				rule += criteria + ",";
+    				console.log("criteria: " + criteria);
+    			}
+    			
+    		}
+    		else {
+    			rule += $(this).text() + ",";
+    		}
+    		
+    		//console.log("RULE: " + rule);
+    	});
+    	console.log(rule);
+    	rulesArray[i] = rule;
+    	/*var current = $(this);
+    	
+    	option = current.text();
+    	
+    	avalOptionsArray[i] = option;
+    	i++;*/
+    });
+    
+   // console.log(JSON.stringify(avalOptionsArray));
+    
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: JSON.stringify(rulesArray),
+        contentType: "application/json; charset=utf-8"
+    }).done (function(data) {
+    	console.log(data);
+	
+	}).fail (function(err) {
+		console.error(err);
+	});
+    
+});
+

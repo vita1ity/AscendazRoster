@@ -1,47 +1,3 @@
-<%-- <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="sf"%>
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Configurations</title>
-</head>
-<body>
-	<c:if test="${empty loginUser}">
-		<div class="login-form">
-		    <h2>Login</h2>
-		    <div>
-		    	<c:url value="/config/login" var="loginUrl" />
-		   	<sf:form method="POST" modelAttribute="user" action="${loginUrl}">
-		   	
-				<label for="user_screen_name">Username:</label>
-				<sf:input path="username" size="30" maxlength="50" id="user_screen_name"/>			
-				<sf:errors path="username" cssClass="error"/>
-				
-				<label for="user_password">Password:</label>
-				<sf:password path="password" size="30" showPassword="true" id="user_password"/>
-				<sf:errors path="password" cssClass="error"/>
-				
-				<c:if test="${loginError == 'true'}">
-					<font color='red'><span>Your login attempt was not successful, try again.<br /> 
-					Reason: Invalid name or password</span></font>
-				</c:if>
-				
-				<input class="btn" name="commit" type="submit" value="Log In"/>
-			</sf:form>
-			    
-		    </div>
-		</div>
-	</c:if>
-	<c:if test="${not empty loginUser}">
-		<h1>User login was successfull</h1>
-	</c:if>
-</body>
-</html> --%>
-
-
-
-
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
@@ -81,9 +37,10 @@
 <main class="maincontent" role="main">
 	<div class="columns cf tabs-container maintabs">
 		<aside class="sidebar">
+			<s:url value="/config/selected-rules" var="selected_rules_url"/>
 			<ul class="aside-list tabs-nav">
 				<li class="tab-item active"><a data-href="basic" href="#">Basic setup</a></li>
-				<li class="tab-item"><a data-href="rules" href="#">Rules</a></li>
+				<li class="tab-item" id="rulesTab"  data-url="${selected_rules_url}"><a data-href="rules" href="#">Rules</a></li>
 			</ul>
 		</aside>
 		<div class="content">
@@ -93,7 +50,7 @@
 						<div class="options-cont-content">
 						
 							<c:if test="${not empty selectedSetupOptions}">
-								<ul>
+								<ul id="options-list">
 									<c:forEach var="option" items="${selectedSetupOptions}">
 										<li>${option}</li>		
 									</c:forEach>
@@ -151,6 +108,7 @@
 
 			</div>
 
+			
 			<div data-id="rules" class="tab-content">
 
 				<div class="rules-sort cf">
@@ -163,105 +121,39 @@
 							<th>Type</th>
 						</tr>
 						</thead>
-						<tbody>
+						<tbody id="rules-table-body">
 						<tr>
 							<td>
-								<select name="" id="">
+								<select name="" id="base">
 									<option value="">Assigned Location</option>
 									<option value="">Designaion</option>
 									<option value="">Age</option>
 								</select>
 							</td>
 							<td>
-								<select name="" id="">
-									<option value="">Should be equal to</option>
-									<option value="">Should be not equal to</option>
-									<option value="">Should contains</option>
-									<option value="">In between</option>
-									<option value="">Atleast</option>
-									<option value="">Atmost</option>
+								<select name="" id="criteria0">
+									<c:forEach var="criteria" items="${criteriaList}">
+										<option value="${criteria.criteriaString}">${criteria.criteriaString}</option>
+									</c:forEach>
+									
 								</select>
 							</td>
 							<td>
-								<select name="" id="">
+								<select name="" id="reference">
 									<option value="">Task Location</option>
 									<option value="">Junior</option>
 									<option value="">Age range</option>
 								</select>
 							</td>
 							<td>
-								<select name="" id="">
-									<option value="">Hard</option>
-									<option value="">Soft</option>
+								<select name="" id="rule-type0">
+									<c:forEach var="type" items="${typeList}">
+										<option value="${type}">${type}</option>
+									</c:forEach>
 								</select>
 							</td>
 						</tr>
-						<tr>
-							<td>
-								<select name="" id="">
-									<option value="">Designaion</option>
-
-									<option value="">Assigned Location</option>
-									<option value="">Age</option>
-								</select>
-							</td>
-							<td>
-								<select name="" id="">
-									<option value="">Should be equal to</option>
-									<option value="">Should be not equal to</option>
-									<option value="">Should contains</option>
-									<option value="">In between</option>
-									<option value="">Atleast</option>
-									<option value="">Atmost</option>
-								</select>
-							</td>
-							<td>
-								<select name="" id="">
-									<option value="">Task Location</option>
-									<option value="">Junior</option>
-									<option value="">Age range</option>
-								</select>
-							</td>
-							<td>
-								<select name="" id="">
-									<option value="">Hard</option>
-									<option value="">Soft</option>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<select name="" id="">
-									<option value="">Age</option>
-
-									<option value="">Assigned Location</option>
-									<option value="">Designaion</option>
-								</select>
-							</td>
-							<td>
-								<select name="" id="">
-									<option value="">Should be equal to</option>
-									<option value="">Should be not equal to</option>
-									<option value="">Should contains</option>
-									<option value="">In between</option>
-									<option value="">Atleast</option>
-									<option value="">Atmost</option>
-								</select>
-							</td>
-							<td>
-								<select name="" id="">
-									<option value="">Task Location</option>
-									<option value="">Junior</option>
-									<option value="">Age range</option>
-								</select>
-							</td>
-							<td>
-								<select name="" id="">
-									<option value="">Hard</option>
-									<option value="">Soft</option>
-								</select>
-							</td>
-						</tr>
+						
 						</tbody>
 					</table>
 
@@ -272,8 +164,9 @@
 					</div>
 				</div>
 
+				<s:url value="/config/save-rules" var="save_rules_url"/>
 				<div class="btns-holder">
-					<a href="" class="btn btn-color ">ok</a>
+					<a  id="save_rules" data-url="${save_rules_url}" href="" class="btn btn-color">ok</a>
 					<a href="" class="btn btn-red ">cancel</a>
 				</div>
 			</div>
@@ -329,11 +222,6 @@
 							</button>
 						</form>
 						
-						
-	
-						<!-- <p><a class="lost-pass-btn" href=""
-							  role="toggle_forgot_password_form">Забыли пароль?</a>
-						</p> -->
 					 </div>
 				</div>
 			</div>

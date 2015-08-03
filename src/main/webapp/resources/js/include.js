@@ -81,6 +81,74 @@ jQuery(document).ready(function ($) {
 	function tabs() {
 
 		$(".tab-item").click(function () {
+			
+			if (this.id == "rulesTab") {		
+				//rules tab (get and display rules from selected options)
+					
+				var url = $(this).data("url");
+				console.log("URL:" + url);
+				$.ajax({
+			        type: "GET",
+			        url: url
+			    }).done (function(data) {
+			    	
+			    	var table = "";
+					var len = data.length;
+					for (var i = 0; i < len; i++) {
+						table += "<tr> \n";
+						
+						table += "<td> \n";
+						var setupOption = data[i].setupOption.setupOption;
+						//console.log("setup option:" + setupOption);
+						table += setupOption + "\n";
+						table += "</td> \n";
+						
+						table += "<td> \n";
+						table += "<select id=\"criteria" + i + "\">";
+						/*if (i == 0) {
+							table += "<select id=\"criteria\">";
+						}
+						else {
+							table += "<select>";
+						}*/
+						var criteria = $("#criteria0").html();
+						//console.log("Criteria:" + criteria);
+						table += criteria;
+						table += "</select> \n";
+						table += "</td>";
+						
+						table += "<td> \n";
+						var reference = data[i].reference.reference;
+						//console.log("reference:" + reference);
+						table += reference + "\n";
+						table += "</td> \n";
+						
+						table += "<td> \n";
+						table += "<select id=\"rule-type" + i + "\">";
+						/*if (i == 0) {
+							table += "<select id=\"rule-type\">";
+						}
+						else {
+							table += "<select>";
+						}*/
+						var type = $("#rule-type0").html();
+						//console.log("Criteria:" + criteria);
+						table += type;
+						table += "</select> \n";
+						table += "</td>";
+						
+						table += "</tr>";
+					}
+					//console.log(table);
+					$("#rules-table-body").html(table);
+				
+				}).fail (function(err) {
+					console.error(err);
+				});
+					
+			}
+			
+			
 			$(this).parents('.tabs-container').find(".tab-content").hide().css('opacity', '0');
 			$(this).parents('.tabs-container').find(".tab-item").removeClass("active");
 			$(this).addClass("active");
@@ -89,7 +157,8 @@ jQuery(document).ready(function ($) {
 			$('.tab-content[data-id="' + id + '"]').show().css({"height": "100%"}).animate({
 				'opacity': '1'
 			}, 500);
-
+			
+			
 			return false;
 
 		});

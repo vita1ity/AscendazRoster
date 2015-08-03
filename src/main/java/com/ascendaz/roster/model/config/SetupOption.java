@@ -1,28 +1,39 @@
-package com.ascendaz.roster.model;
+package com.ascendaz.roster.model.config;
 
+import java.io.Serializable;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "setup_option")
 @NamedQueries({
 	@NamedQuery(name = SetupOption.GET_OPTIONS_BY_IS_SELECETED, query = "SELECT option "
 												+ "FROM SetupOption option "
-												+ "WHERE option.isSelected = :isSelected"),
-	@NamedQuery(name = SetupOption.SET_SELECTED_TRUE, query = "UPDATE SetupOption option "
+												+ "WHERE option.isSelected = :isSelected")
+	/*@NamedQuery(name = SetupOption.SET_SELECTED_TRUE, query = "UPDATE SetupOption option "
 												+ "SET option.isSelected = true "
 												+ "WHERE option.setupOption = :setupOption"),
 	@NamedQuery(name = SetupOption.SET_SELECTED_FALSE, query = "UPDATE SetupOption option "
 			+ "SET option.isSelected = false "
-			+ "WHERE option.setupOption = :setupOption"),
+			+ "WHERE option.setupOption = :setupOption"),*/
 	
 })
-public class SetupOption {
+public class SetupOption implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9157664777858689333L;
 	public static final String GET_OPTIONS_BY_IS_SELECETED = "getOptionsByIsSelected";
 	public static final String SET_SELECTED_TRUE = "setSelectedTrue";
 	public static final String SET_SELECTED_FALSE = "setSelectedFalse";
@@ -36,6 +47,12 @@ public class SetupOption {
 	
 	@Column(name = "IS_SELECTED", nullable = true)
 	private boolean isSelected;
+	
+	@OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "setupOption")
+	@JsonBackReference
+	private Rule rule;
+	
+	
 
 	public int getId() {
 		return id;
@@ -61,6 +78,16 @@ public class SetupOption {
 		this.isSelected = isSelected;
 	}
 	
+	
+	
+	public Rule getRule() {
+		return rule;
+	}
+
+	public void setRule(Rule rule) {
+		this.rule = rule;
+	}
+
 	@Override
 	public String toString() {
 		return setupOption;
