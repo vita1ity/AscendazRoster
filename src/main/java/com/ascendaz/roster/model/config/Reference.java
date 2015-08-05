@@ -32,6 +32,9 @@ public class Reference implements Serializable {
 	@Column(name = "REFERENCE", nullable = false, length = 50)
 	private String reference;
 	
+	@Column(name = "ATTRIBUTE_NAME", nullable = true)
+	private String attributeName;
+	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "reference")
 	@JsonBackReference
 	private List<Rule> ruleList = new ArrayList<Rule>();
@@ -60,6 +63,14 @@ public class Reference implements Serializable {
 
 	public void setReference(String reference) {
 		this.reference = reference;
+	}
+
+	public String getAttributeName() {
+		return attributeName;
+	}
+
+	public void setAttributeName(String attributeName) {
+		this.attributeName = attributeName;
 	}
 	
 	

@@ -1,7 +1,9 @@
 package com.ascendaz.roster.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -9,6 +11,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -17,21 +20,24 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.ascendaz.roster.model.attributes.DayOfWeek;
+import com.ascendaz.roster.model.attributes.Location;
+
 @Entity
 @Table(name = "task")
 public class Task {
 	
 	@Id
-	@GeneratedValue
+	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "TASK_ID", nullable = false)
 	private int id;
 	
 	@Column(name = "NAME", nullable = false, length = 50)
 	private String name;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	/*@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LOCATION_ID", nullable = false)
-	private Location location;
+	private Location location;*/
 	
 	@Column(name = "START_DATE", nullable = false)
 	private Date startDate;
@@ -48,7 +54,7 @@ public class Task {
             }
      )
     @ManyToMany
-    private Set<DayOfWeek> dayOfWeekSet = new HashSet<DayOfWeek>();
+    private List<DayOfWeek> dayOfWeekSet = new ArrayList<DayOfWeek>();
 	
 	/*@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "DAY_OF_WEEK_ID", nullable = false)
@@ -59,6 +65,9 @@ public class Task {
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "task")
 	private Set<TaskProfile> taskProfileSet = new HashSet<TaskProfile>();
+	
+	//@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "task")
+	//private Set<Schedule> scheduleSet = new HashSet<Schedule>();
 
 	public int getId() {
 		return id;
@@ -76,13 +85,13 @@ public class Task {
 		this.name = name;
 	}
 
-	public Location getLocation() {
+	/*public Location getLocation() {
 		return location;
 	}
 
 	public void setLocation(Location location) {
 		this.location = location;
-	}
+	}*/
 
 	public Date getStartDate() {
 		return startDate;
@@ -102,11 +111,11 @@ public class Task {
 
 	
 
-	public Set<DayOfWeek> getDayOfWeekSet() {
+	public List<DayOfWeek> getDayOfWeekSet() {
 		return dayOfWeekSet;
 	}
 
-	public void setDayOfWeekSet(Set<DayOfWeek> dayOfWeekSet) {
+	public void setDayOfWeekSet(List<DayOfWeek> dayOfWeekSet) {
 		this.dayOfWeekSet = dayOfWeekSet;
 	}
 

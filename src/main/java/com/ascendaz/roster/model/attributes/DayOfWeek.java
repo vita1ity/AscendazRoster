@@ -1,4 +1,4 @@
-package com.ascendaz.roster.model;
+package com.ascendaz.roster.model.attributes;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -8,17 +8,20 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.ascendaz.roster.model.Task;
 
 @Entity
 @Table(name = "day_of_week")
 public class DayOfWeek {
 
 	@Id
-	@GeneratedValue
+	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "DAY_OF_WEEK_ID", nullable = false)
 	private int id;
 

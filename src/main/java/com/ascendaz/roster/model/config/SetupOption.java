@@ -45,6 +45,9 @@ public class SetupOption implements Serializable{
 	@Column(name = "SETUP_OPTION", nullable = false, length = 50)
 	private String setupOption;
 	
+	@Column(name = "ATTRIBUTE_NAME", nullable = true)
+	private String attributeName;
+	
 	@Column(name = "IS_SELECTED", nullable = true)
 	private boolean isSelected;
 	
@@ -86,6 +89,16 @@ public class SetupOption implements Serializable{
 
 	public void setRule(Rule rule) {
 		this.rule = rule;
+	}
+
+	
+	
+	public String getAttributeName() {
+		return attributeName;
+	}
+
+	public void setAttributeName(String attributeName) {
+		this.attributeName = attributeName;
 	}
 
 	@Override

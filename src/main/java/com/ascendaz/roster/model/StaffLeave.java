@@ -6,17 +6,20 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.ascendaz.roster.model.attributes.Leave;
 
 @Entity
 @Table(name = "staff_leave")
 public class StaffLeave {
 	
 	@Id
-	@GeneratedValue
+	//@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name = "STAFF_LEAVE_ID")
 	private int id;
 	

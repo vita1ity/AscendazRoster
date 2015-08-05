@@ -6,17 +6,21 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.ascendaz.roster.model.attributes.Expiring;
+import com.ascendaz.roster.model.attributes.Training;
+
 @Entity
 @Table(name = "staff_training")
-public class StaffTraining {
+public class StaffTraining implements Expiring{
 
 	@Id
-	@GeneratedValue
+	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "STAFF_TRAINING_ID")
 	private int id;
 	
@@ -74,6 +78,12 @@ public class StaffTraining {
 		this.expireDate = expireDate;
 	}
 	
-	
+	@Override
+	public boolean checkExpired(Date currentDate) {
+		if (currentDate.compareTo(this.effectiveDate) > 0 && currentDate.compareTo(this.expireDate) < 0) {
+			return false;
+		}
+		return true;
+	}
 	
 }

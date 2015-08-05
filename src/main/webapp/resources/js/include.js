@@ -23,13 +23,103 @@ jQuery(document).ready(function ($) {
 		}
 
 	});
+	
+	
+	/*$(window).on('load', function () {
+	   if ($('.rules-table select').length) {
+	      $('.rules-table select').each(function () {
+	         $(this).attr('data-value', $(this).val());
+	      });
+	   }
+	});*/
+	
+	$(window).on('load', function () {
+		if ($('.rules-table select').length) {
+			setTimeout(function(){
+				$('.rules-table select').each(function () {
+					$(this).attr('data-value', $(this).val());
+				});
+			},300);
+		}
+	});
 
+		/*$('.rules-table select').on('change', function () {
+		   $(this).attr('data-value', $(this).val());
+		});
+		
+*/
+	$(document).on('change','.rules-table select', function () {
+		$(this).attr('data-value', $(this).val());
+		});
+	
+	function setSelectValue(a) {
+	   a.find('select').each(function () {
+	      if ($(this).attr('data-value') != 0) {
+	         var val = $(this).attr('data-value');
+	      }
+	      else {
+	         var val = $(this).val();
+	      }
+	      $(this).val(val);
+	   })
+
+	}
+
+		$(document).on('click', '.arr-btn', function (e) {
+		   e.preventDefault();
+
+		   var parent = $(this).parents('.change-options-container'),
+		      parent2 = $(this).parents('.rules-sort'),
+		      elements, itemIndex = 0, listlength;
+
+		   if ($(this).hasClass('arr-btn-right') && parent.find('.list-left .active').length) {
+		      elements = parent.find('.list-left .active').clone();
+		      parent.find('.list-right').append(elements);
+		      parent.find('.list-left .active').remove();
+		      parent.find('.active').removeClass('active');
+
+		   }
+		   if ($(this).hasClass('arr-btn-left') && parent.find('.list-right .active').length) {
+		      elements = parent.find('.list-right .active').clone();
+		      parent.find('.list-left').append(elements);
+		      parent.find('.list-right .active').remove();
+		      parent.find('.active').removeClass('active');
+
+
+		   }
+
+		   if ($(this).hasClass('arr-btn-top') && parent2.find('.rules-table .active').length) {
+		      itemIndex = parent2.find('.rules-table .active').index();
+		      if (itemIndex > 0) {
+		         elements = parent2.find('.rules-table .active').clone();
+		         parent2.find('.rules-table .active').remove();
+		         parent2.find('.rules-table tbody tr').eq(itemIndex - 1).before(elements);
+		         setSelectValue(parent2.find('.rules-table .active'));
+		      }
+
+		   }
+		   if ($(this).hasClass('arr-btn-bottom') && parent2.find('.rules-table .active').length) {
+		      elements = parent2.find('.rules-table .active').clone();
+		      listlength = parent2.find('.rules-table tbody tr').length;
+		      itemIndex = parent2.find('.rules-table .active').index();
+		      console.log(listlength);
+		      if (itemIndex != listlength - 1) {
+		         elements = parent2.find('.rules-table .active').clone();
+		         parent2.find('.rules-table .active').remove();
+		         parent2.find('.rules-table tbody tr').eq(itemIndex).after(elements);
+		         setSelectValue(parent2.find('.rules-table .active'));
+		      }
+
+
+		   }
+
+		});
 /*	$(document).on('click', '.open_hidden_options', function (e) {
 		e.preventDefault();
 		$('.hidden_options').slideToggle(200);
 	});*/
 
-	$(document).on('click', '.arr-btn', function (e) {
+	/*$(document).on('click', '.arr-btn', function (e) {
 		e.preventDefault();
 
 		var parent = $(this).parents('.change-options-container'),
@@ -76,7 +166,7 @@ jQuery(document).ready(function ($) {
 
 		}
 
-	});
+	});*/
 
 	function tabs() {
 
@@ -141,6 +231,12 @@ jQuery(document).ready(function ($) {
 					}
 					//console.log(table);
 					$("#rules-table-body").html(table);
+
+					if ($('#rules-table-body select').length) {
+						$('#rules-table-body select').each(function () {
+							$(this).attr('data-value', $(this).val());
+						});
+					}
 				
 				}).fail (function(err) {
 					console.error(err);

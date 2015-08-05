@@ -3,29 +3,42 @@ package com.ascendaz.roster.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.ascendaz.roster.model.attributes.AgeRange;
+import com.ascendaz.roster.model.attributes.Designation;
+import com.ascendaz.roster.model.attributes.Gender;
+import com.ascendaz.roster.model.attributes.Location;
+import com.ascendaz.roster.model.attributes.Shift;
+import com.ascendaz.roster.model.attributes.Skill;
+import com.ascendaz.roster.model.attributes.Training;
 
 @Entity
 @Table(name = "task_profile")
 public class TaskProfile {
 
 	@Id
-	@GeneratedValue
+	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "TASK_PROFILE_ID", nullable = false)
 	private int id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "TASK_ID", nullable = false)
 	private Task task;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "LOCATION_ID", nullable = false)
+	private Location location;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "DESIGNATION_ID", nullable = false)
@@ -64,6 +77,9 @@ public class TaskProfile {
      )
     @ManyToMany
     private Set<Training> trainingSet = new HashSet<Training>();
+	
+	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "task")
+	private Set<Schedule> scheduleSet = new HashSet<Schedule>();
 
 	public int getId() {
 		return id;

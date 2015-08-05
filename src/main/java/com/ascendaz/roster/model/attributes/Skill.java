@@ -1,21 +1,26 @@
-package com.ascendaz.roster.model;
+package com.ascendaz.roster.model.attributes;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+//import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.ascendaz.roster.model.Staff;
+import com.ascendaz.roster.model.TaskProfile;
+
 @Entity
 @Table(name="skill")
-public class Skill {
+public class Skill implements Comparable<Skill>{
 	
 	@Id
-	@GeneratedValue
+	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name="SKILL_ID", nullable=false)
 	private int id;
 	
@@ -72,6 +77,42 @@ public class Skill {
 
 	public void setTaskProfileSet(Set<TaskProfile> taskProfileSet) {
 		this.taskProfileSet = taskProfileSet;
+	}
+
+	@Override
+	public int compareTo(Skill skill) {
+		
+		return this.sequence - skill.getSequence();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((skill == null) ? 0 : skill.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Skill other = (Skill) obj;
+		if (skill == null) {
+			if (other.skill != null)
+				return false;
+		} else if (!skill.equals(other.skill))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return skill;
 	}
 	
 	

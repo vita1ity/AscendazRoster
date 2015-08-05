@@ -39,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 			+ "WHERE option.setupOption = :setupOption"),*/
 	
 })
-public class Rule implements Serializable{
+public class Rule implements Serializable, Comparable<Rule>{
 	
 	/**
 	 * 
@@ -135,5 +135,10 @@ public class Rule implements Serializable{
 	public String toString() {
 		return "Rule [id=" + id + ", setupOption=" + setupOption + ", reference=" + reference + ", criteria=" + criteria
 				+ ", type=" + type + ", priority=" + priority + ", isSelected=" + isSelected + "]";
+	}
+
+	@Override
+	public int compareTo(Rule rule) {
+		return this.priority - rule.getPriority();
 	}
 }
