@@ -16,19 +16,8 @@ import com.ascendaz.roster.model.attributes.Shift;
 
 @Entity
 @Table(name = "schedule")
-public class Schedule {
+public class Schedule implements Comparable<Schedule>{
 	
-	public Schedule() {
-		super();
-	}
-	
-	public Schedule(TaskProfile task, Staff staff, Shift shift, boolean isViolated) {
-		super();
-		this.task = task;
-		this.staff = staff;
-		this.isViolated = isViolated;
-	}
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ID", nullable = false, unique = true)
@@ -49,6 +38,25 @@ public class Schedule {
 	@Column(name = "DATE", nullable = false)
 	private Date date;
 	
+	@Column(name = "IS_VIOLATED", nullable = true)
+	private boolean isViolated;
+	
+	@Column(name = "STATUS", nullable = false)
+	private String status;
+	
+	public Schedule() {
+		super();
+	}
+	
+	public Schedule(TaskProfile task, Staff staff, Date date, Shift shift, boolean isViolated) {
+		super();
+		this.task = task;
+		this.staff = staff;
+		this.date = date;
+		this.shift = shift;
+		this.isViolated = isViolated;
+	}
+	
 	public Date getDate() {
 		return date;
 	}
@@ -57,11 +65,6 @@ public class Schedule {
 		this.date = date;
 	}
 
-	@Column(name = "IS_VIOLATED", nullable = true)
-	private boolean isViolated;
-	
-	@Column(name = "STATUS", nullable = false)
-	private String status;
 
 	public int getId() {
 		return id;
@@ -103,5 +106,20 @@ public class Schedule {
 		this.status = status;
 	}
 	
-	
+	@Override
+	public String toString() {
+		String str = "Schedule item:\n";
+		str += task + "\n";
+		str += staff + "\n";
+		str += "Date: " + date + "\n";
+		str += "Is violated: " + isViolated + "\n";
+		return str;
+	}
+
+
+	@Override
+	public int compareTo(Schedule o) {
+
+		return this.getDate().compareTo(o.getDate());
+	}
 }

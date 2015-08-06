@@ -19,11 +19,14 @@ import com.ascendaz.roster.model.Schedule;
 import com.ascendaz.roster.model.ShiftPattern;
 import com.ascendaz.roster.model.Staff;
 import com.ascendaz.roster.model.StaffLeave;
+import com.ascendaz.roster.model.StaffLocation;
 import com.ascendaz.roster.model.StaffShift;
 import com.ascendaz.roster.model.Task;
 import com.ascendaz.roster.model.TaskProfile;
+import com.ascendaz.roster.model.attributes.Attribute;
 import com.ascendaz.roster.model.attributes.DayOfWeek;
 import com.ascendaz.roster.model.attributes.Expiring;
+import com.ascendaz.roster.model.attributes.Location;
 import com.ascendaz.roster.model.attributes.Range;
 import com.ascendaz.roster.model.attributes.Shift;
 import com.ascendaz.roster.model.config.Criteria;
@@ -49,6 +52,9 @@ public class RosterEngine {
 	//@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<Schedule> processRules(Date startDate, Date endDate) throws RosterEngineException {
 		
+		long start = System.currentTimeMillis();
+		
+		
 		List<Schedule> schedule = new ArrayList<Schedule>();
 		
 		Schedule sch = null;
@@ -56,7 +62,13 @@ public class RosterEngine {
 		
 		int numStaffLeft = 0;
 		
-		Calendar cal = Calendar.getInstance();
+		//staff
+		LocalDate effectLocalDate = null;
+		Date startEffectDate = null;
+		Date endExpireDate = null;
+		
+		Calendar current = Calendar.getInstance();
+		Calendar cal2 = Calendar.getInstance();
 		SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
 		//sort staff by salary
 		Collections.sort(staffList);
@@ -66,12 +78,29 @@ public class RosterEngine {
 		Date currentDate = startDate;
 		while (!currentDate.equals(endDate)) {
 			
-			System.out.println("Current Date: " + df.format(currentDate));
-			List<Staff> candidatesForCurrentDay = new ArrayList<Staff>(staffList);
+			LocalDate currentLocalDate = new LocalDate(currentDate);
+			current.setTime(currentDate);
+			
+			System.out.println();
+			System.out.println("========================== CURRENT DATE: " + df.format(currentDate) + " ============================");
+			System.out.println();
+			//TODO remove corying list 
+			//List<Staff> candidatesForCurrentDay = new ArrayList<Staff>(staffList);
+			for (Staff staff: staffList) {
+				staff.setBusy(false);
+			}
+			/*for (TaskProfile profile: taskList) {
+				profile.setNeedsToBePerformed(true);
+			}*/
 			
 			Task task = null;
-			nextTask: for (TaskProfile taskProfile: new ArrayList<TaskProfile>(taskList)) {
-				
+			nextTask: for (TaskProfile taskProfile: taskList) {
+				/*if (!taskProfile.isNeedsToBePerformed()) {
+					continue;
+				}*/
+				System.out.println();
+				System.out.println("------------------Task: " + taskProfile + " --------------------");
+				System.out.println();
 				
 				softRuleViolated = new ArrayList<Schedule>();
 				
@@ -80,15 +109,18 @@ public class RosterEngine {
 				numStaffLeft = numOfStaffNeeded;
 				
 				//check if Task is valid for this date
-				Date taskStartDate = task.getStartDate();
-				Date taskEndDate = task.getEndDate();
-				if (taskStartDate.compareTo(currentDate) > 0 || taskEndDate.compareTo(currentDate) < 0) {
-					
-					System.out.println("Task does not need to be peformed for current date. Current date: " + df.format(currentDate) +
-							" task dates: from " + df.format(taskStartDate) + " to " + df.format(taskEndDate));
-					
-					taskList.remove(task);
-					continue;
+				startEffectDate = task.getStartDate();
+				endExpireDate = task.getEndDate();
+				
+				if (startEffectDate.compareTo(currentDate) >= 0 || endExpireDate.compareTo(currentDate) <= 0) {
+					if (!df.format(startEffectDate).equals(df.format(currentDate))) {
+						System.out.println("Task does not need to be peformed for current date. Current date: " + df.format(currentDate) +
+								" task dates: from " + df.format(startEffectDate) + " to " + df.format(endExpireDate));
+						
+						
+						//taskList.remove(task);
+						continue;
+					}
 				}
 				List<DayOfWeek> daysOfWeek= task.getDayOfWeekSet();
 				
@@ -98,45 +130,58 @@ public class RosterEngine {
 				//0 is equal to all days of week
 				if (daysOfWeek.size() == 1 && daysOfWeek.get(0).getNumber() == 0) {
 					
-					System.out.println("Day should be performed for the whole week");
+					System.out.println("Task should be performed for the whole week");
 							
 					isPerformedForCurrentDayOfWeek = true;
 				}
 				if (!isPerformedForCurrentDayOfWeek) {
 					
-					cal.setTime(currentDate);
-					int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+					
+					int dayOfWeek = current.get(Calendar.DAY_OF_WEEK);
 					for (DayOfWeek day: daysOfWeek) {
 						if (day.getNumber() == dayOfWeek) {
-							System.out.println("Day should be performed for the day: " + dayOfWeek);
+							System.out.println("Task should be performed for the current day: " + dayOfWeek);
 							isPerformedForCurrentDayOfWeek = true;
 							break;
 						}
+						else {
+							System.out.println("Task should be performed for the day: " + day);
+						}
 					}
 					if (!isPerformedForCurrentDayOfWeek) {
-						taskList.remove(task);
+						System.out.println("Task shouldn't be performed for the current day: " + dayOfWeek);
+						//taskList.remove(task);
 						continue;
 					}
 				}
 				
 				
+				/*Date effectDate = null;
+				Date expireDate = null;*/
 				
-				Date effectDate = null;
-				Date expireDate = null;
-				LocalDate effectLocalDate = null;
-				LocalDate currentLocalDate = new LocalDate(currentDate);
-				
-				staff: for (Staff staff: new ArrayList<Staff>(candidatesForCurrentDay)) {
+				//staff: for (Staff staff: new ArrayList<Staff>(candidatesForCurrentDay)) {
+				staff: for (Staff staff: staffList) {
+					if (staff.isBusy()) {
+						continue;
+					}
+					
+					System.out.println();
+					System.out.println("+++++++++++++++++++++++" + staff + "++++++++++++++++++++++++++++");
+					System.out.println();
 					
 					char shiftForTheDay = '0';
 					
 					
-					//TODO change using Expiring interface
 					Set<StaffShift> staffShieftSet = staff.getStaffShiftSet();
 					for (StaffShift staffShift: staffShieftSet) {
+						
+						startEffectDate = staffShift.getEffectiveDate();
+						endExpireDate = staffShift.getExpireDate();
+						
 						if (staffShift.checkExpired(currentDate)) {
+							
 							System.out.println("Staff shieft is out of date. Current date: " + df.format(currentDate) +
-									" shieft effective date " + df.format(effectDate) + " expire " + df.format(expireDate));
+									" shift effective date " + df.format(startEffectDate) + " expire " + df.format(endExpireDate));
 							continue;
 						}
 						/*effectDate = staffShift.getEffectiveDate();
@@ -148,26 +193,26 @@ public class RosterEngine {
 						}*/
 						else {
 							ShiftPattern shiftPattern = staffShift.getShiftPattern();
-							effectLocalDate = new LocalDate(effectDate);
+							effectLocalDate = new LocalDate(startEffectDate);
 							
 							int days = Days.daysBetween(effectLocalDate, currentLocalDate).getDays();
 							String pattern = shiftPattern.getName();
 							int numOfDay = days % pattern.length();
 							
 							shiftForTheDay = pattern.charAt(numOfDay);
-							if (pattern.charAt(numOfDay) == 'O') {
+							if (shiftForTheDay == 'O') {
 								
 								System.out.println("Staff has day off in the date: " + df.format(currentDate));
 								Shift shift = new Shift();
 								shift.setShift("OFF");
 								shift.setShiftLetter("O");
 								
-								sch = new Schedule(null, staff, shift, false);
+								sch = new Schedule(null, staff, currentDate, shift, false);
 								schedule.add(sch);
-								candidatesForCurrentDay.remove(staff);
+								staff.setBusy(true);
+								//candidatesForCurrentDay.remove(staff);
 								continue staff;
 							}
-							
 							
 							break;
 						}
@@ -176,7 +221,22 @@ public class RosterEngine {
 					Set<StaffLeave> staffLeaveSet = staff.getStaffLeaveSet();
 					
 					for (StaffLeave staffLeave: staffLeaveSet) {
-						if (staffLeave.getDate().equals(currentDate)) {
+						
+						cal2.setTime(staffLeave.getDate());
+						boolean sameDay = current.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+						                  current.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+						/*System.out.println(current.get(Calendar.YEAR));
+						System.out.println(cal2.get(Calendar.YEAR));
+						System.out.println(current.get(Calendar.MONTH));
+						System.out.println(cal2.get(Calendar.MONTH));
+						System.out.println(current.get(Calendar.DAY_OF_MONTH));
+						System.out.println(cal2.get(Calendar.DAY_OF_MONTH));
+						System.out.println(current.get(Calendar.DAY_OF_YEAR));
+						System.out.println(cal2.get(Calendar.DAY_OF_YEAR));*/
+						
+						if (sameDay) {
+						
+						//if (staffLeave.getDate().equals(currentDate)) {
 							System.out.println("Staff has annual leave today");
 							
 							if (staffLeave.getStatus().equalsIgnoreCase("approved")) {
@@ -186,9 +246,10 @@ public class RosterEngine {
 								Shift shift = new Shift();
 								shift.setShift("Annual Leave");
 								shift.setShiftLetter("L");
-								sch = new Schedule(null, staff, shift, false);
+								sch = new Schedule(null, staff, currentDate, shift, false);
 								schedule.add(sch);
-								candidatesForCurrentDay.remove(staff);
+								staff.setBusy(true);
+								//candidatesForCurrentDay.remove(staff);
 								continue staff;
 							}
 							break;
@@ -205,10 +266,10 @@ public class RosterEngine {
 						Reference reference = rule.getReference();
 						Criteria criteria = rule.getCriteria();
 						
-						String attributeName = option.getAttributeName();
+						String staffAttributeName = option.getAttributeName();
 						String taskAttributeName = reference.getAttributeName();
 						
-						System.out.println("Rule with staff attribute: " + attributeName + " task attribute: " + taskAttributeName);
+						System.out.println("Rule: " + staffAttributeName + " " + criteria + " " + taskAttributeName);
 						
 						//get attribute with given name
 						Class<?> staffClass = staff.getClass();
@@ -217,7 +278,7 @@ public class RosterEngine {
 						Field staffField;
 						Field taskField;
 						try {
-							staffField = staffClass.getDeclaredField(attributeName);
+							staffField = staffClass.getDeclaredField(staffAttributeName);
 							taskField = taskClass.getDeclaredField(taskAttributeName);
 							
 							staffField.setAccessible(true);
@@ -226,16 +287,27 @@ public class RosterEngine {
 							Object staffObject = staffField.get(staff);
 							Object taskObject = taskField.get(taskProfile);
 							
+							System.out.println("STAFF OBJECT: " + staffObject + ", TASK OBJECT: " + taskObject);
+							
+							//skip this rule if task object doesn't have it specified
+							if (taskObject == null) {
+								continue;
+							}
+							
+							
 							//Shift attributes
-							if (staffObject instanceof Shift) {
-								if (!(taskObject instanceof Shift)) {
+							else if (taskObject instanceof Shift) {
+								/*if (!(taskObject instanceof Shift)) {
 									throw new RosterEngineException("Staff rule type is Shift. Expected type of task is Shift. Current type: " 
 											+ taskObject.getClass().getName());
 								}
-								else {
+								else {*/
+									
+									System.out.println("staff and task type is Shift");
+									
 									String taskShift = taskProfile.getShift().getShiftLetter();
 									char taskShiftCharacter = taskShift.charAt(0);
-									
+									System.out.println("staff shift: " + shiftForTheDay);
 									//shift supports only equals criteria
 									
 									if (!criteria.equals(Criteria.EQUAL)) {
@@ -245,27 +317,65 @@ public class RosterEngine {
 										System.out.println("Shift rule approved!");
 										continue;
 									}
+									else {
+										System.out.println("Shift rule not approved");
+										continue staff;
+									}
+									
+								//}
+							}
+							//Location attribute. 
+							else if (taskObject instanceof Location) {
+								
+								System.out.println("Location rule");
+								
+								if (!(staffObject instanceof Collection)) {
+									throw new RosterEngineException("Task type is Location. Staff should be of type Collection<Location>");
+								}
+								else {
+									
+									String setupOption = option.getSetupOption();
+									
+									List<StaffLocation> staffLocations = new ArrayList<StaffLocation>();
+									
+									//Assigned or restricted locations
+									Collection staffColl = (Collection)staffObject;
+									for (Object obj: staffColl) {
+										if (!(obj instanceof StaffLocation)) {
+											throw new RosterEngineException("Task type is Location. Staff object should be of type StaffLocation");
+										}
+										else {
+											StaffLocation staffLocation = (StaffLocation)obj;
+											if (setupOption.contains("Assigned") && staffLocation.getType().equals("Assigned")) {
+												staffLocations.add(staffLocation);
+											}
+											else if (setupOption.contains("Restricted") && staffLocation.getType().equals("Restricted")) {
+												staffLocations.add(staffLocation);
+											}
+										}
+									}
+									staffObject = staffLocations;
 									
 								}
 							}
 							
-							boolean res = processCriteria(criteria, taskObject, staffObject, currentDate);
 							
-							if (res) {
+							if (processCriteria(criteria, taskObject, staffObject, currentDate)) {
+								System.out.println("Staff satisfies the rule");
 								continue;
 							}
 							
 							if (softRuleViolated.size() < numStaffLeft && rule.getType().equals(RuleType.Soft)) {
+								System.out.println("Staff violates soft rule");
 								violatesSoftRule = true;
 								continue;
 							}
 							//HARD rule
 							else {
 								//check next staff
+								System.out.println("Staff doesn't satisfy the rule");
 								continue staff;
 							}
-							
-							//check if not Expiring TODO
 							
 						
 						} catch (NoSuchFieldException | SecurityException e) {
@@ -285,7 +395,12 @@ public class RosterEngine {
 					//soft rule violated but candidate founded
 					if (violatesSoftRule && numStaffLeft > softRuleViolated.size()) {
 						//add candidate as soft violation variant for this task and day
-						Schedule violatedSchedule = new Schedule(taskProfile, staff, taskProfile.getShift(), true);
+						System.out.println("Schedule with soft rule violation added:");
+						System.out.println("Task: " + taskProfile);
+						System.out.println("Staff: " + staff);
+						System.out.println("Day: " + currentDate);
+						System.out.println("Shift: " + taskProfile.getShift());
+						Schedule violatedSchedule = new Schedule(taskProfile, staff, currentDate, taskProfile.getShift(), true);
 						softRuleViolated.add(violatedSchedule);
 					}
 					//candidate satisfies all rules 
@@ -297,8 +412,10 @@ public class RosterEngine {
 						System.out.println("Day: " + currentDate);
 						System.out.println("Shift: " + taskProfile.getShift());
 						
-						sch = new Schedule(taskProfile, staff, taskProfile.getShift(), false);
+						sch = new Schedule(taskProfile, staff, currentDate, taskProfile.getShift(), false);
 						schedule.add(sch);
+						//candidatesForCurrentDay.remove(staff);
+						staff.setBusy(true);
 						if (--numStaffLeft == 0) {
 							continue nextTask;
 						}
@@ -320,6 +437,8 @@ public class RosterEngine {
 						System.out.println("Shift: " + taskProfile.getShift());
 						
 						schedule.add(violatedSch);
+						violatedSch.getStaff().setBusy(true);
+						//candidatesForCurrentDay.remove(violatedSch.getStaff());
 					}
 					
 				}
@@ -341,6 +460,9 @@ public class RosterEngine {
 			currentDate = c.getTime();
 		}//days list end
 		
+		long end = System.currentTimeMillis();
+		System.out.println("PROCESS FINISHED. Time: " + (end - start));
+		
 		return schedule;
 	}
 
@@ -349,25 +471,27 @@ public class RosterEngine {
 	//return positive int if condition is sutisfied, 
 	private boolean processCriteria(Criteria criteria, Object taskObject, Object staffObject, Date currentDate) throws RosterEngineException {
 		
-		Collection<?> staffCollection = null;
-		Collection<?> taskCollection = null;
-		Collection<Expiring> staffNotExpired = null;
+		//Collection<?> staffCollection = null;
+		//Collection<?> taskCollection = null;
+		Collection<Object> staffNotExpired = null;
+		Expiring expStaffObj = null;
 		boolean expiring = false;
 		// Expiring case
-		if (staffObject instanceof Collection && taskObject instanceof Collection) {
-			staffCollection = (Collection<?>) staffObject;
-			taskCollection = (Collection<?>) taskObject;
+		if (staffObject instanceof Collection) {
+			//staffCollection = (Collection<?>) staffObject;
+			//taskCollection = (Collection<?>) taskObject;
 			
-			staffNotExpired = new HashSet<Expiring>();
+			staffNotExpired = new HashSet<Object>();
 			
 			//remove expired items
 			
-			for (Object staffObj: staffCollection) {
+			for (Object staffObj: (Collection<?>)staffObject) {
 				if (expiring == true || staffObj instanceof Expiring) {
 					expiring = true;
-					Expiring expStaffObj = (Expiring)staffObj;
+					expStaffObj = (Expiring)staffObj;
 					if (!expStaffObj.checkExpired(currentDate)) {
-						staffNotExpired.add(expStaffObj);
+						System.out.println("Not expired item added: " + expStaffObj.getValueObject());
+						staffNotExpired.add(expStaffObj.getValueObject());
 					}
 					
 				}
@@ -375,43 +499,64 @@ public class RosterEngine {
 			}
 			
 		}
+		if (staffNotExpired != null && !staffNotExpired.isEmpty()) {
+			if (staffNotExpired.size() == 1) {
+				staffObject = expStaffObj.getValueObject();
+			}
+			else {
+				staffObject = staffNotExpired;
+			}
+		}
+		
 		
 		switch (criteria) {
 		case EQUAL:
-			if (expiring) {
-				if (taskCollection.equals(staffNotExpired)) {
-					System.out.println("(Not expired) Staff value: " + staffObject + " is equal to Task value: " + taskObject);
+			System.out.println("taskObject: " + taskObject + ", staffObject: " + staffObject);
+			if (taskObject instanceof Attribute && staffObject instanceof Attribute) {
+				Attribute taskAttr = (Attribute)taskObject;
+				Attribute staffAttr = (Attribute)staffObject;
+				if (taskAttr.getValue().equals(staffAttr.getValue())) {
+				//if (taskObject.equals(staffObject)) {
+					System.out.println("Staff value: " + staffObject + " is equal to Task value: " + taskObject);
 					return true;
 				}
-			}
-			else if (taskObject.equals(staffObject)) {
-				System.out.println("Staff value: " + staffObject + " is equal to Task value: " + taskObject);
-				return true;
 			}
 			return false;
 		case NOT_EQUAL:
-			if (!taskObject.equals(staffObject)) {
-				System.out.println("Staff value: " + staffObject + " is not equal to Task value: " + taskObject);
+			System.out.println("taskObject: " + taskObject + ", staffObject: " + staffObject);
+			if (taskObject instanceof Attribute && staffObject instanceof Attribute) {
+				Attribute taskAttr = (Attribute)taskObject;
+				Attribute staffAttr = (Attribute)staffObject;
+				if (!taskAttr.getValue().equals(staffAttr.getValue())) {
+					System.out.println("Staff value: " + staffObject + " is not equal to Task value: " + taskObject);
+					return true;
+				}
+				return false;
+			}
+			else {
 				return true;
 			}
-			return false;
 		case CONTAINS:
-			if (!(staffObject instanceof Collection && taskObject instanceof Collection)) {
+			if (!(staffObject instanceof Collection)) {
 				throw new RosterEngineException("CONTAINS rule is applicable only for Collection type. Staff type: " + staffObject.getClass().getName()
 						+ ", task type: " + taskObject.getClass().getName());
 			}
-			else if (expiring) {
-				if (staffNotExpired.containsAll(taskCollection)) {
-					System.out.println("Staff collection without expired items contains all objects from Task collection");
-					return true;
-				}
-			}
-			else {
+			Collection<?> staffCollection = (Collection)staffObject;
+			if (taskObject instanceof Collection) {
+				Collection<?> taskCollection = (Collection)taskObject;
 				if (staffCollection.containsAll(taskCollection)) {
 					System.out.println("Staff collection contains all objects from Task collection");
 					return true;
 				}
-			}		
+			}
+			else {
+				if (staffCollection.contains(taskObject)) {
+					System.out.println("Staff collection contains all objects from Task collection");
+					return true;
+				}
+			}
+			
+					
 		
 			return false;
 		case IN_BETWEEN:
@@ -426,6 +571,7 @@ public class RosterEngine {
 					@SuppressWarnings("unchecked")
 					Comparable<Number> staffNumber = (Comparable<Number>) staffObject;
 					if (taskRange.checkInBetween(staffNumber)) {
+						System.out.println("Staff attribute is in between task range");
 						return true;
 					}
 				}
@@ -442,9 +588,10 @@ public class RosterEngine {
 			}
 			else {
 				Comparable compStaff = (Comparable) staffObject;
-				Comparable compTask = (Comparable) staffObject;
+				Comparable compTask = (Comparable) taskObject;
 				
-				if (compStaff.compareTo(compTask) > 0) {
+				if (compStaff.compareTo(compTask) >= 0) {
+					System.out.println("Staff attribute is bigger than task attribute");
 					return true;
 				}
 			}
@@ -456,9 +603,10 @@ public class RosterEngine {
 			}
 			else {
 				Comparable compStaff = (Comparable) staffObject;
-				Comparable compTask = (Comparable) staffObject;
+				Comparable compTask = (Comparable) taskObject;
 				
-				if (compStaff.compareTo(compTask) < 0) {
+				if (compStaff.compareTo(compTask) <= 0) {
+					System.out.println("Staff attribute is smaller than task attribute");
 					return true;
 				}
 			}
@@ -466,6 +614,9 @@ public class RosterEngine {
 		default:
 			return false;
 		}
+		
+		
+		
 		
 	}
 	

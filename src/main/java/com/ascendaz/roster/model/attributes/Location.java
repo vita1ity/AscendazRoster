@@ -16,7 +16,7 @@ import com.ascendaz.roster.model.TaskProfile;
 
 @Entity
 @Table(name = "location")
-public class Location {
+public class Location implements Attribute{
 	
 	@Id
 	//@GeneratedValue(strategy = GenerationType.AUTO)
@@ -71,9 +71,9 @@ public class Location {
 			return false;
 		Location other = (Location) obj;
 		if (location == null) {
-			if (other.location != null)
+			if (other.getLocation() != null)
 				return false;
-		} else if (!location.equals(other.location))
+		} else if (!location.equals(other.getLocation()))
 			return false;
 		return true;
 	}
@@ -81,6 +81,12 @@ public class Location {
 	@Override
 	public String toString() {
 		return location;
+	}
+
+	@Override
+	public Object getValue() {
+		
+		return this.location;
 	}
 
 	

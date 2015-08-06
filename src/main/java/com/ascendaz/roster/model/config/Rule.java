@@ -30,7 +30,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 												+ "FROM Rule rule1 "
 												+ "WHERE rule1.setupOption.id = :setupOptionId"),
 	
-	
+	@NamedQuery(name = Rule.GET_SELECTED_RULES, query = "SELECT rule1 "
+												+ "FROM Rule rule1 "
+												+ "WHERE rule1.isSelected = true")
 	/*@NamedQuery(name = SetupOption.SET_SELECTED_TRUE, query = "UPDATE SetupOption option "
 												+ "SET option.isSelected = true "
 												+ "WHERE option.setupOption = :setupOption"),
@@ -48,6 +50,7 @@ public class Rule implements Serializable, Comparable<Rule>{
 
 	public static final String GET_RULE_BY_OPTION = "getRuleByOption";
 	public static final String SAVE_RULE = "updateRule";
+	public static final String GET_SELECTED_RULES = "getSelectedRules";
 	
 	@Id
 	@Column(name = "RULE_ID", nullable = false, unique = true)

@@ -8,15 +8,16 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.ascendaz.roster.model.attributes.Designation;
 import com.ascendaz.roster.model.attributes.Gender;
@@ -24,7 +25,15 @@ import com.ascendaz.roster.model.attributes.Skill;
 
 @Entity
 @Table(name = "staff")
+
+@NamedQueries({
+	@NamedQuery(name = Staff.GET_ALL_STAFF, query = "SELECT staff1 "
+												+ "FROM Staff staff1")
+})
+
 public class Staff implements Comparable<Staff>{
+	
+	public static final String GET_ALL_STAFF = "getStaff";
 	
 	@Id
 	//@GeneratedValue(strategy = GenerationType.AUTO)
@@ -79,6 +88,10 @@ public class Staff implements Comparable<Staff>{
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "staff")
 	private Set<Schedule> scheduleSet = new HashSet<Schedule>();
+	
+	@Transient
+	private boolean isBusy;
+	
 	
 	public int getId() {
 		return id;
@@ -196,6 +209,20 @@ public class Staff implements Comparable<Staff>{
 	public int compareTo(Staff staff) {
 		
 		return this.salary - staff.getSalary();
+	}
+
+	public boolean isBusy() {
+		return isBusy;
+	}
+
+	public void setBusy(boolean isBusy) {
+		this.isBusy = isBusy;
+	}
+
+	@Override
+	public String toString() {
+		return "Staff: id=" + id + ", name=" + name + ", gender=" + gender + ", designation=" + designation
+				+ ", salary=" + salary + ", age=" + age;
 	}
 	
 	

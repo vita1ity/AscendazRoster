@@ -6,4 +6,6 @@ public interface Expiring {
 	
 	public boolean checkExpired(Date currentDate);
 	
+	public Object getValueObject();
+	
 }

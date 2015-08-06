@@ -19,7 +19,7 @@ import com.ascendaz.roster.model.TaskProfile;
 
 @Entity
 @Table(name = "training")
-public class Training {
+public class Training implements Attribute{
 	
 	@Id
 	//@GeneratedValue(strategy = GenerationType.AUTO)
@@ -107,5 +107,12 @@ public class Training {
 	public String toString() {
 		return name;
 	}
+	
+	@Override
+	public Object getValue() {
+		
+		return this.name;
+	}
+	
 	
 }

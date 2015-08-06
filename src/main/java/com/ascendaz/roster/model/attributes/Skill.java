@@ -17,7 +17,7 @@ import com.ascendaz.roster.model.TaskProfile;
 
 @Entity
 @Table(name="skill")
-public class Skill implements Comparable<Skill>{
+public class Skill implements Comparable<Skill>, Attribute{
 	
 	@Id
 	//@GeneratedValue(strategy = GenerationType.AUTO)
@@ -113,6 +113,12 @@ public class Skill implements Comparable<Skill>{
 	@Override
 	public String toString() {
 		return skill;
+	}
+	
+	@Override
+	public Object getValue() {
+		
+		return this.skill;
 	}
 	
 	

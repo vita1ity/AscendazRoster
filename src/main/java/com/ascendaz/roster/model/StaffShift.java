@@ -79,10 +79,17 @@ public class StaffShift implements Expiring{
 	
 	@Override
 	public boolean checkExpired(Date currentDate) {
-		if (currentDate.compareTo(this.effectiveDate) > 0 && currentDate.compareTo(this.expireDate) < 0) {
+		if (currentDate.compareTo(this.effectiveDate) >= 0 && currentDate.compareTo(this.expireDate) <= 0) {
 			return false;
 		}
 		return true;
 	}
+
+	@Override
+	public Object getValueObject() {
+		
+		return this.shiftPattern;
+	}
+	
 	
 }

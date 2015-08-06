@@ -67,6 +67,11 @@ public class DayOfWeek {
 	public void setTaskSet(Set<Task> taskSet) {
 		this.taskSet = taskSet;
 	}
+
+	@Override
+	public String toString() {
+		return "DayOfWeek: " + number + ". " + dayOfWeek;
+	}
 	
 	
 	

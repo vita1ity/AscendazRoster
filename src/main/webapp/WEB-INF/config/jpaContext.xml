@@ -27,8 +27,8 @@
 		<property name="jpaPropertyMap">
 			<map>
 				<entry key="hibernate.dialect" value="org.hibernate.dialect.SQLServer2008Dialect"/>
-				<entry key="hibernate.hbm2ddl.auto" value="create"/>
-				<entry key="hibernate.format.sql" value="update"/>
+				<entry key="hibernate.hbm2ddl.auto" value="update"/>
+				<entry key="hibernate.format.sql" value="true"/>
 			</map>
 		</property>
 	</bean>

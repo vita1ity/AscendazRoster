@@ -12,8 +12,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.ascendaz.roster.model.attributes.AgeRange;
 import com.ascendaz.roster.model.attributes.Designation;
@@ -25,8 +28,16 @@ import com.ascendaz.roster.model.attributes.Training;
 
 @Entity
 @Table(name = "task_profile")
+
+
+@NamedQueries({
+	@NamedQuery(name = TaskProfile.GET_ALL_TASKS, query = "SELECT task1 "
+												+ "FROM TaskProfile task1")
+})
 public class TaskProfile {
 
+	public static final String GET_ALL_TASKS = "getTasks";
+	
 	@Id
 	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "TASK_PROFILE_ID", nullable = false)
@@ -45,7 +56,7 @@ public class TaskProfile {
 	private Designation designation;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "AGE_RANGE_ID", nullable = false)
+	@JoinColumn(name = "AGE_RANGE_ID", nullable = true)
 	private AgeRange ageRange;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -80,6 +91,9 @@ public class TaskProfile {
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "task")
 	private Set<Schedule> scheduleSet = new HashSet<Schedule>();
+	
+	@Transient
+	private boolean needsToBePerformed;
 
 	public int getId() {
 		return id;
@@ -128,6 +142,32 @@ public class TaskProfile {
 	public void setShift(Shift shift) {
 		this.shift = shift;
 	}
+	
+	
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+
+	public Set<Schedule> getScheduleSet() {
+		return scheduleSet;
+	}
+
+	public void setScheduleSet(Set<Schedule> scheduleSet) {
+		this.scheduleSet = scheduleSet;
+	}
+
+	public boolean isNeedsToBePerformed() {
+		return needsToBePerformed;
+	}
+
+	public void setNeedsToBePerformed(boolean needsToBePerformed) {
+		this.needsToBePerformed = needsToBePerformed;
+	}
 
 	public Set<Skill> getSkillSet() {
 		return skillSet;
@@ -143,6 +183,12 @@ public class TaskProfile {
 
 	public void setTrainingSet(Set<Training> trainingSet) {
 		this.trainingSet = trainingSet;
+	}
+
+	@Override
+	public String toString() {
+		return "TaskProfile: id=" + id + ", location=" + location + ", designation=" + designation
+				+ ", ageRange=" + ageRange + ", gender=" + gender + ", shift=" + shift;
 	}
 	
 	

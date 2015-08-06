@@ -27,6 +27,8 @@ public class Shift {
 	@Column(name="SHIFT_TYPE", nullable=false, length=30)
 	private String shift;
 	
+	
+
 	@Column(name="SHIFT_LETTER", nullable=false, length=2)
 	private String shiftLetter;
 	
@@ -60,5 +62,9 @@ public class Shift {
 		this.shift = shift;
 	}
 	
+	@Override
+	public String toString() {
+		return "Shift: " + shiftLetter + " - " + shift;
+	}
 	
 }

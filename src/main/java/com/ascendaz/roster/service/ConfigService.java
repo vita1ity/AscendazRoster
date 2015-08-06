@@ -66,6 +66,7 @@ public class ConfigService {
 			//System.out.println(rule);
 			String[] ruleArgs = rule.split(",");
 			String base = ruleArgs[0];
+			
 			Criteria criteria = Criteria.constructCriteria(ruleArgs[1]);
 			String reference = ruleArgs[2];
 			RuleType type = RuleType.constructType(ruleArgs[3]);

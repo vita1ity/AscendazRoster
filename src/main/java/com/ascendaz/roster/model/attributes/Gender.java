@@ -18,7 +18,7 @@ import com.ascendaz.roster.model.TaskProfile;
 
 @Entity
 @Table(name = "gender")
-public class Gender implements Comparable<Gender> {
+public class Gender implements Comparable<Gender>, Attribute {
 	
 	@Id
 	//@GeneratedValue(strategy = GenerationType.AUTO)
@@ -114,6 +114,11 @@ public class Gender implements Comparable<Gender> {
 		return type;
 	}
 	
+	@Override
+	public Object getValue() {
+		
+		return this.name;
+	}
 	
 	
 }

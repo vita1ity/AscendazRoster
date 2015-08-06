@@ -7,7 +7,7 @@ public enum Criteria {
     CONTAINS("Should contain"),
     IN_BETWEEN("In between"),
     ATLEAST("Atleast"),
-    ATMOST("Almost"); 
+    ATMOST("Atmost"); 
 
 
     private final String criteriaString;
