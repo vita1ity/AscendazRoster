@@ -22,7 +22,8 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-		    /WEB-INF/config/jpaContext.xml,
+    		/WEB-INF/config/hibernateContext.xml,
+		    <!-- /WEB-INF/config/jpaContext.xml,  -->
 		    <!-- /WEB-INF/config/security.xml, -->
 		    /WEB-INF/config/appContext.xml
 		</param-value>
@@ -34,13 +35,17 @@
     <session-timeout>30</session-timeout>
   </session-config>
   <filter>
-    <filter-name>SpringOpenEntityManagerInViewFilter</filter-name>
-    <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
+    <filter-name>SpringOpenSessionInViewFilter</filter-name>
+    <filter-class>org.springframework.orm.hibernate4.support.OpenSessionInViewFilter</filter-class>
+    <init-param>
+			<param-name>sessionFactoryBeanName</param-name>
+			<param-value>sessionFactory</param-value>
+		</init-param>
   </filter>
   <filter-mapping>
-    <filter-name>SpringOpenEntityManagerInViewFilter</filter-name>
+    <filter-name>SpringOpenSessionInViewFilter</filter-name>
     <url-pattern>/*</url-pattern>
-  </filter-mapping>
+  </filter-mapping> 
   <!-- <filter>
     <filter-name>springSecurityFilterChain</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>

@@ -16,10 +16,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "setup_option")
-@NamedQueries({
-	@NamedQuery(name = SetupOption.GET_OPTIONS_BY_IS_SELECETED, query = "SELECT option "
+//@NamedQueries({
+/*	@NamedQuery(name = SetupOption.GET_OPTIONS_BY_IS_SELECETED, query = "SELECT option "
 												+ "FROM SetupOption option "
-												+ "WHERE option.isSelected = :isSelected")
+												+ "WHERE option.isSelected = :isSelected")*/
 	/*@NamedQuery(name = SetupOption.SET_SELECTED_TRUE, query = "UPDATE SetupOption option "
 												+ "SET option.isSelected = true "
 												+ "WHERE option.setupOption = :setupOption"),
@@ -27,16 +27,16 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 			+ "SET option.isSelected = false "
 			+ "WHERE option.setupOption = :setupOption"),*/
 	
-})
+//})
 public class SetupOption implements Serializable{
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -9157664777858689333L;
-	public static final String GET_OPTIONS_BY_IS_SELECETED = "getOptionsByIsSelected";
+	/*public static final String GET_OPTIONS_BY_IS_SELECETED = "getOptionsByIsSelected";
 	public static final String SET_SELECTED_TRUE = "setSelectedTrue";
-	public static final String SET_SELECTED_FALSE = "setSelectedFalse";
+	public static final String SET_SELECTED_FALSE = "setSelectedFalse";*/
 	
 	@Id
 	@Column(name = "OPTION_ID", nullable = false)

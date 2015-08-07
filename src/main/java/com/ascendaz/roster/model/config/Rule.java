@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "roster_rule")
-@NamedNativeQuery(name=Rule.SAVE_RULE, query="UPDATE roster_rule "
+/*@NamedNativeQuery(name=Rule.SAVE_RULE, query="UPDATE roster_rule "
 											+ "SET CRITERIA = :criteria, TYPE = :type, PRIORITY = :priority, IS_SELECTED = 1 "
 											+ "WHERE SETUP_OPTION_ID = (SELECT OPTION_ID "
 																	+ "FROM setup_option "
@@ -33,14 +33,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 	@NamedQuery(name = Rule.GET_SELECTED_RULES, query = "SELECT rule1 "
 												+ "FROM Rule rule1 "
 												+ "WHERE rule1.isSelected = true")
-	/*@NamedQuery(name = SetupOption.SET_SELECTED_TRUE, query = "UPDATE SetupOption option "
-												+ "SET option.isSelected = true "
-												+ "WHERE option.setupOption = :setupOption"),
-	@NamedQuery(name = SetupOption.SET_SELECTED_FALSE, query = "UPDATE SetupOption option "
-			+ "SET option.isSelected = false "
-			+ "WHERE option.setupOption = :setupOption"),*/
 	
-})
+	
+})*/
 public class Rule implements Serializable, Comparable<Rule>{
 	
 	/**
@@ -48,9 +43,9 @@ public class Rule implements Serializable, Comparable<Rule>{
 	 */
 	private static final long serialVersionUID = -7862186534373258869L;
 
-	public static final String GET_RULE_BY_OPTION = "getRuleByOption";
+/*	public static final String GET_RULE_BY_OPTION = "getRuleByOption";
 	public static final String SAVE_RULE = "updateRule";
-	public static final String GET_SELECTED_RULES = "getSelectedRules";
+	public static final String GET_SELECTED_RULES = "getSelectedRules";*/
 	
 	@Id
 	@Column(name = "RULE_ID", nullable = false, unique = true)

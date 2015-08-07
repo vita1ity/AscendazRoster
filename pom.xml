@@ -13,8 +13,10 @@
 	<java.version>1.8</java.version>
 	<spring.version>4.1.7.RELEASE</spring.version>
 	<spring.securiry>4.0.2.RELEASE</spring.securiry>
-	<hibernate.version>5.0.2.Final</hibernate.version>
-	<hibernate.entitymanager.version>4.3.10.Final</hibernate.entitymanager.version>
+	<!-- <hibernate.version>5.0.2.Final</hibernate.version> -->
+	<hibernate.version>4.3.10.Final</hibernate.version>
+	<dbcp.version>1.4</dbcp.version>
+	<!-- <hibernate.entitymanager.version>4.3.10.Final</hibernate.entitymanager.version> -->
 	<mssql.version>4.2</mssql.version>
 	<jackson.version>2.6.0</jackson.version>
 	
@@ -65,8 +67,7 @@
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-orm</artifactId>
 		<version>${spring.version}</version>
-		<type>jar</type>
-		<scope>compile</scope>
+		
 	</dependency>
 
 	<dependency>
@@ -78,15 +79,15 @@
 	</dependency>
 	
 	<!-- Spring Data JPA -->
-    <dependency>
+    <!-- <dependency>
         <groupId>org.springframework.data</groupId>
         <artifactId>spring-data-jpa</artifactId>
         <version>1.8.2.RELEASE</version>
-    </dependency>
+    </dependency> -->
 
 
 	<!-- Spring Security -->
-	<dependency> 
+	<!-- <dependency> 
       		<groupId>org.springframework.security</groupId> 
       		<artifactId>spring-security-core</artifactId>           
 		<version>${spring.securiry}</version> 
@@ -105,11 +106,25 @@
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-taglibs</artifactId>
         <version>${spring.securiry}</version>
-    </dependency>
+    </dependency> -->
 	
 	<!-- Hibernate -->
-	<!-- Hibernate Validator -->
 	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-core</artifactId>
+		<version>${hibernate.version}</version>
+	</dependency>
+	
+	<!-- database pool -->
+	<dependency>
+		<groupId>commons-dbcp</groupId>
+		<artifactId>commons-dbcp</artifactId>
+		<version>${dbcp.version}</version>
+	</dependency>
+	
+	
+	<!--  Hibernate Validator -->
+	<!-- <dependency>
 		<groupId>org.hibernate</groupId>
 		<artifactId>hibernate-validator</artifactId>
 		<version>${hibernate.version}</version>
@@ -129,14 +144,14 @@
 		<groupId>javax.inject</groupId>
 		<artifactId>javax.inject</artifactId>
 		<version>1</version>
-	</dependency>
+	</dependency>  -->
 	
 	<!-- JSON Mapping -->
-	<dependency>
+	<!-- <dependency>
 		<groupId>org.codehaus.jackson</groupId>
 		<artifactId>jackson-mapper-asl</artifactId>
 		<version>1.9.13</version>
-	</dependency>
+	</dependency> -->
 	<dependency>
 		<groupId>com.fasterxml.jackson.core</groupId>
 		<artifactId>jackson-core</artifactId>

@@ -29,14 +29,14 @@ import com.ascendaz.roster.model.attributes.Training;
 @Entity
 @Table(name = "task_profile")
 
-
+/*
 @NamedQueries({
 	@NamedQuery(name = TaskProfile.GET_ALL_TASKS, query = "SELECT task1 "
 												+ "FROM TaskProfile task1")
-})
+})*/
 public class TaskProfile {
 
-	public static final String GET_ALL_TASKS = "getTasks";
+	//public static final String GET_ALL_TASKS = "getTasks";
 	
 	@Id
 	//@GeneratedValue(strategy = GenerationType.AUTO)

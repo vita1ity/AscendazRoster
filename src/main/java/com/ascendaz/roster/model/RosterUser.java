@@ -6,21 +6,20 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "roster_user")
-@NamedQueries({
+/*@NamedQueries({
 	@NamedQuery(name=RosterUser.GET_USER_BY_USERNAME, query="SELECT user1 "
 												+ "FROM RosterUser user1 "
 												+ "WHERE user1.username = :username"),
 	@NamedQuery(name=RosterUser.GET_ALL_USERS, query="SELECT user1 "
 											+ "FROM RosterUser user1"),
-})
+})*/
 public class RosterUser {
 	
-	public static final String GET_USER_BY_USERNAME = "getUserByUsername";
-	public static final String GET_ALL_USERS = "getAllUsers";
+	//public static final String GET_USER_BY_USERNAME = "getUserByUsername";
+	//public static final String GET_ALL_USERS = "getAllUsers";
 
 	@Id
 	@Column(name="USER_ID", nullable=false)

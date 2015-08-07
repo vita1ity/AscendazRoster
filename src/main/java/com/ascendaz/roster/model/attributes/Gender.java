@@ -15,10 +15,11 @@ import javax.persistence.Table;
 
 import com.ascendaz.roster.model.Staff;
 import com.ascendaz.roster.model.TaskProfile;
+import com.ascendaz.roster.util.Util;
 
 @Entity
 @Table(name = "gender")
-public class Gender implements Comparable<Gender>, Attribute {
+public class Gender implements Comparable<Gender>, Attribute, CustomEquality {
 	
 	@Id
 	//@GeneratedValue(strategy = GenerationType.AUTO)
@@ -98,15 +99,19 @@ public class Gender implements Comparable<Gender>, Attribute {
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof Gender)) {
+		//if (getClass() != obj.getClass())
 			return false;
-		Gender other = (Gender) obj;
+		}
+		Gender other = (Gender) Util.deproxy(obj);
 		if (type == null) {
 			if (other.type != null)
-				return false;
-		} else if (!type.equals(other.type))
-			return false;
-		return true;
+				return false;	
+		} 
+		else if (other.type.equals("A") || this.type.equals(other.type)) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -117,7 +122,13 @@ public class Gender implements Comparable<Gender>, Attribute {
 	@Override
 	public Object getValue() {
 		
-		return this.name;
+		return this.type;
+	}
+
+	@Override
+	public boolean isEqual(Object other) {
+		
+		return this.equals(other);
 	}
 	
 	

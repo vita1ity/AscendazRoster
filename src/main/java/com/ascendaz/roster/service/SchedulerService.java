@@ -1,14 +1,15 @@
 package com.ascendaz.roster.service;
 
-import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ascendaz.roster.engine.RosterEngine;
+import com.ascendaz.roster.engine.RosterEngineMulti;
 import com.ascendaz.roster.exception.RosterEngineException;
 import com.ascendaz.roster.model.Schedule;
 import com.ascendaz.roster.model.Staff;
@@ -28,7 +29,8 @@ public class SchedulerService {
 		List<Staff> staff = schedulerRepository.getStaff();
 		List<Rule> rules = schedulerRepository.getSelectedRules();
 		
-		RosterEngine engine = new RosterEngine(tasksProfile, staff, rules);
+		RosterEngineMulti engine = new RosterEngineMulti(tasksProfile, staff, rules);
+		//RosterEngine engine = new RosterEngine(tasksProfile, staff, rules);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		
 		Date startDate = null;
@@ -45,6 +47,9 @@ public class SchedulerService {
 		try {
 			schedule = engine.processRules(startDate, endDate);
 		} catch (RosterEngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

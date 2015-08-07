@@ -26,14 +26,14 @@ import com.ascendaz.roster.model.attributes.Skill;
 @Entity
 @Table(name = "staff")
 
-@NamedQueries({
+/*@NamedQueries({
 	@NamedQuery(name = Staff.GET_ALL_STAFF, query = "SELECT staff1 "
 												+ "FROM Staff staff1")
-})
+})*/
 
 public class Staff implements Comparable<Staff>{
 	
-	public static final String GET_ALL_STAFF = "getStaff";
+	//public static final String GET_ALL_STAFF = "getStaff";
 	
 	@Id
 	//@GeneratedValue(strategy = GenerationType.AUTO)
