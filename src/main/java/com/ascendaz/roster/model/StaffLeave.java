@@ -1,23 +1,29 @@
 package com.ascendaz.roster.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.ascendaz.roster.model.attributes.Leave;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "staff_leave")
-public class StaffLeave {
+public class StaffLeave implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5263420499042209336L;
+
 	@Id
 	//@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name = "STAFF_LEAVE_ID")

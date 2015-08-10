@@ -1,5 +1,6 @@
 package com.ascendaz.roster.model.attributes;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,18 +8,25 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.ascendaz.roster.model.Schedule;
 import com.ascendaz.roster.model.TaskProfile;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "shift")
-public class Shift {
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class Shift implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8759897001095444153L;
+
 	@Id
 	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name="SHIFT_ID", nullable=false)
@@ -33,9 +41,11 @@ public class Shift {
 	private String shiftLetter;
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "shift")
+	@JsonIgnore
 	private Set<TaskProfile> taskProfileSet = new HashSet<TaskProfile>();
 
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "shift")
+	@JsonBackReference
 	private Set<Schedule> schedule = new HashSet<Schedule>();
 	
 	public String getShiftLetter() {

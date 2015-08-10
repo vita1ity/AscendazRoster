@@ -207,7 +207,7 @@ public class RosterEngine {
 								shift.setShift("OFF");
 								shift.setShiftLetter("O");
 								
-								sch = new Schedule(null, staff, currentDate, shift, false);
+								sch = new Schedule(null, staff, currentDate, shift, "Draft", false);
 								schedule.add(sch);
 								staff.setBusy(true);
 								//candidatesForCurrentDay.remove(staff);
@@ -246,7 +246,7 @@ public class RosterEngine {
 								Shift shift = new Shift();
 								shift.setShift("Annual Leave");
 								shift.setShiftLetter("L");
-								sch = new Schedule(null, staff, currentDate, shift, false);
+								sch = new Schedule(null, staff, currentDate, shift, "Draft", false);
 								schedule.add(sch);
 								staff.setBusy(true);
 								//candidatesForCurrentDay.remove(staff);
@@ -400,7 +400,7 @@ public class RosterEngine {
 						System.out.println("Staff: " + staff);
 						System.out.println("Day: " + currentDate);
 						System.out.println("Shift: " + taskProfile.getShift());
-						Schedule violatedSchedule = new Schedule(taskProfile, staff, currentDate, taskProfile.getShift(), true);
+						Schedule violatedSchedule = new Schedule(taskProfile, staff, currentDate, taskProfile.getShift(), "Draft", true);
 						softRuleViolated.add(violatedSchedule);
 					}
 					//candidate satisfies all rules 
@@ -412,7 +412,7 @@ public class RosterEngine {
 						System.out.println("Day: " + currentDate);
 						System.out.println("Shift: " + taskProfile.getShift());
 						
-						sch = new Schedule(taskProfile, staff, currentDate, taskProfile.getShift(), false);
+						sch = new Schedule(taskProfile, staff, currentDate, taskProfile.getShift(), "Draft", false);
 						schedule.add(sch);
 						//candidatesForCurrentDay.remove(staff);
 						staff.setBusy(true);

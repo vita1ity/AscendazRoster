@@ -1,12 +1,11 @@
 package com.ascendaz.roster.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -17,7 +16,12 @@ import com.ascendaz.roster.model.attributes.Training;
 
 @Entity
 @Table(name = "staff_training")
-public class StaffTraining implements Expiring{
+public class StaffTraining implements Expiring, Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6641989028579526049L;
 
 	@Id
 	//@GeneratedValue(strategy = GenerationType.AUTO)

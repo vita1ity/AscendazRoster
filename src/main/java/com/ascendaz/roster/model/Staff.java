@@ -1,5 +1,7 @@
 package com.ascendaz.roster.model;
 
+import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,8 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -22,6 +22,8 @@ import javax.persistence.Transient;
 import com.ascendaz.roster.model.attributes.Designation;
 import com.ascendaz.roster.model.attributes.Gender;
 import com.ascendaz.roster.model.attributes.Skill;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "staff")
@@ -31,10 +33,17 @@ import com.ascendaz.roster.model.attributes.Skill;
 												+ "FROM Staff staff1")
 })*/
 
-public class Staff implements Comparable<Staff>{
+public class Staff implements Comparable<Staff>, Serializable{
 	
 	//public static final String GET_ALL_STAFF = "getStaff";
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8466938937045060086L;
+
+	public static final Comparator<Staff> SALARY_COMPARATOR = new SalaryComparator();
+
 	@Id
 	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name="STAFF_ID", nullable=false)
@@ -45,10 +54,12 @@ public class Staff implements Comparable<Staff>{
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "GENDER_ID", nullable = false)
+	@JsonIgnore
 	private Gender gender;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "DESIGNATION_ID", nullable = false)
+	@JsonIgnore
 	private Designation designation;
 	
 	@Column(name="SALARY", nullable=false)
@@ -69,24 +80,30 @@ public class Staff implements Comparable<Staff>{
             }
      )
     @ManyToMany
+    @JsonIgnore
     private Set<Skill> skillSet = new HashSet<Skill>();;
 	
 	/*@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "staff")
 	private Set<StaffSkill> staffSkillSet = new HashSet<StaffSkill>();*/
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "staff")
+	@JsonManagedReference
 	private Set<StaffLocation> staffLocationSet = new HashSet<StaffLocation>();
 
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "staff")
+	@JsonIgnore
 	private Set<StaffShift> staffShiftSet = new HashSet<StaffShift>();
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "staff")
+	@JsonIgnore
 	private Set<StaffTraining> staffTrainingSet = new HashSet<StaffTraining>();
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "staff")
+	@JsonIgnore
 	private Set<StaffLeave> staffLeaveSet = new HashSet<StaffLeave>();
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "staff")
+	@JsonIgnore
 	private Set<Schedule> scheduleSet = new HashSet<Schedule>();
 	
 	@Transient
@@ -205,15 +222,18 @@ public class Staff implements Comparable<Staff>{
 		this.scheduleSet = scheduleSet;
 	}
 
-	@Override
-	public int compareTo(Staff staff) {
-		
-		return this.salary - staff.getSalary();
-	}
-
+	
 	public boolean isBusy() {
 		return isBusy;
 	}
+	
+	@Override
+	public int compareTo(Staff staff) {
+		
+		return this.getName().compareTo(staff.getName());
+		//return this.salary - staff.getSalary();
+	}
+
 
 	public void setBusy(boolean isBusy) {
 		this.isBusy = isBusy;
@@ -225,5 +245,9 @@ public class Staff implements Comparable<Staff>{
 				+ ", salary=" + salary + ", age=" + age;
 	}
 	
-	
+	static class SalaryComparator implements Comparator<Staff> {
+        public int compare(Staff s1, Staff s2) {
+        	return s1.salary - s2.salary;
+        }
+    }
 }

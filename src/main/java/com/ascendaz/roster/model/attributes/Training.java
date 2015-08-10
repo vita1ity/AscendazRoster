@@ -1,5 +1,6 @@
 package com.ascendaz.roster.model.attributes;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,8 +8,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
@@ -16,11 +15,18 @@ import javax.persistence.Table;
 
 import com.ascendaz.roster.model.StaffTraining;
 import com.ascendaz.roster.model.TaskProfile;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "training")
-public class Training implements Attribute{
+public class Training implements Attribute, Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3459850485284595910L;
+
 	@Id
 	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "TRAINING_ID", nullable = false)
@@ -33,9 +39,11 @@ public class Training implements Attribute{
 	private String description;
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "training")
+	@JsonIgnore
 	private Set<StaffTraining> staffTrainingSet = new HashSet<StaffTraining>();
 	
 	@ManyToMany(mappedBy = "trainingSet")
+	@JsonBackReference
 	private Set<TaskProfile> taskProfileSet = new HashSet<TaskProfile>();
 
 	public int getId() {

@@ -25,14 +25,6 @@ jQuery(document).ready(function ($) {
 	});
 	
 	
-	/*$(window).on('load', function () {
-	   if ($('.rules-table select').length) {
-	      $('.rules-table select').each(function () {
-	         $(this).attr('data-value', $(this).val());
-	      });
-	   }
-	});*/
-	
 	$(window).on('load', function () {
 		if ($('.rules-table select').length) {
 			setTimeout(function(){
@@ -43,11 +35,8 @@ jQuery(document).ready(function ($) {
 		}
 	});
 
-		/*$('.rules-table select').on('change', function () {
-		   $(this).attr('data-value', $(this).val());
-		});
-		
-*/
+	
+
 	$(document).on('change','.rules-table select', function () {
 		$(this).attr('data-value', $(this).val());
 		});
@@ -114,59 +103,7 @@ jQuery(document).ready(function ($) {
 		   }
 
 		});
-/*	$(document).on('click', '.open_hidden_options', function (e) {
-		e.preventDefault();
-		$('.hidden_options').slideToggle(200);
-	});*/
 
-	/*$(document).on('click', '.arr-btn', function (e) {
-		e.preventDefault();
-
-		var parent = $(this).parents('.change-options-container'),
-			parent2 = $(this).parents('.rules-sort'),
-			elements, itemIndex = 0, listlength;
-
-		if ($(this).hasClass('arr-btn-right') && parent.find('.list-left .active').length) {
-			elements = parent.find('.list-left .active').clone();
-			parent.find('.list-right').append(elements);
-			parent.find('.list-left .active').remove();
-			parent.find('.active').removeClass('active');
-
-		}
-		if ($(this).hasClass('arr-btn-left') && parent.find('.list-right .active').length) {
-			elements = parent.find('.list-right .active').clone();
-			parent.find('.list-left').append(elements);
-			parent.find('.list-right .active').remove();
-			parent.find('.active').removeClass('active');
-
-		}
-
-		if ($(this).hasClass('arr-btn-top') && parent2.find('.rules-table .active').length) {
-			itemIndex = parent2.find('.rules-table .active').index();
-			if(itemIndex > 0){
-				elements = parent2.find('.rules-table .active').clone();
-				parent2.find('.rules-table .active').remove();
-				parent2.find('.rules-table tbody tr').eq(itemIndex - 1 ).before(elements);
-
-			}
-
-		}
-		if ($(this).hasClass('arr-btn-bottom') && parent2.find('.rules-table .active').length) {
-			elements = parent2.find('.rules-table .active').clone();
-			listlength = parent2.find('.rules-table tbody tr').length;
-			itemIndex = parent2.find('.rules-table .active').index();
-			console.log(listlength);
-			if(itemIndex != listlength - 1){
-				elements = parent2.find('.rules-table .active').clone();
-				parent2.find('.rules-table .active').remove();
-				parent2.find('.rules-table tbody tr').eq(itemIndex ).after(elements);
-
-			}
-
-
-		}
-
-	});*/
 
 	function tabs() {
 
@@ -291,13 +228,66 @@ jQuery(document).ready(function ($) {
 	}
 
 	showHideModal('.open_login_modal','.modal-login');
+	showHideModal('.open_adv_options', '.modal-advanced');
+	showHideModal('.open_locations_modal', '.modal-locations');
 
 	jQuery(document).on('click touchstart', '[role="toggle_forgot_password_form"]', function (e) {
 		e.preventDefault();
 		jQuery(this).parents('.login-form-block').find('.flipper').toggleClass('rotate');
 	});
 
+	
+	
+	//SCHEDULER PAGE
+		
 
+	$(".day-picker").datepicker({
+		dateFormat: "dd/mm/yy"
+	});
+
+
+	$(function () {
+		var startDate;
+		var endDate;
+
+		var selectCurrentWeek = function () {
+			window.setTimeout(function () {
+				$('.week-picker').find('.ui-datepicker-current-day a').addClass('ui-state-active')
+			}, 1);
+		}
+
+		$('.week-picker').datepicker({
+			showOtherMonths  : true,
+			selectOtherMonths: true,
+			dateFormat       : "dd/mm/yy",
+			onSelect         : function (dateText, inst) {
+				var date = $(this).datepicker('getDate');
+				startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
+				endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 6);
+				var dateFormat = inst.settings.dateFormat || $.datepicker._defaults.dateFormat;
+				$('#startDate').text($.datepicker.formatDate(dateFormat, startDate, inst.settings));
+				$('#endDate').text($.datepicker.formatDate(dateFormat, endDate, inst.settings));
+
+				selectCurrentWeek();
+			},
+			beforeShowDay    : function (date) {
+				var cssClass = '';
+				if (date >= startDate && date <= endDate)
+					cssClass = 'ui-datepicker-current-day';
+				return [true, cssClass];
+			},
+			onChangeMonthYear: function (year, month, inst) {
+				selectCurrentWeek();
+			}
+		});
+
+		$('.week-picker .ui-datepicker-calendar tr').on('mousemove', function () {
+			$(this).find('td a').addClass('ui-state-hover');
+		});
+		$('.week-picker .ui-datepicker-calendar tr').on('mouseleave', function () {
+			$(this).find('td a').removeClass('ui-state-hover');
+		});
+	});	
 
 
 });

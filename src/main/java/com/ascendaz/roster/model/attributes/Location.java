@@ -1,5 +1,6 @@
 package com.ascendaz.roster.model.attributes;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,13 +12,22 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.ascendaz.roster.model.Task;
 import com.ascendaz.roster.model.TaskProfile;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "location")
-public class Location implements Attribute{
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class Location implements Attribute, Serializable{
 	
+	
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6872836720547756628L;
+
 	@Id
 	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "LOCATION_ID", nullable = false)
@@ -27,6 +37,7 @@ public class Location implements Attribute{
 	private String location;
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "location")
+	@JsonBackReference
 	private Set<TaskProfile> taskSet = new HashSet<TaskProfile>();
 
 	public int getId() {

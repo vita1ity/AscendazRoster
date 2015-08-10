@@ -2,15 +2,18 @@ package com.ascendaz.roster.repository;
 
 import java.util.List;
 
-import javax.persistence.TypedQuery;
-
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.ascendaz.roster.model.Schedule;
 import com.ascendaz.roster.model.Staff;
 import com.ascendaz.roster.model.TaskProfile;
+import com.ascendaz.roster.model.attributes.Shift;
 import com.ascendaz.roster.model.config.Rule;
 
 @Repository("schedulerRepository")
@@ -66,6 +69,38 @@ public class SchedulerRepository {
 		List<Rule> rules = query.list();
 		return rules;
 	
+	}
+
+	public void saveSchedule(List<Schedule> schedule) {
+		
+		Session session = sessionFactory.getCurrentSession();
+		for (Schedule sch: schedule) {
+			Transaction tx = session.beginTransaction();
+			try {
+				
+				session.save(sch);
+				
+			}
+			catch (HibernateException e) {
+				e.printStackTrace();
+				session.getTransaction().rollback();
+			}
+			if (!tx.wasCommitted()) {
+				tx.commit();
+			}
+		}
+
+		
+	}
+
+	public Shift getShiftByShiftLetter(String shiftLetter) {
+		String hqlQuery = "FROM Shift "
+				+ "WHERE shiftLetter = :shiftLetter";
+		Query query = sessionFactory.getCurrentSession().createQuery(hqlQuery);
+		query.setParameter("shiftLetter", shiftLetter);
+		Shift shift = (Shift)query.uniqueResult();
+		return shift;
+		
 	}
 	
 	

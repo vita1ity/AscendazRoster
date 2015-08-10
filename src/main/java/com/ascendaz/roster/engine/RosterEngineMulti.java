@@ -12,6 +12,7 @@ import com.ascendaz.roster.exception.RosterEngineException;
 import com.ascendaz.roster.model.Schedule;
 import com.ascendaz.roster.model.Staff;
 import com.ascendaz.roster.model.TaskProfile;
+import com.ascendaz.roster.model.attributes.Shift;
 import com.ascendaz.roster.model.config.Rule;
 
 public class RosterEngineMulti {
@@ -19,11 +20,14 @@ public class RosterEngineMulti {
 	private  CopyOnWriteArrayList<TaskProfile> threadSafeTaskList = new CopyOnWriteArrayList<TaskProfile>();
 	private  CopyOnWriteArrayList<Staff> threadSafeStaffList = new CopyOnWriteArrayList<Staff>();
 	private  CopyOnWriteArrayList<Rule> threadSafeRuleList = new CopyOnWriteArrayList<Rule>();
+	private final Shift leaveShift;
+	private final Shift dayOffShift;
 	/*private List<TaskProfile> taskList;
 	private List<Staff> staffList;
 	private List<Rule> ruleList;*/
 	
-	public RosterEngineMulti(List<TaskProfile> taskList, List<Staff> staffList, List<Rule> ruleList) {
+	public RosterEngineMulti(List<TaskProfile> taskList, List<Staff> staffList, List<Rule> ruleList, 
+			Shift leaveShift, Shift dayOffShift) {
 		super();
 		/*this.taskList = taskList;
 		this.staffList = staffList;
@@ -31,6 +35,8 @@ public class RosterEngineMulti {
 		this.threadSafeTaskList.addAll(taskList);
 		this.threadSafeStaffList.addAll(staffList);
 		this.threadSafeRuleList.addAll(ruleList);
+		this.leaveShift = leaveShift;
+		this.dayOffShift = dayOffShift;
 	}
 
 	//TODO
@@ -42,7 +48,7 @@ public class RosterEngineMulti {
 		List<Schedule> schedule = new ArrayList<Schedule>();
 		
 		//sort staff by salary
-		Collections.sort(threadSafeStaffList);
+		Collections.sort(threadSafeStaffList, Staff.SALARY_COMPARATOR);
 		//sort rules by priority
 		Collections.sort(threadSafeRuleList);
 		
@@ -51,10 +57,11 @@ public class RosterEngineMulti {
 		List<Thread> threads = new ArrayList<Thread>();
 		List<EngineThread> engineThreads = new ArrayList<EngineThread>();
 		Date currentDate = startDate;
-		while (!currentDate.equals(endDate)) {
+		while (currentDate.compareTo(endDate) <= 0) {
 			
 			
-			engineThread = new EngineThread(threadSafeTaskList, threadSafeStaffList, threadSafeRuleList, (Date)currentDate.clone());
+			engineThread = new EngineThread(threadSafeTaskList, threadSafeStaffList, threadSafeRuleList, 
+					leaveShift, dayOffShift, (Date)currentDate.clone());
 			thread = new Thread(engineThread);
 			threads.add(thread);
 			engineThreads.add(engineThread);

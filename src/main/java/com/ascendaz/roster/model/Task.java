@@ -22,6 +22,7 @@ import javax.persistence.Table;
 
 import com.ascendaz.roster.model.attributes.DayOfWeek;
 import com.ascendaz.roster.model.attributes.Location;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "task")
@@ -40,9 +41,11 @@ public class Task {
 	private Location location;*/
 	
 	@Column(name = "START_DATE", nullable = false)
+	@JsonIgnore
 	private Date startDate;
 	
 	@Column(name = "END_DATE", nullable = false)
+	@JsonIgnore
 	private Date endDate;
 	
 	@JoinTable(name = "task_day_of_week", 
@@ -54,6 +57,7 @@ public class Task {
             }
      )
     @ManyToMany
+    @JsonIgnore
     private List<DayOfWeek> dayOfWeekSet = new ArrayList<DayOfWeek>();
 	
 	/*@ManyToOne(fetch = FetchType.LAZY)

@@ -1,5 +1,6 @@
 package com.ascendaz.roster.model;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,8 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -25,6 +24,9 @@ import com.ascendaz.roster.model.attributes.Location;
 import com.ascendaz.roster.model.attributes.Shift;
 import com.ascendaz.roster.model.attributes.Skill;
 import com.ascendaz.roster.model.attributes.Training;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "task_profile")
@@ -34,10 +36,15 @@ import com.ascendaz.roster.model.attributes.Training;
 	@NamedQuery(name = TaskProfile.GET_ALL_TASKS, query = "SELECT task1 "
 												+ "FROM TaskProfile task1")
 })*/
-public class TaskProfile {
+public class TaskProfile implements Serializable{
 
 	//public static final String GET_ALL_TASKS = "getTasks";
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7387754660888704511L;
+
 	@Id
 	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "TASK_PROFILE_ID", nullable = false)
@@ -45,26 +52,32 @@ public class TaskProfile {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "TASK_ID", nullable = false)
+	@JsonIgnore
 	private Task task;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LOCATION_ID", nullable = false)
+	@JsonManagedReference
 	private Location location;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "DESIGNATION_ID", nullable = false)
+	@JsonIgnore
 	private Designation designation;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "AGE_RANGE_ID", nullable = true)
+	@JsonIgnore
 	private AgeRange ageRange;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "GENDER_ID", nullable = false)
+	@JsonIgnore
 	private Gender gender;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "SHIFT_ID", nullable = false)
+	@JsonIgnore
 	private Shift shift;
 	
 	@JoinTable(name = "task_profile_skill", 
@@ -76,6 +89,7 @@ public class TaskProfile {
             }
      )
     @ManyToMany
+    @JsonIgnore
     private Set<Skill> skillSet = new HashSet<Skill>();
 	
 	@JoinTable(name = "task_profile_training", 
@@ -87,13 +101,13 @@ public class TaskProfile {
             }
      )
     @ManyToMany
+    @JsonManagedReference
     private Set<Training> trainingSet = new HashSet<Training>();
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "task")
+	@JsonBackReference
 	private Set<Schedule> scheduleSet = new HashSet<Schedule>();
 	
-	@Transient
-	private boolean needsToBePerformed;
 
 	public int getId() {
 		return id;
@@ -161,13 +175,6 @@ public class TaskProfile {
 		this.scheduleSet = scheduleSet;
 	}
 
-	public boolean isNeedsToBePerformed() {
-		return needsToBePerformed;
-	}
-
-	public void setNeedsToBePerformed(boolean needsToBePerformed) {
-		this.needsToBePerformed = needsToBePerformed;
-	}
 
 	public Set<Skill> getSkillSet() {
 		return skillSet;

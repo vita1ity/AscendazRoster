@@ -1,23 +1,29 @@
 package com.ascendaz.roster.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.ascendaz.roster.model.attributes.Expiring;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "staff_shift")
-public class StaffShift implements Expiring{
+public class StaffShift implements Expiring, Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4034753572075408886L;
+
 	@Id
 	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "STAFF_SHIFT_ID", nullable = false)

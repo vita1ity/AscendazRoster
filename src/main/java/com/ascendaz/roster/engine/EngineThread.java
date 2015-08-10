@@ -43,17 +43,21 @@ public class EngineThread implements Runnable{
 	private  CopyOnWriteArrayList<Staff> staffList = null;
 	private  CopyOnWriteArrayList<Rule> ruleList = null;
 	private Date currentDate;
+	private final Shift leaveShift;
+	private final Shift dayOffShift;
 	private List<Schedule> schedule = new ArrayList<Schedule>();
 	
 	private String log = "";
 	
 	public EngineThread(CopyOnWriteArrayList<TaskProfile> threadSafeTaskList,
 			CopyOnWriteArrayList<Staff> threadSafeStaffList, CopyOnWriteArrayList<Rule> threadSafeRuleList,
-			Date currentDate) {
+			Shift leaveShift, Shift dayOffShift, Date currentDate) {
 		super();
 		this.taskList = threadSafeTaskList;
 		this.staffList = threadSafeStaffList;
 		this.ruleList = threadSafeRuleList;
+		this.leaveShift = leaveShift;
+		this.dayOffShift = dayOffShift;
 		this.currentDate = currentDate;
 	}
 
@@ -255,11 +259,11 @@ public class EngineThread implements Runnable{
 							
 							log += "Staff has day off in the date: " + df.format(currentDate) + "\n";
 							//System.out.println("Staff has day off in the date: " + df.format(currentDate));
-							Shift shift = new Shift();
+							/*Shift shift = new Shift();
 							shift.setShift("OFF");
-							shift.setShiftLetter("O");
+							shift.setShiftLetter("O");*/
 							
-							sch = new Schedule(null, staff, currentDate, shift, false);
+							sch = new Schedule(null, staff, currentDate, dayOffShift, "Draft", false);
 							schedule.add(sch);
 							isBusyStaff[index] = true;
 							//staff.setBusy(true);
@@ -298,10 +302,10 @@ public class EngineThread implements Runnable{
 							log += "leave is approved\n";
 							//System.out.println("leave is approved");
 							
-							Shift shift = new Shift();
+							/*Shift shift = new Shift();
 							shift.setShift("Annual Leave");
-							shift.setShiftLetter("L");
-							sch = new Schedule(null, staff, currentDate, shift, false);
+							shift.setShiftLetter("L");*/
+							sch = new Schedule(null, staff, currentDate, leaveShift, "Draft", false);
 							schedule.add(sch);
 							isBusyStaff[index] = true;
 							//staff.setBusy(true);
@@ -323,10 +327,12 @@ public class EngineThread implements Runnable{
 					SetupOption option = rule.getSetupOption();
 					Reference reference = rule.getReference();
 					Criteria criteria = rule.getCriteria();
-					
-					String staffAttributeName = option.getAttributeName();
-					String taskAttributeName = reference.getAttributeName();
-					
+					String staffAttributeName = null;
+					String taskAttributeName = null;
+					synchronized(this.getClass()) {
+						staffAttributeName = option.getAttributeName();
+						taskAttributeName = reference.getAttributeName();
+					}
 					log += "Rule: " + staffAttributeName + " " + criteria + " " + taskAttributeName + "\n";
 					//System.out.println("Rule: " + staffAttributeName + " " + criteria + " " + taskAttributeName);
 					
@@ -479,7 +485,7 @@ public class EngineThread implements Runnable{
 					log += "Shift: " + taskProfile.getShift() + "\n";
 					
 					violatedStaffIndexes.add(index); 
-					Schedule violatedSchedule = new Schedule(taskProfile, staff, currentDate, taskProfile.getShift(), true);
+					Schedule violatedSchedule = new Schedule(taskProfile, staff, currentDate, taskProfile.getShift(), "Draft", true);
 					softRuleViolated.add(violatedSchedule);
 				}
 				//candidate satisfies all rules 
@@ -497,7 +503,7 @@ public class EngineThread implements Runnable{
 					log += "Day: " + currentDate + "\n";
 					log += "Shift: " + taskProfile.getShift() + "\n";
 					
-					sch = new Schedule(taskProfile, staff, currentDate, taskProfile.getShift(), false);
+					sch = new Schedule(taskProfile, staff, currentDate, taskProfile.getShift(), "Draft", false);
 					schedule.add(sch);
 					//candidatesForCurrentDay.remove(staff);
 					isBusyStaff[index] = true;

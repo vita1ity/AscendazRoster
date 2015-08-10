@@ -1,5 +1,6 @@
 package com.ascendaz.roster.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -13,11 +14,17 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.ascendaz.roster.model.attributes.Shift;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "schedule")
-public class Schedule implements Comparable<Schedule>{
+public class Schedule implements Comparable<Schedule>, Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1531670117193524125L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ID", nullable = false, unique = true)
@@ -25,14 +32,17 @@ public class Schedule implements Comparable<Schedule>{
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "TASK_ID", nullable = true)
+	@JsonManagedReference
 	private TaskProfile task;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "STAFF_ID", nullable = false)
+	@JsonManagedReference
 	private Staff staff;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "SHIFT_ID", nullable = false)
+	@JsonManagedReference
 	private Shift shift;
 	
 	@Column(name = "DATE", nullable = false)
@@ -48,12 +58,13 @@ public class Schedule implements Comparable<Schedule>{
 		super();
 	}
 	
-	public Schedule(TaskProfile task, Staff staff, Date date, Shift shift, boolean isViolated) {
+	public Schedule(TaskProfile task, Staff staff, Date date, Shift shift, String status, boolean isViolated) {
 		super();
 		this.task = task;
 		this.staff = staff;
 		this.date = date;
 		this.shift = shift;
+		this.status = status;
 		this.isViolated = isViolated;
 	}
 	
@@ -106,6 +117,15 @@ public class Schedule implements Comparable<Schedule>{
 		this.status = status;
 	}
 	
+	
+	public Shift getShift() {
+		return shift;
+	}
+
+	public void setShift(Shift shift) {
+		this.shift = shift;
+	}
+
 	@Override
 	public String toString() {
 		String str = "Schedule item:\n";
@@ -119,7 +139,12 @@ public class Schedule implements Comparable<Schedule>{
 
 	@Override
 	public int compareTo(Schedule o) {
-
-		return this.getDate().compareTo(o.getDate());
+		int staffComparison = this.staff.compareTo(o.staff);
+		if (staffComparison == 0) {
+			return this.date.compareTo(o.date);
+		}
+		else {
+			return staffComparison;
+		}
 	}
 }
