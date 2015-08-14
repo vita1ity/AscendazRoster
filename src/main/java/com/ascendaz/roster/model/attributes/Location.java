@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.ascendaz.roster.model.TaskProfile;
+import com.ascendaz.roster.model.attributes.interfaces.Attribute;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -20,16 +21,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Table(name = "location")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Location implements Attribute, Serializable{
-	
-	
-
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6872836720547756628L;
 
 	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "LOCATION_ID", nullable = false)
 	private int id;
 	

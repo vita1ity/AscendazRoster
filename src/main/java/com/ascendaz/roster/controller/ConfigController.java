@@ -33,8 +33,6 @@ public class ConfigController {
 	
 	@RequestMapping(value = "config")
 	public String configPage(Model model){
-		/*RosterUser user = new RosterUser();
-		model.addAttribute("user", user);*/
 		System.out.println("Config Controller");
 		
 		List<SetupOption> selectedSetupOptions = configService.getSelectedSetupOptions();
@@ -48,23 +46,11 @@ public class ConfigController {
 		
 		return "config";
 	}
-	/*@RequestMapping(value = "config/login", method = RequestMethod.POST)
-	public String login(@ModelAttribute("user") RosterUser user, Model model, HttpSession session) {
-		boolean loginSuccessfull = userService.checkUser(user);
-		if (loginSuccessfull) {
-			session.setAttribute("loginUser", user);
-			return "redirect:/config";
-		}
-		else {
-			model.addAttribute("loginError", true);
-			return "config";
-		}
-	}*/
+
 	@RequestMapping(value = "config/login", method = RequestMethod.POST)
 	public @ResponseBody String loginAJAX(@RequestParam(value="username", required=true) String username, 
 			@RequestParam(value="password", required=true) String password, HttpSession session) {
 		
-		System.out.println("LOGIN WITH AJAX");
 		System.out.println("username: " + username + " password: " + password);
 		
 		boolean loginSuccessfull = userService.checkUser(username, password);
@@ -73,7 +59,6 @@ public class ConfigController {
 			return "success";
 		}
 		else {
-			//model.addAttribute("loginError", true);
 			return "fail";
 		}
 	}

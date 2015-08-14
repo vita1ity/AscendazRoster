@@ -132,12 +132,7 @@ jQuery(document).ready(function ($) {
 						
 						table += "<td> \n";
 						table += "<select id=\"criteria" + i + "\">";
-						/*if (i == 0) {
-							table += "<select id=\"criteria\">";
-						}
-						else {
-							table += "<select>";
-						}*/
+						
 						var criteria = $("#criteria0").html();
 						//console.log("Criteria:" + criteria);
 						table += criteria;
@@ -152,12 +147,7 @@ jQuery(document).ready(function ($) {
 						
 						table += "<td> \n";
 						table += "<select id=\"rule-type" + i + "\">";
-						/*if (i == 0) {
-							table += "<select id=\"rule-type\">";
-						}
-						else {
-							table += "<select>";
-						}*/
+						
 						var type = $("#rule-type0").html();
 						//console.log("Criteria:" + criteria);
 						table += type;
@@ -242,10 +232,63 @@ jQuery(document).ready(function ($) {
 		
 
 	$(".day-picker").datepicker({
-		dateFormat: "dd/mm/yy"
+		dateFormat : "dd/mm/yy",
+		firstDay   : 1,
+		onSelect   : function () {
+			var date = new Date();
+			//var date = $(this).datepicker('getDate');
+			$("#runEngine").addClass("disabled");
+			$("#runAdvanced").addClass("disabled");
+			$("#approveSchedule").addClass("disabled");
+			getSchedule(date, date);
+		}
 	});
 
+	if($('.pick-month').length){
+		$('.pick-month').datepicker({
+			changeMonth: true,
+			changeYear: true,
+			showButtonPanel: true,
+			dateFormat: "mm/yy",
+			beforeShow: function (e, t) {
+				$(this).datepicker("hide");
+	
+				
+				$("#ui-datepicker-div").addClass("hide-calendar");
+				$("#ui-datepicker-div").addClass('MonthDatePicker');
+				$("#ui-datepicker-div").addClass('HideTodayButton');
+			},
+			onClose: function(dateText, inst){
+				$("#runEngine").removeClass("disabled");
+				$("#runAdvanced").removeClass("disabled");
+				$("#approveSchedule").removeClass("disabled");
+	
+				
+				var n = Math.abs($("#ui-datepicker-div .ui-datepicker-month :selected").val());
+				var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+				$(this).datepicker("setDate", new Date(year, n,1));
+				$("#ui-datepicker-div").removeClass("hide-calendar");
+				$("#ui-datepicker-div").removeClass('MonthDatePicker');
+				var startDate = new Date(year, n, 1);
+				var endDate = new Date(year, n + 1, 0);
+				getSchedule(startDate, endDate);
+			}
+		});
+	}
 
+	$('.date-picker').datepicker( {
+		changeMonth: true,
+		changeYear: true,
+		showButtonPanel: true,
+		dateFormat: 'MM yy',
+		onClose: function(dateText, inst) {
+			var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+			var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+			$(this).datepicker('setDate', new Date(year, month, 1));
+		}
+	});
+	
+	
 	$(function () {
 		var startDate;
 		var endDate;
@@ -260,14 +303,21 @@ jQuery(document).ready(function ($) {
 			showOtherMonths  : true,
 			selectOtherMonths: true,
 			dateFormat       : "dd/mm/yy",
+			firstDay		 : 1,
 			onSelect         : function (dateText, inst) {
+				
 				var date = $(this).datepicker('getDate');
-				startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
-				endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 6);
+				startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 1);
+				endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 7);
 				var dateFormat = inst.settings.dateFormat || $.datepicker._defaults.dateFormat;
 				$('#startDate').text($.datepicker.formatDate(dateFormat, startDate, inst.settings));
 				$('#endDate').text($.datepicker.formatDate(dateFormat, endDate, inst.settings));
-
+				
+				$("#runEngine").removeClass("disabled");
+				$("#runAdvanced").removeClass("disabled");
+				$("#approveSchedule").removeClass("disabled");
+				
+				getSchedule(startDate, endDate);
 				selectCurrentWeek();
 			},
 			beforeShowDay    : function (date) {
@@ -289,5 +339,14 @@ jQuery(document).ready(function ($) {
 		});
 	});	
 
-
+	$(document).on('click', '#cancel-filter-locations', function (e) {
+		$('.modal-wrap').removeClass('open');
+	});
+	
+	$(document).on('click', '#cancelAdvancedEngine', function (e) {
+		$('.modal-wrap').removeClass('open');
+	});
+	
+	
+	
 });

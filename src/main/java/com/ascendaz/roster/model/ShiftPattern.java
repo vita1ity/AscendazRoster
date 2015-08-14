@@ -24,7 +24,6 @@ public class ShiftPattern implements Serializable{
 	private static final long serialVersionUID = -4312301109599608267L;
 
 	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "SHIFT_PATTERN_ID", nullable = false)
 	private int id;
 	
@@ -57,7 +56,5 @@ public class ShiftPattern implements Serializable{
 	public void setStaffShiftSet(Set<StaffShift> staffShiftSet) {
 		this.staffShiftSet = staffShiftSet;
 	}
-	
-	
 	
 }

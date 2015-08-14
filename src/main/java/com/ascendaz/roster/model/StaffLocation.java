@@ -1,7 +1,6 @@
 package com.ascendaz.roster.model;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,10 +10,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.ascendaz.roster.model.attributes.Expiring;
+import org.hibernate.annotations.Type;
+import org.joda.time.LocalDate;
+
 import com.ascendaz.roster.model.attributes.Location;
+import com.ascendaz.roster.model.attributes.interfaces.Expiring;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -27,7 +28,6 @@ public class StaffLocation implements Expiring, Serializable{
 	private static final long serialVersionUID = 2579199913620718434L;
 
 	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name="STAFF_LOCATION_ID", nullable=false)
 	private int id;
 	
@@ -45,10 +45,12 @@ public class StaffLocation implements Expiring, Serializable{
 	private String type;
 	
 	@Column(name = "EFFECTIVE_DATE", nullable = false)
-	private Date effectiveDate;
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
+	private LocalDate effectiveDate;
 	
 	@Column(name = "EXPIRE_DATE", nullable = true)
-	private Date expireDate;
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
+	private LocalDate expireDate;
 
 	public int getId() {
 		return id;
@@ -82,24 +84,24 @@ public class StaffLocation implements Expiring, Serializable{
 		this.type = type;
 	}
 
-	public Date getEffectiveDate() {
+	public LocalDate getEffectiveDate() {
 		return effectiveDate;
 	}
 
-	public void setEffectiveDate(Date effectiveDate) {
+	public void setEffectiveDate(LocalDate effectiveDate) {
 		this.effectiveDate = effectiveDate;
 	}
 
-	public Date getExpireDate() {
+	public LocalDate getExpireDate() {
 		return expireDate;
 	}
 
-	public void setExpireDate(Date expireDate) {
+	public void setExpireDate(LocalDate expireDate) {
 		this.expireDate = expireDate;
 	}
 
 	@Override
-	public boolean checkExpired(Date currentDate) {
+	public boolean checkExpired(LocalDate currentDate) {
 		if (currentDate.compareTo(this.effectiveDate) >= 0 && currentDate.compareTo(this.expireDate) <= 0) {
 			return false;
 		}

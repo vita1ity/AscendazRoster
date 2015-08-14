@@ -15,7 +15,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.ascendaz.roster.model.attributes.AgeRange;
 import com.ascendaz.roster.model.attributes.Designation;
@@ -31,14 +30,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Entity
 @Table(name = "task_profile")
 
-/*
-@NamedQueries({
-	@NamedQuery(name = TaskProfile.GET_ALL_TASKS, query = "SELECT task1 "
-												+ "FROM TaskProfile task1")
-})*/
 public class TaskProfile implements Serializable{
-
-	//public static final String GET_ALL_TASKS = "getTasks";
 	
 	/**
 	 * 
@@ -46,7 +38,6 @@ public class TaskProfile implements Serializable{
 	private static final long serialVersionUID = 7387754660888704511L;
 
 	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "TASK_PROFILE_ID", nullable = false)
 	private int id;
 	

@@ -3,26 +3,26 @@
 $(document).ready(function() {
 	$("#loginform").submit(function(e){
 		var username = $(this).find('.first').val();
-		console.log(username);
+		//console.log(username);
 		var password = $(this).find('.last').val();
-		console.log(password);
+		//console.log(password);
 		$.ajax({
 			   url: $(this).attr("action"),
                type: "POST",
                data: {username: username, password: password},
         }).done (function(response) {
-        	console.log(response);
+        	//console.log(response);
         	if (response == "success") {
         		$("#msg").html("<span class=\"loginFormSuccess\">Login was successful!</span>");
         		$(".modal-login").removeClass('open');
         		$(".loginButton").addClass("notDisplayLogin");
         		$("#loginUserSuccessMessage").html("<span class=\"loginFormSuccess\">User Login successfully</span>");
-        		console.log("SUCCESS");
+        		//console.log("SUCCESS");
         	}
         	else {
         		$("#msg").html("<span class=\"loginFormError\">Your login attempt was not successful</br> " +
         				"Reason: Invalid username or password</span>");
-        		console.log("FAIL");
+        		//console.log("FAIL");
         	}
         }).fail (function(err) {
         	
@@ -50,7 +50,7 @@ $(document).on('click', '.open_hidden_options', function (e) {
 		for (var i = 0; i < len; i++) {
 			list += "<li>" + data[i].setupOption + "</li>"
 		}
-		console.log(list);
+		//console.log(list);
 		$("#sortable1").html(list);
 	
 	}).fail (function(err) {
@@ -70,7 +70,7 @@ $(document).on('click', '.open_hidden_options', function (e) {
 		for (var i = 0; i < len; i++) {
 			list += "<li>" + data[i].setupOption + "</li>"
 		}
-		console.log(list);
+		//console.log(list);
 		$("#sortable2").html(list);
 	
 	}).fail (function(err) {
@@ -87,6 +87,26 @@ $(document).on('click', '#save_setup', function (e) {
 
 	$('.hidden_options').slideUp(200);
 	
+	//selected options
+    
+    var selecOptionsArray = new Array();
+    var option = new Object();
+    var selecurl = $(this).data("saveselec");
+    
+    console.log(JSON.stringify(selecOptionsArray));
+    
+    $('#sortable2').find('li').each(function(i){
+    	var current = $(this);
+    	option = current.text();
+    	
+    	selecOptionsArray[i] = option;
+    	i++;
+    });
+	
+    //write selected options to the list
+    var selectedOptions = $('#sortable2').html();
+    $("#options-list").html(selectedOptions);
+    
 	//available options
     var avalOptionsArray = new Array();
     var option = new Object();
@@ -101,54 +121,34 @@ $(document).on('click', '#save_setup', function (e) {
     	i++;
     });
     
-    console.log(JSON.stringify(avalOptionsArray));
     
-    $.ajax({
-        type: "POST",
-        url: avalurl,
-        data: JSON.stringify(avalOptionsArray),
-        contentType: "application/json; charset=utf-8"
-    }).done (function(data) {
-    	console.log(data);
-	
-	}).fail (function(err) {
-		console.error(err);
-	});
-    
-    //selected options
-    
-    var selecOptionsArray = new Array();
-    var option = new Object();
-    var selecurl = $(this).data("saveselec");
-    
-    console.log(JSON.stringify(selecOptionsArray));
-    
-    $('#sortable2').delay(1000);
-    
-    $('#sortable2').find('li').each(function(i){
-    	var current = $(this);
-    	option = current.text();
-    	
-    	selecOptionsArray[i] = option;
-    	i++;
-    });
-    
-    
+    //save selected options
     $.ajax({
         type: "POST",
         url: selecurl,
         data: JSON.stringify(selecOptionsArray),
         contentType: "application/json; charset=utf-8"
     }).done (function(data) {
-    	console.log(data);
+    	
+    	console.log(JSON.stringify(avalOptionsArray));
+        
+        $.ajax({
+            type: "POST",
+            url: avalurl,
+            data: JSON.stringify(avalOptionsArray),
+            contentType: "application/json; charset=utf-8"
+        }).done (function(data) {
+        	console.log(data);
+    	
+    	}).fail (function(err) {
+    		console.error(err);
+    	});
 	
 	}).fail (function(err) {
 		console.error(err);
 	});
     
-    var selectedOptions = $('#sortable2').html();
     
-    $("#options-list").html(selectedOptions);
     
 });
 
@@ -165,18 +165,17 @@ $(document).on('click', '#save_rules', function (e) {
     $('#rules-table-body').find('tr').each(function(i){
     	var rule = "";
     	$(this).find('td').each(function(j){
-    		//console.log($(this).html());
+    		
     		var html = $(this).html();
-    		//console.log("this: " + $(html).prop("tagName"));
     		
     		if ($(html).prop("tagName") == "SELECT") {
     			
     			var id = $(html).attr("id");
-    			//console.log(id);
+    			
     			var idIndex = id.slice(-1);
-    			console.log("index: " + idIndex);
+    			//console.log("index: " + idIndex);
     			if (id.indexOf("rule-type") == 0) {
-    			//if (id == ("rule-type" + i)) {
+    			
     				var ruleType = $("#rule-type" + idIndex + " option:selected").text();
     				rule += ruleType;
     				console.log("type: " + ruleType);
@@ -196,15 +195,8 @@ $(document).on('click', '#save_rules', function (e) {
     	});
     	console.log(rule);
     	rulesArray[i] = rule;
-    	/*var current = $(this);
     	
-    	option = current.text();
-    	
-    	avalOptionsArray[i] = option;
-    	i++;*/
     });
-    
-   // console.log(JSON.stringify(avalOptionsArray));
     
     $.ajax({
         type: "POST",
@@ -213,7 +205,7 @@ $(document).on('click', '#save_rules', function (e) {
         contentType: "application/json; charset=utf-8"
     }).done (function(data) {
     	console.log(data);
-	
+    	alert("Rules were saved successfully");
 	}).fail (function(err) {
 		console.error(err);
 	});
@@ -230,183 +222,399 @@ $(document).on('click', '#runEngine', function (e) {
 	console.log(startDate);
 	console.log(endDate);
 	console.log(url);
+	$('.preload-wrap').show();
 	
 	$.ajax({
         type: "POST",
         url: url,
-        data: {startDate: startDate, endDate: endDate},
-        //contentType: "application/json; charset=utf-8"
+        data: {startDate: startDate, endDate: endDate, considerSalary: true}
+        
     }).done (function(data) {
-    	//TODO
-    	//table header
-    	var tableHeader = "";
-    	tableHeader += "<tr> \n";;
-    	tableHeader += "<th>Name</th> \n";
-    	tableHeader += "<th>Assigned location</th> \n"
-    	tableHeader += "<th>Reference</th> \n";
-    	var startDateObj = $.datepicker.parseDate("dd/mm/yy", startDate);
-    	var endDateObj = $.datepicker.parseDate("dd/mm/yy", endDate);
-    	
-    	var dateName;
-    	var day;
-    	var currentDate = new Date(startDateObj);
-    	while (currentDate <= endDateObj) {
-    		//console.log(startDateObj);
-    		
-    		dateName = $.datepicker.formatDate("M dd", currentDate);
-    		day = $.datepicker.formatDate("D", currentDate);
-    		tableHeader += "<th>" + dateName + "<br>" + day + "</th> \n";
-    		currentDate.setDate(currentDate.getDate() + 1)
-    	}
-    	tableHeader += "</tr> \n";
-    	$("#scheduleTableHeader").html(tableHeader);
-    	
-    	//table body
-    	var tableBody = "";
-    	var len = data.length;
-    	
-    	var staffName;
-    	var location;
-    	var reference = "1";
-    	
-		for (var i = 0; i < len; i++) {
-			tableBody += "<tr> \n";
-			staffName = data[i].staff.name;
-			console.log(staffName);
-			tableBody += "<td>" + staffName + "</td> \n";
-			if (data[i].task != null) {
-				location = data[i].task.location.location;
-			}
-			else {
-				var locationSet = data[i].staff.staffLocationSet;
-				var locationSetLength = locationSet.length;
-				for (var j = 0; j < locationSetLength; j++) {
-					var effectDate = new Date(locationSet[j].effectiveDate);
-					var expireDate = new Date(locationSet[j].expireDate);
-					var type = locationSet[j].type;
-					console.log(effectDate);
-					console.log(expireDate);
-					console.log(type);
-					if (type == "Assigned") {
-						if (effectDate < startDateObj && expireDate > startDateObj) {
-							
-							location = locationSet[j].location.location;
-							console.log("Valid:" + location);
-							break;
-						} 
-					}
-				}
-			}
-			
-			tableBody += "<td>" + location + "</td> \n";
-			tableBody += "<td>" + reference + "</td> \n";
-			
-			currentDate = new Date(startDateObj);
-			//from monday to sunday
-			daysOfWeek: for (var j = 0; j < 7; j++) {
-				
-				console.log("START DATE: " + currentDate);
-				while (data[i].staff.name == staffName) {
-					var scheduleDate = new Date(data[i].date);
-					console.log(currentDate + ",   " + scheduleDate);
-					if (currentDate.getTime() < scheduleDate.getTime()) {
-						//TODO blank task
-						tableBody += "<td><span class=\"table-tag not-assigned\">NA</span></td> \n";
-						currentDate.setDate(currentDate.getDate() + 1);
-						continue daysOfWeek;
-					}
-					//there is no task for current date
-					else if (currentDate.getTime() > scheduleDate.getTime()) {
-						i++;
-						continue;
-						
-					}	
-					//dates are equal
-					else {
-						console.log("EQUAL:" + currentDate + ",   " + scheduleDate);
-						//assign attributes for the day
-						console.log("SHIFT: " + data[i].shift.shift);
-						var shiftLetter = data[i].shift.shiftLetter;
-						if (shiftLetter == "M") {
-							tableBody += "<td><span class=\"table-tag yellow\">D12 <span class=\"tag-mark\">D</span></span></td> \n";
-						}
-						else if (shiftLetter == "A") {
-							tableBody += "<td><span class=\"table-tag green\">A8 <span class=\"tag-mark\">D</span></span></td> \n";
-						}
-						else if (shiftLetter == "N") {
-							tableBody += "<td><span class=\"table-tag purple\">N12 <span class=\"tag-mark\">D</span></span></td> \n";
-						}
-						else if (shiftLetter == "L") {
-							tableBody += "<td><span class=\"table-tag pink\">AL <span class=\"tag-mark\">D</span></span></td> \n";
-						}
-						else if (shiftLetter == "O") {
-							tableBody += "<td><span class=\"table-tag black\">OFF <span class=\"tag-mark\">D</span></span></td> \n";
-						}
-						currentDate.setDate(currentDate.getDate() + 1);
-						continue daysOfWeek;
-					}
-					
-				}
-				
-			}
-			
-			tableBody += "</tr>";
-			
-		}
-    	
-		$("#scheduleTableBody").html(tableBody);
-		
-    	/*var table = "";
-		var len = data.length;
-		for (var i = 0; i < len; i++) {
-			table += "<tr> \n";
-			
-			table += "<td> \n";
-			var setupOption = data[i].setupOption.setupOption;
-			//console.log("setup option:" + setupOption);
-			table += setupOption + "\n";
-			table += "</td> \n";
-			
-			table += "<td> \n";
-			table += "<select id=\"criteria" + i + "\">";
-			if (i == 0) {
-				table += "<select id=\"criteria\">";
-			}
-			else {
-				table += "<select>";
-			}
-			var criteria = $("#criteria0").html();
-			//console.log("Criteria:" + criteria);
-			table += criteria;
-			table += "</select> \n";
-			table += "</td>";
-			
-			table += "<td> \n";
-			var reference = data[i].reference.reference;
-			//console.log("reference:" + reference);
-			table += reference + "\n";
-			table += "</td> \n";
-			
-			table += "<td> \n";
-			table += "<select id=\"rule-type" + i + "\">";
-			if (i == 0) {
-				table += "<select id=\"rule-type\">";
-			}
-			else {
-				table += "<select>";
-			}
-			var type = $("#rule-type0").html();
-			//console.log("Criteria:" + criteria);
-			table += type;
-			table += "</select> \n";
-			table += "</td>";
-			
-			table += "</tr>";
-		}
-		//console.log(table);
-		$("#rules-table-body").html(table);*/
+    	renderHeader(startDate, endDate);
+    	renderSchedule(data);
+    	$('.preload-wrap').hide();
+		alert("Roster successfully completed for the given period: \n " + startDate + " - " + endDate);
 	
 	}).fail (function(err) {
-		console.error(err);
+		$('.preload-wrap').hide();
+		$("#scheduleTableBody").html("");
+		if (err.responseJSON != null) {
+			alert("Error occured during processing: \n " + err.responseJSON.ex);
+		}
+		
+		console.error(err.responseText);
 	});
 });
+
+//run advanced engine
+$(document).on('click', '#runAdvancedEngine', function (e) {
+	e.preventDefault();
+	var url = $(this).data("url");
+	
+	$('.modal-wrap').removeClass('open');
+	console.log(url);
+	var considerSalary = $('#sal:checkbox:checked').val();
+	var monthly = $('#monthly:radio:checked').val();
+	if (considerSalary != null) {
+		considerSalary = true;
+	}
+	else{
+		considerSalary = false;
+	}
+	if (monthly != null) {
+		var monthString = $('.pick-month').val();
+		if (monthString == "Month") {
+			alert("You should pick the month first!");
+			
+			return;
+		}
+		monthString = monthString + "/01";
+		//console.log(monthString);
+		var startDateObj = $.datepicker.parseDate("mm/yy/dd", monthString);
+		
+		var year = startDateObj.getFullYear();
+		var month = startDateObj.getMonth();
+		
+		var endDateObj = new Date(year, month + 1, 0)
+		var startDate = $.datepicker.formatDate('dd/mm/yy', startDateObj);
+		var endDate = $.datepicker.formatDate('dd/mm/yy', endDateObj);
+		console.log(startDate);
+		console.log(endDate);
+		
+	}
+	else {
+		var startDate = $('#startDate').text();
+		var endDate = $('#endDate').text();
+	}
+	//console.log(considerSalary);
+	
+	$('.preload-wrap').show();
+	
+	
+	$.ajax({
+        type: "POST",
+        url: url,
+        data: {startDate: startDate, endDate: endDate, considerSalary: considerSalary}
+        //contentType: "application/json; charset=utf-8"
+    }).done (function(data) {
+    	renderHeader(startDate, endDate);
+    	renderSchedule(data);
+    	$('.preload-wrap').hide();
+		alert("Advanced Roster successfully completed for the given period: \n " + startDate + " - " + endDate);
+	
+	}).fail (function(err) {
+		$('.preload-wrap').hide();
+		$("#scheduleTableBody").html("");
+		if (err.responseJSON != null) {
+			alert("Error occured during processing: \n " + err.responseJSON.ex);
+		}
+		
+		console.error(err.responseText);
+	});
+});
+
+
+$(document).on('click', '#approveSchedule', function (e) {
+	e.preventDefault();
+	
+	var url = $(this).data("url");
+	console.log(url);
+	
+	$.ajax({
+        url:url,
+        type: "GET"
+	}).done (function(data) {
+		if (data) {
+			$('.tag-mark').each(function(i) {
+				$("#runEngine").addClass("disabled");
+				$("#runAdvanced").addClass("disabled");
+				$("#approveSchedule").addClass("disabled");
+				$(this).html("S");
+			});
+		}
+	
+	}).fail (function(err) {
+	       console.error(err);
+	});
+	
+});
+
+function renderHeader(startDate, endDate) {
+	var tableHeader = "";
+	tableHeader += "<tr> \n";;
+	tableHeader += "<th>Name</th> \n";
+	tableHeader += "<th>Assigned location</th> \n"
+	tableHeader += "<th>Reference</th> \n";
+	var startDateObj = $.datepicker.parseDate("dd/mm/yy", startDate);
+	var endDateObj = $.datepicker.parseDate("dd/mm/yy", endDate);
+	
+	var dateName;
+	var day;
+	var currentDate = new Date(startDateObj);
+	var currentDateFormatted = $.datepicker.formatDate('dd/M/yy D', new Date(startDateObj));
+	var today = $.datepicker.formatDate('dd/M/yy D', new Date());
+	
+	while (currentDate <= endDateObj) {
+		
+		currentDateFormatted = $.datepicker.formatDate('dd/M/yy D', currentDate);
+		
+		dateName = $.datepicker.formatDate("M dd", currentDate);
+		
+		day = $.datepicker.formatDate("D", currentDate);
+		if (currentDateFormatted == today) {
+			tableHeader += "<th class=\"today\">" + dateName + "<br>" + day + "</th> \n";
+		}
+		else {
+			tableHeader += "<th>" + dateName + "<br>" + day + "</th> \n";
+		}
+		currentDate.setDate(currentDate.getDate() + 1)
+	}
+	tableHeader += "</tr> \n";
+	$("#scheduleTableHeader").html(tableHeader);
+}
+
+function renderSchedule(data) {
+	
+	//table body
+	var tableBody = "";
+	var len = data.length;
+	if (len == 0) {
+		$("#scheduleTableBody").html(tableBody);
+		return;
+	}
+	var staffName;
+	var location;
+	var reference = "1";
+	
+	var isDraft = false;
+	
+	for (var i = 0; i < len; i++) {
+		tableBody += "<tr> \n";
+		staffName = data[i].name;
+		tableBody += "<td>" + staffName + "</td> \n";
+		location = data[i].location;
+		tableBody += "<td>" + location + "</td> \n";
+		reference = data[i].reference;
+		tableBody += "<td>" + reference + "</td> \n";
+		
+		var tasks = data[i].tasks;
+		if (tasks != null) {
+			for (var j = 0; j < tasks.length; j++) {
+				var shift = tasks[j].shift;
+				var NA = false;
+				if (shift != null) {
+					
+					var status = tasks[j].status;
+					if (status == "Submitted") {
+						
+						status = "S";
+					}
+					else {
+						isDraft = true;
+						status = "D";
+					}
+					
+					var shiftLetter = shift.shiftLetter;
+					if (shiftLetter == "M") {
+						tableBody += "<td><span data-tip class=\"table-tag yellow\">D12 <span class=\"tag-mark\">" + status + "</span> \n";
+					}
+					else if (shiftLetter == "A") {
+						tableBody += "<td><span data-tip class=\"table-tag green\">A8 <span class=\"tag-mark\">" + status + "</span> \n";
+					}
+					else if (shiftLetter == "N") {
+						tableBody += "<td><span data-tip class=\"table-tag purple\">N12 <span class=\"tag-mark\">" + status + "</span> \n";
+					}
+					else if (shiftLetter == "L") {
+						tableBody += "<td><span data-tip class=\"table-tag pink\">AL <span class=\"tag-mark\">" + status + "</span> \n";
+					}
+					else if (shiftLetter == "O") {
+						tableBody += "<td><span data-tip class=\"table-tag black\">OFF <span class=\"tag-mark\">" + status + "</span> \n";
+					}
+					//unknown shift. Mark as not assigned.
+					else {
+						
+						tableBody += "<td><span class=\"table-tag grey\">NA";
+						NA = true;
+						isDraft = true;
+					}
+				}
+				else {
+					
+					tableBody += "<td><span class=\"table-tag grey\">NA";
+					NA = true;
+					isDraft = true;
+				}
+				
+				if (!NA) {
+					if (tasks[j].violated) {
+						tableBody += "<span class=\"left-tag\">V</span> \n";
+					}
+					tableBody += "<span class=\"custom-tooltip\"> \n";
+					tableBody += "<strong>Location:</strong>" + location + " <br/> \n";
+					tableBody += "<strong>Shift:</strong>" + shift.shift + " <br/> \n"; 
+					tableBody += "<strong>Training:</strong> ";
+					var trainings = tasks[j].trainings;
+					if (trainings != null) {
+						var trainingsLen = trainings.length;
+						for (var k = 0; k < trainingsLen; k++) {
+							if (k != trainingsLen - 1) {
+								tableBody += trainings[k].name + ", ";
+							}
+							else {
+								tableBody += trainings[k].name;
+							}
+						}
+					}
+				}
+				tableBody += "</span></td> \n";
+			}
+		}
+		tableBody += "</tr> \n";
+	}
+	
+	if (!isDraft) {
+		
+		$("#runEngine").addClass("disabled");
+		$("#runAdvanced").addClass("disabled");
+		$("#approveSchedule").addClass("disabled");
+		
+	}
+	$("#scheduleTableBody").html(tableBody);
+}
+
+function getSchedule(startDate, endDate) {
+	var url = $('#dateWeek').data("url");
+	console.log(url);
+	startDate = $.datepicker.formatDate('dd/mm/yy', startDate);
+	endDate = $.datepicker.formatDate('dd/mm/yy', endDate);
+	console.log(startDate);
+	console.log(endDate);
+	
+	$.ajax({
+        url:url,
+        type: "POST",
+        data: {startDate: startDate, endDate: endDate}
+        	
+	}).done (function(data) {
+		renderHeader(startDate, endDate);
+		renderSchedule(data);
+	
+	}).fail (function(err) {
+	       console.error(err);
+	});
+}
+
+$(document).on('click', '.staff-without-tasks', function (e) {
+	e.preventDefault();
+	
+	$("#runEngine").addClass("disabled");
+	$("#runAdvanced").addClass("disabled");
+	$("#approveSchedule").addClass("disabled");
+	
+	var url = $(this).data("url");
+	console.log(url);
+	
+	$.ajax({
+        url:url,
+        type: "GET"
+	}).done (function(data) {
+		renderSchedule(data);
+	
+	}).fail (function(err) {
+	       console.error(err);
+	});
+	
+});
+
+$(document).on('click', '#filter-locations', function (e) {
+	e.preventDefault();
+	
+	$("#runEngine").addClass("disabled");
+	$("#runAdvanced").addClass("disabled");
+	$("#approveSchedule").addClass("disabled");
+	
+	
+	var url = $(this).data("url");
+	console.log(url);
+	
+	
+	var checkedValues = $('#locationsForm input:checkbox:checked').map(function() {
+	    return this.value;
+	}).get();
+	console.log(checkedValues);
+	
+	$.ajax({
+        url:url,
+        type: "POST",
+        data: JSON.stringify(checkedValues),
+        contentType: "application/json; charset=utf-8"
+	}).done (function(data) {
+		renderSchedule(data);
+
+		$('.modal-wrap').removeClass('open');
+	
+	}).fail (function(err) {
+	       console.error(err);
+	});
+	
+});
+
+$(document).on('click', '.rules-violated-tasks', function (e) {
+	e.preventDefault();
+	
+	$("#runEngine").addClass("disabled");
+	$("#runAdvanced").addClass("disabled");
+	$("#approveSchedule").addClass("disabled");
+	
+	var url = $(this).data("url");
+	console.log(url);
+	
+	$.ajax({
+        url:url,
+        type: "GET"
+	}).done (function(data) {
+		renderSchedule(data);
+	
+	}).fail (function(err) {
+	       console.error(err);
+	});
+	
+});
+
+
+$(document).on('click', '.leaves-tasks', function (e) {
+	e.preventDefault();
+	
+	$("#runEngine").addClass("disabled");
+	$("#runAdvanced").addClass("disabled");
+	$("#approveSchedule").addClass("disabled");
+	
+	
+	var url = $(this).data("url");
+	console.log(url);
+	
+	$.ajax({
+        url:url,
+        type: "GET"
+	}).done (function(data) {
+		renderSchedule(data);
+	
+	}).fail (function(err) {
+	       console.error(err);
+	});
+	
+});
+
+$(document).on('click', '#today', function (e) {
+	e.preventDefault();
+	var date = new Date();
+	
+	$("#runEngine").addClass("disabled");
+	$("#runAdvanced").addClass("disabled");
+	$("#approveSchedule").addClass("disabled");
+
+	getSchedule(date, date);
+});
+
+
+

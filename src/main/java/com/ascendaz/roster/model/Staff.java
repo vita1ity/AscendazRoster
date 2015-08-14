@@ -2,7 +2,6 @@ package com.ascendaz.roster.model;
 
 import java.io.Serializable;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,6 +18,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+import org.joda.time.LocalDate;
+
 import com.ascendaz.roster.model.attributes.Designation;
 import com.ascendaz.roster.model.attributes.Gender;
 import com.ascendaz.roster.model.attributes.Skill;
@@ -27,15 +29,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "staff")
-
-/*@NamedQueries({
-	@NamedQuery(name = Staff.GET_ALL_STAFF, query = "SELECT staff1 "
-												+ "FROM Staff staff1")
-})*/
-
 public class Staff implements Comparable<Staff>, Serializable{
-	
-	//public static final String GET_ALL_STAFF = "getStaff";
 	
 	/**
 	 * 
@@ -45,7 +39,6 @@ public class Staff implements Comparable<Staff>, Serializable{
 	public static final Comparator<Staff> SALARY_COMPARATOR = new SalaryComparator();
 
 	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name="STAFF_ID", nullable=false)
 	private int id;
 	
@@ -69,7 +62,17 @@ public class Staff implements Comparable<Staff>, Serializable{
 	private Integer age;
 	
 	@Column(name="DATE_OF_BIRTH", nullable=true)
-	private Date dateOfBirth;
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
+	private LocalDate dateOfBirth;
+	
+	@Column(name="JOIN_DATE", nullable=false)
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
+	private LocalDate joinDate;
+	
+	@Column(name="RESIGN_DATE", nullable=false)
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
+	private LocalDate resignDate;
+	
 	
 	@JoinTable(name = "staff_skill", 
             joinColumns = { 
@@ -82,9 +85,6 @@ public class Staff implements Comparable<Staff>, Serializable{
     @ManyToMany
     @JsonIgnore
     private Set<Skill> skillSet = new HashSet<Skill>();;
-	
-	/*@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "staff")
-	private Set<StaffSkill> staffSkillSet = new HashSet<StaffSkill>();*/
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "staff")
 	@JsonManagedReference
@@ -134,14 +134,6 @@ public class Staff implements Comparable<Staff>, Serializable{
 		this.salary = salary;
 	}
 
-/*	public Set<StaffSkill> getStaffSkillSet() {
-		return staffSkillSet;
-	}
-
-	public void setStaffSkillSet(Set<StaffSkill> staffSkillSet) {
-		this.staffSkillSet = staffSkillSet;
-	}*/
-
 	public String getName() {
 		return name;
 	}
@@ -174,11 +166,11 @@ public class Staff implements Comparable<Staff>, Serializable{
 		this.age = age;
 	}
 
-	public Date getDateOfBirth() {
+	public LocalDate getDateOfBirth() {
 		return dateOfBirth;
 	}
 
-	public void setDateOfBirth(Date dateOfBirth) {
+	public void setDateOfBirth(LocalDate dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 
@@ -231,12 +223,28 @@ public class Staff implements Comparable<Staff>, Serializable{
 	public int compareTo(Staff staff) {
 		
 		return this.getName().compareTo(staff.getName());
-		//return this.salary - staff.getSalary();
+
 	}
 
 
 	public void setBusy(boolean isBusy) {
 		this.isBusy = isBusy;
+	}
+
+	public LocalDate getJoinDate() {
+		return joinDate;
+	}
+
+	public void setJoinDate(LocalDate joinDate) {
+		this.joinDate = joinDate;
+	}
+
+	public LocalDate getResignDate() {
+		return resignDate;
+	}
+
+	public void setResignDate(LocalDate resignDate) {
+		this.resignDate = resignDate;
 	}
 
 	@Override

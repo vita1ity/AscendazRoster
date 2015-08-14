@@ -15,11 +15,14 @@ import javax.persistence.Table;
 
 import com.ascendaz.roster.model.StaffTraining;
 import com.ascendaz.roster.model.TaskProfile;
+import com.ascendaz.roster.model.attributes.interfaces.Attribute;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "training")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Training implements Attribute, Serializable{
 	
 	/**
@@ -28,7 +31,6 @@ public class Training implements Attribute, Serializable{
 	private static final long serialVersionUID = 3459850485284595910L;
 
 	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "TRAINING_ID", nullable = false)
 	private int id;
 	

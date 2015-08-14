@@ -9,17 +9,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "roster_user")
-/*@NamedQueries({
-	@NamedQuery(name=RosterUser.GET_USER_BY_USERNAME, query="SELECT user1 "
-												+ "FROM RosterUser user1 "
-												+ "WHERE user1.username = :username"),
-	@NamedQuery(name=RosterUser.GET_ALL_USERS, query="SELECT user1 "
-											+ "FROM RosterUser user1"),
-})*/
+
 public class RosterUser {
-	
-	//public static final String GET_USER_BY_USERNAME = "getUserByUsername";
-	//public static final String GET_ALL_USERS = "getAllUsers";
 
 	@Id
 	@Column(name="USER_ID", nullable=false)

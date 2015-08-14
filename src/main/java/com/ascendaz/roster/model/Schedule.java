@@ -1,7 +1,6 @@
 package com.ascendaz.roster.model;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +11,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
+import org.joda.time.LocalDate;
 
 import com.ascendaz.roster.model.attributes.Shift;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -46,7 +48,8 @@ public class Schedule implements Comparable<Schedule>, Serializable{
 	private Shift shift;
 	
 	@Column(name = "DATE", nullable = false)
-	private Date date;
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
+	private LocalDate date;
 	
 	@Column(name = "IS_VIOLATED", nullable = true)
 	private boolean isViolated;
@@ -58,7 +61,7 @@ public class Schedule implements Comparable<Schedule>, Serializable{
 		super();
 	}
 	
-	public Schedule(TaskProfile task, Staff staff, Date date, Shift shift, String status, boolean isViolated) {
+	public Schedule(TaskProfile task, Staff staff, LocalDate date, Shift shift, String status, boolean isViolated) {
 		super();
 		this.task = task;
 		this.staff = staff;
@@ -68,11 +71,11 @@ public class Schedule implements Comparable<Schedule>, Serializable{
 		this.isViolated = isViolated;
 	}
 	
-	public Date getDate() {
+	public LocalDate getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 
@@ -131,6 +134,7 @@ public class Schedule implements Comparable<Schedule>, Serializable{
 		String str = "Schedule item:\n";
 		str += task + "\n";
 		str += staff + "\n";
+		str += "Shift: " + shift + "\n";
 		str += "Date: " + date + "\n";
 		str += "Is violated: " + isViolated + "\n";
 		return str;

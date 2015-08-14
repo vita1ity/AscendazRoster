@@ -72,9 +72,7 @@
 						</div>
 						<div class="options-cont-content">
 							<ul id="sortable1" class="connectedSortable list-left">
-								<!-- <li class="">Restricted Location</li>
-								<li class="">Rank</li>
-								<li class="">Status</li> -->
+								
 							</ul>
 						</div>
 					</div>
@@ -90,8 +88,6 @@
 						</div>
 						<div class="options-cont-content">
 							<ul id="sortable2" class="connectedSortable list-right">
-								<!-- <li class="">Assigned Location</li>
-								<li class="">Task Location</li> -->
 
 							</ul>
 						</div>
@@ -192,12 +188,6 @@
 					</div>
 	
 					<div class="login-form">
-						<!-- <div class="loader-box">
-							<div class="loader-inner">
-								<div></div>
-							</div>
-						</div>
-						<i class="close-modal" role="close_form">&times</i>  -->
 	
 						<h3>Login</h3>
 	
@@ -229,8 +219,6 @@
 	</div>
 </c:if>
 <!----------------end modal---------->
-
-
 
 </body>
 </html>

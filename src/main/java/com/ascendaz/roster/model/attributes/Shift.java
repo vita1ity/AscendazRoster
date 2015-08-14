@@ -28,7 +28,6 @@ public class Shift implements Serializable{
 	private static final long serialVersionUID = 8759897001095444153L;
 
 	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name="SHIFT_ID", nullable=false)
 	private int id;
 	

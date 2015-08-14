@@ -1,26 +1,29 @@
 package com.ascendaz.roster.model.attributes;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-//import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import com.ascendaz.roster.model.Staff;
 import com.ascendaz.roster.model.TaskProfile;
+import com.ascendaz.roster.model.attributes.interfaces.Attribute;
 
 @Entity
 @Table(name="skill")
-public class Skill implements Comparable<Skill>, Attribute{
+public class Skill implements Comparable<Skill>, Attribute, Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2564071317829786884L;
+
 	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name="SKILL_ID", nullable=false)
 	private int id;
 	
@@ -33,8 +36,6 @@ public class Skill implements Comparable<Skill>, Attribute{
 	@ManyToMany(mappedBy = "skillSet")
 	private Set<Staff> staffSet = new HashSet<Staff>();
 	
-	/*@ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "skill")
-	private Set<StaffSkill> staffSkillSet = new HashSet<StaffSkill>();*/
 	
 	@ManyToMany(mappedBy = "skillSet")
 	private Set<TaskProfile> taskProfileSet = new HashSet<TaskProfile>();

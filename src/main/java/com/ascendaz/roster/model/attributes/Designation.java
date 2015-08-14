@@ -1,5 +1,6 @@
 package com.ascendaz.roster.model.attributes;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,21 +8,24 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.ascendaz.roster.model.Staff;
 import com.ascendaz.roster.model.TaskProfile;
+import com.ascendaz.roster.model.attributes.interfaces.Attribute;
 
 @Entity
 @Table(name = "designation")
-public class Designation implements Comparable<Designation>, Attribute {
+public class Designation implements Comparable<Designation>, Attribute, Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 910187958013048278L;
+
 	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "DESIGNATION_ID", nullable = false)
 	private int id;
 	

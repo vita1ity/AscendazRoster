@@ -1,5 +1,6 @@
 package com.ascendaz.roster.model.attributes;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,22 +8,26 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.ascendaz.roster.model.Staff;
 import com.ascendaz.roster.model.TaskProfile;
+import com.ascendaz.roster.model.attributes.interfaces.Attribute;
+import com.ascendaz.roster.model.attributes.interfaces.CustomEquality;
 import com.ascendaz.roster.util.Util;
 
 @Entity
 @Table(name = "gender")
-public class Gender implements Comparable<Gender>, Attribute, CustomEquality {
+public class Gender implements Comparable<Gender>, Attribute, CustomEquality, Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -598794564037203446L;
+
 	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name="GENDER_ID", nullable=false) 
 	private int id;
 	
@@ -73,12 +78,6 @@ public class Gender implements Comparable<Gender>, Attribute, CustomEquality {
 		this.staffSet = staff;
 	}
 
-/*	@Override
-	public Object getValue() {
-		
-		return type;
-	}
-*/
 	@Override
 	public int compareTo(Gender gender) {
 		
@@ -100,7 +99,6 @@ public class Gender implements Comparable<Gender>, Attribute, CustomEquality {
 		if (obj == null)
 			return false;
 		if (!(obj instanceof Gender)) {
-		//if (getClass() != obj.getClass())
 			return false;
 		}
 		Gender other = (Gender) Util.deproxy(obj);

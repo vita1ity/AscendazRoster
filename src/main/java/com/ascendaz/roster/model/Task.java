@@ -1,7 +1,7 @@
 package com.ascendaz.roster.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,43 +10,44 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+import org.joda.time.LocalDate;
+
 import com.ascendaz.roster.model.attributes.DayOfWeek;
-import com.ascendaz.roster.model.attributes.Location;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "task")
-public class Task {
+public class Task implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3486804239461364169L;
+
 	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "TASK_ID", nullable = false)
 	private int id;
 	
 	@Column(name = "NAME", nullable = false, length = 50)
 	private String name;
 	
-	/*@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "LOCATION_ID", nullable = false)
-	private Location location;*/
-	
 	@Column(name = "START_DATE", nullable = false)
 	@JsonIgnore
-	private Date startDate;
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
+	private LocalDate startDate;
 	
 	@Column(name = "END_DATE", nullable = false)
 	@JsonIgnore
-	private Date endDate;
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
+	private LocalDate endDate;
 	
 	@JoinTable(name = "task_day_of_week", 
             joinColumns = { 
@@ -60,19 +61,12 @@ public class Task {
     @JsonIgnore
     private List<DayOfWeek> dayOfWeekSet = new ArrayList<DayOfWeek>();
 	
-	/*@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "DAY_OF_WEEK_ID", nullable = false)
-	private DayOfWeek dayOfWeek;*/
-
 	@Column(name = "HEADCOUNT", nullable = false)
 	private int headcount;
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "task")
 	private Set<TaskProfile> taskProfileSet = new HashSet<TaskProfile>();
 	
-	//@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "task")
-	//private Set<Schedule> scheduleSet = new HashSet<Schedule>();
-
 	public int getId() {
 		return id;
 	}
@@ -88,28 +82,19 @@ public class Task {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	/*public Location getLocation() {
-		return location;
-	}
-
-	public void setLocation(Location location) {
-		this.location = location;
-	}*/
-
-	public Date getStartDate() {
+	public LocalDate getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(LocalDate startDate) {
 		this.startDate = startDate;
 	}
 
-	public Date getEndDate() {
+	public LocalDate getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Date endDate) {
+	public void setEndDate(LocalDate endDate) {
 		this.endDate = endDate;
 	}
 
@@ -138,7 +123,5 @@ public class Task {
 	public void setHeadcount(int headcount) {
 		this.headcount = headcount;
 	}
-	
-	
 	
 }

@@ -1,5 +1,6 @@
 package com.ascendaz.roster.model.attributes;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,20 +8,23 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.ascendaz.roster.model.TaskProfile;
+import com.ascendaz.roster.model.attributes.interfaces.Range;
 
 @Entity
 @Table(name = "age_range")
-public class AgeRange implements Range{
+public class AgeRange implements Range, Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2781000961879138285L;
+
 	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "AGE_RANGE_ID", nullable = false)
 	private int id;
 	
@@ -91,9 +95,7 @@ public class AgeRange implements Range{
 
 	@Override
 	public boolean checkInBetween(Comparable<Number> object) {
-		/*if (number.longValue() > startAge.intValue() && number.longValue() < endAge.intValue()) {
-			return true;
-		}*/
+		
 		if (endAge == null) {
 			if (object.compareTo(startAge) > 0) {
 				return true;

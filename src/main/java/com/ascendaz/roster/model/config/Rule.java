@@ -8,9 +8,6 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -19,23 +16,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "roster_rule")
-/*@NamedNativeQuery(name=Rule.SAVE_RULE, query="UPDATE roster_rule "
-											+ "SET CRITERIA = :criteria, TYPE = :type, PRIORITY = :priority, IS_SELECTED = 1 "
-											+ "WHERE SETUP_OPTION_ID = (SELECT OPTION_ID "
-																	+ "FROM setup_option "
-																	+ "WHERE SETUP_OPTION = :base)")
-											
-@NamedQueries({
-	@NamedQuery(name = Rule.GET_RULE_BY_OPTION, query = "SELECT rule1 "
-												+ "FROM Rule rule1 "
-												+ "WHERE rule1.setupOption.id = :setupOptionId"),
-	
-	@NamedQuery(name = Rule.GET_SELECTED_RULES, query = "SELECT rule1 "
-												+ "FROM Rule rule1 "
-												+ "WHERE rule1.isSelected = true")
-	
-	
-})*/
+
 public class Rule implements Serializable, Comparable<Rule>{
 	
 	/**
@@ -43,10 +24,6 @@ public class Rule implements Serializable, Comparable<Rule>{
 	 */
 	private static final long serialVersionUID = -7862186534373258869L;
 
-/*	public static final String GET_RULE_BY_OPTION = "getRuleByOption";
-	public static final String SAVE_RULE = "updateRule";
-	public static final String GET_SELECTED_RULES = "getSelectedRules";*/
-	
 	@Id
 	@Column(name = "RULE_ID", nullable = false, unique = true)
 	private int id;
