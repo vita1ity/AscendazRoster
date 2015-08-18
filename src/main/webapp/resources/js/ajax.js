@@ -14,6 +14,7 @@ $(document).ready(function() {
         	//console.log(response);
         	if (response == "success") {
         		$("#msg").html("<span class=\"loginFormSuccess\">Login was successful!</span>");
+        		$(".display-none").removeClass("display-none");
         		$(".modal-login").removeClass('open');
         		$(".loginButton").addClass("notDisplayLogin");
         		$("#loginUserSuccessMessage").html("<span class=\"loginFormSuccess\">User Login successfully</span>");
@@ -268,9 +269,9 @@ $(document).on('click', '#runAdvancedEngine', function (e) {
 			
 			return;
 		}
-		monthString = monthString + "/01";
+		monthString = monthString + " 01";
 		//console.log(monthString);
-		var startDateObj = $.datepicker.parseDate("mm/yy/dd", monthString);
+		var startDateObj = $.datepicker.parseDate("M yy dd", monthString);
 		
 		var year = startDateObj.getFullYear();
 		var month = startDateObj.getMonth();

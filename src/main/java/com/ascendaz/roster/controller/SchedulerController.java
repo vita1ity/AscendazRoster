@@ -57,7 +57,7 @@ public class SchedulerController {
 		daysOfWeek[5] = saturday.toString("MMM dd E");
 		daysOfWeek[6] = sunday.toString("MMM dd E");
 		
-		List<ScheduleResponse> schedule = schedulerService.getScheduleForTheWeek(monday, sunday);
+		List<ScheduleResponse> schedule = schedulerService.getScheduleForPeriod(monday, sunday);
 		
 		List<Location> locationList = schedulerService.getAllLocations();
 		model.addAttribute("locationList", locationList);
@@ -117,7 +117,7 @@ public class SchedulerController {
 		LocalDate endD = LocalDate.parse(endDate, df);
 
 		
-		List<ScheduleResponse> schedule = schedulerService.getScheduleForTheWeek(startD, endD);
+		List<ScheduleResponse> schedule = schedulerService.getScheduleForPeriod(startD, endD);
 		session.removeAttribute("schedule");
 		session.setAttribute("schedule", schedule);
 		

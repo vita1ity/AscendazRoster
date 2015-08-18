@@ -1,6 +1,12 @@
 package com.ascendaz.roster.model.config;
 
-public enum Criteria {
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonFormat(shape= JsonFormat.Shape.OBJECT)
+public enum Criteria implements Serializable{
 	
 	EQUAL("Should be equal to"), 
     NOT_EQUAL("Should not be equal to"), 
@@ -9,7 +15,7 @@ public enum Criteria {
     ATLEAST("Atleast"),
     ATMOST("Atmost"); 
 
-
+	@JsonProperty
     private final String criteriaString;
 
     Criteria(String criteriaString) {

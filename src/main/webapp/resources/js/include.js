@@ -133,9 +133,26 @@ jQuery(document).ready(function ($) {
 						table += "<td> \n";
 						table += "<select id=\"criteria" + i + "\">";
 						
-						var criteria = $("#criteria0").html();
-						//console.log("Criteria:" + criteria);
-						table += criteria;
+						
+						//console.log("criteria" + data[i].criteria.criteriaString);
+						var criteriaVal = data[i].criteria.criteriaString;
+						
+						var criteriaHtml = "";
+						$("#criteria0").find('option').each(function(i) {
+						    
+							if ($(this).text() == criteriaVal) {
+								criteriaHtml += "<option value=\"" + $(this).val() + "\" selected>" + criteriaVal + "</option> \n"
+							}
+							else {
+								
+								criteriaHtml += "<option value=\"" + $(this).val() + "\">" + $(this).html() + "</option> \n";
+							}
+						     
+						});
+						
+						//console.log(criteriaHtml);
+						
+						table += criteriaHtml;
 						table += "</select> \n";
 						table += "</td>";
 						
@@ -148,9 +165,22 @@ jQuery(document).ready(function ($) {
 						table += "<td> \n";
 						table += "<select id=\"rule-type" + i + "\">";
 						
-						var type = $("#rule-type0").html();
-						//console.log("Criteria:" + criteria);
-						table += type;
+						var ruleVal = data[i].type;
+						var ruleHtml = "";
+						$("#rule-type0").find('option').each(function(i) {
+						    
+							if ($(this).text() == ruleVal) {
+								ruleHtml += "<option value=\"" + $(this).val() + "\" selected>" + ruleVal + "</option> \n"
+							}
+							else {
+								
+								ruleHtml += "<option value=\"" + $(this).val() + "\">" + $(this).html() + "</option> \n";
+							}
+						     
+						});
+						//console.log(ruleHtml);
+						
+						table += ruleHtml;
 						table += "</select> \n";
 						table += "</td>";
 						
@@ -249,7 +279,7 @@ jQuery(document).ready(function ($) {
 			changeMonth: true,
 			changeYear: true,
 			showButtonPanel: true,
-			dateFormat: "mm/yy",
+			dateFormat: "M yy",
 			beforeShow: function (e, t) {
 				$(this).datepicker("hide");
 	
@@ -263,10 +293,17 @@ jQuery(document).ready(function ($) {
 				$("#runAdvanced").removeClass("disabled");
 				$("#approveSchedule").removeClass("disabled");
 	
-				
 				var n = Math.abs($("#ui-datepicker-div .ui-datepicker-month :selected").val());
 				var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
-				$(this).datepicker("setDate", new Date(year, n,1));
+				var currentMonth = new Date(year, n, 1);
+				
+				var formatMonth = $.datepicker.formatDate('M yy', currentMonth);
+				$("#weekDateValue").addClass("display-none");
+				$("#monthDateValue").removeClass("display-none");
+				$("#monthDate").text(formatMonth);
+				
+				
+				$(this).datepicker("setDate", currentMonth);
 				$("#ui-datepicker-div").removeClass("hide-calendar");
 				$("#ui-datepicker-div").removeClass('MonthDatePicker');
 				var startDate = new Date(year, n, 1);
@@ -312,6 +349,9 @@ jQuery(document).ready(function ($) {
 				var dateFormat = inst.settings.dateFormat || $.datepicker._defaults.dateFormat;
 				$('#startDate').text($.datepicker.formatDate(dateFormat, startDate, inst.settings));
 				$('#endDate').text($.datepicker.formatDate(dateFormat, endDate, inst.settings));
+				
+				$("#weekDateValue").removeClass("display-none");
+				$("#monthDateValue").addClass("display-none");
 				
 				$("#runEngine").removeClass("disabled");
 				$("#runAdvanced").removeClass("disabled");

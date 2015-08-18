@@ -68,8 +68,13 @@
 				<div class="date-filters">
 					<s:url value="/scheduler/get-schedule" var="getSchedule"/>
 					<div id="dateWeek" data-url="${getSchedule}" type="text" class="cl-inp"><input class="week-picker" type="text">
-						<span id="startDate"><joda:format value="${startDate}" pattern="dd/MM/yyyy"/></span>
-						 - <span id="endDate"><joda:format value="${endDate}" pattern="dd/MM/yyyy"/></span>
+						<div id="weekDateValue">
+							<span id="startDate"><joda:format value="${startDate}" pattern="dd/MM/yyyy"/></span>
+							 - <span id="endDate"><joda:format value="${endDate}" pattern="dd/MM/yyyy"/></span>
+						</div>
+						<div id="monthDateValue" class="display-none">
+							<span id="monthDate"></span>
+						</div>
 					</div>
 					<span id="today" class="cl-btn">Today</span>
 					<input class="cl-btn pick-month" value="Month"  />
@@ -252,8 +257,8 @@
 		</div>
 		<div class="motal-content">
 			<form class="advanced-form" action="">
-				<label class="lbl" for="sal"><input id="sal" type="checkbox">Consider salary</label>
-				<label class="lbl" for="weekly"><input id="weekly" type="radio" name="r1">Weekly</label>
+				<label class="lbl" for="sal"><input id="sal" type="checkbox" checked>Consider salary</label>
+				<label class="lbl" for="weekly"><input id="weekly" type="radio" name="r1" checked>Weekly</label>
 				<label class="lbl" for="monthly"><input id="monthly" type="radio" name="r1">Monthly</label>
 				<s:url value="/scheduler/run-engine" var="runAdvancedEngine"/>
 				<button id="runAdvancedEngine" data-url="${runAdvancedEngine}" class="btn btn-color">ok</button>

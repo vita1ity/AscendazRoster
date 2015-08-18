@@ -49,6 +49,21 @@ public class SchedulerService {
 		
 		schedulerRepository.saveSchedule(schedule);
 		
+		//get all staff if schedule wasn't generated yet
+		if (schedule == null || schedule.size() == 0) {
+			
+			schedule = new ArrayList<Schedule>();
+			for (Staff s: staff) {
+				LocalDate currentDate = startDate;
+				while (currentDate.compareTo(endDate) <= 0) {
+					schedule.add(new Schedule(null, s, currentDate, null, null, false));
+					
+					currentDate = currentDate.plusDays(1);
+				}
+					
+			}
+		}
+		
 		List<ScheduleResponse> response = ScheduleResponse.createScheduleResponse(schedule, startDate, endDate);
 		
 		/*System.out.println();
@@ -64,11 +79,31 @@ public class SchedulerService {
 	}
 
 
-	public List<ScheduleResponse> getScheduleForTheWeek(LocalDate monday, LocalDate sunday) {
+	public List<ScheduleResponse> getScheduleForPeriod(LocalDate startDate, LocalDate endDate) {
 	
-		List<Schedule> schedule = schedulerRepository.getScheduleForWeek(monday, sunday);
+		List<Schedule> schedule = schedulerRepository.getScheduleForWeek(startDate, endDate);
 		
-		List<ScheduleResponse> scheduleResponse = ScheduleResponse.createScheduleResponse(schedule, monday, sunday);
+		//get all staff if schedule wasn't generated yet
+		if (schedule == null || schedule.size() == 0) {
+			
+			List<Staff> staff = schedulerRepository.getActiveStaff(startDate, endDate);
+			schedule = new ArrayList<Schedule>();
+			for (Staff s: staff) {
+				LocalDate currentDate = startDate;
+				while (currentDate.compareTo(endDate) <= 0) {
+					schedule.add(new Schedule(null, s, currentDate, null, null, false));
+					
+					currentDate = currentDate.plusDays(1);
+				}
+					
+			}
+		}
+		
+		/*for (Schedule sch: schedule) {
+			System.out.println(sch);
+		}*/
+		
+		List<ScheduleResponse> scheduleResponse = ScheduleResponse.createScheduleResponse(schedule, startDate, endDate);
 		return scheduleResponse;
 		
 	}

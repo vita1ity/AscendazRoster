@@ -22,8 +22,12 @@
 
 </head>
 <body>
-
-
+<c:if test="${empty loginUser}">
+<div class="display-none">
+</c:if>
+<c:if test="${not empty loginUser}">
+<div>
+</c:if>
 <header class="mainhead cf">
 	<a href="" class="logo">Roster Configuration</a>
 	<c:if test="${empty loginUser}">
@@ -129,7 +133,7 @@
 							<td>
 								<select name="" id="criteria0">
 									<c:forEach var="criteria" items="${criteriaList}">
-										<option value="${criteria.criteriaString}">${criteria.criteriaString}</option>
+										<option value="${criteria}">${criteria.criteriaString}</option>
 									</c:forEach>
 									
 								</select>
@@ -170,7 +174,7 @@
 	</div>
 </main>
 
-
+</div>
 <!------------login modal-------------->
 <c:if test="${empty loginUser}">
 	<div class="modal-wrap modal-login open">
