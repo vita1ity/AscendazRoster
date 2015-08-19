@@ -121,7 +121,7 @@ public class EngineThread implements Runnable{
 					effectDate = task.getStartDate();
 					expireDate = task.getEndDate();
 					
-					if (effectDate.compareTo(currentDate) >= 0 || expireDate.compareTo(currentDate) <= 0) {
+					if (effectDate.compareTo(currentDate) > 0 || expireDate.compareTo(currentDate) < 0) {
 						
 						log += "Task does not need to be peformed for current date. Current date: " + currentDate +
 								" task dates: from " + effectDate + " to " + expireDate + "\n";
