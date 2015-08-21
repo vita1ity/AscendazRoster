@@ -8,6 +8,7 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>Roster Scheduler</title>
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+	
 	<link rel="stylesheet" href="<c:url value="/resources/css/style.css"/>">
 	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js" type="text/javascript"></script>
@@ -25,19 +26,8 @@
 </header>
 <main class="maincontent" role="main">
 	<div class="columns cf">
-		<aside class="sidebar">
-			<h5>Filters</h5>
-			<ul class="aside-list">
-				<s:url value="/scheduler/staff-without-tasks" var="staffWithoutTasks"/>
-				<s:url value="/scheduler/rules-violated-tasks" var="rulesViolatedTasks"/>
-				<s:url value="/scheduler/leaves-tasks" var="onLeavesTasks"/>
-				<li class="staff-without-tasks" data-url="${staffWithoutTasks}"><a href="#">Staff without any task assigned</a></li>
-				<li class="open_locations_modal"><a href="#">Locations</a></li>
-				<li class="rules-violated-tasks" data-url="${rulesViolatedTasks}"><a href="#">Rules violated tasks</a></li>
-				<li class="leaves-tasks" data-url="${onLeavesTasks}"><a href="#">Leaves</a></li>
-			</ul>
-		</aside>
-		<div class="content">
+		
+		<div class="content content-full">
 			<div class="content-header">
 				
 				<c:if test="${not empty schedule}">
@@ -57,32 +47,47 @@
 					<span id="runEngine" class="cl-icon icon-roster show_preload" data-url="${run_engine}"></span>
 					<span id="runAdvanced" class="cl-icon icon-options open_adv_options"></span>
 					
-					<span class="cl-icon icon-check" id="approveSchedule" data-url="${approveSchedule}"></span>
+					<span id="approveSchedule" class="cl-icon icon-check show_approve_modal"></span>
+					
 				</c:if>
 				<c:if test="${empty isDraft}">
 					
 					<span id="runEngine" class="cl-icon icon-roster show_preload disabled" data-url="${run_engine}"></span>
 					<span id="runAdvanced" class="cl-icon icon-options open_adv_options disabled"></span>
-					<span class="cl-icon icon-check disabled" id="approveSchedule" data-url="${approveSchedule}"></span>
+					<span id="approveSchedule" class="cl-icon icon-check disabled show_approve_modal" ></span>
 				</c:if>
+				<!-- <div id="dialog-confirm" class="cl-icon"></div> -->
 				<div class="date-filters">
 					<s:url value="/scheduler/get-schedule" var="getSchedule"/>
-					<div id="dateWeek" data-url="${getSchedule}" type="text" class="cl-inp"><input class="week-picker" type="text">
+					<div id="dateWeek" data-url="${getSchedule}" type="text" class="cl-inp"><!-- <input class="week-picker" type="text"> -->
 						<div id="weekDateValue">
 							<span id="startDate"><joda:format value="${startDate}" pattern="dd/MM/yyyy"/></span>
 							 - <span id="endDate"><joda:format value="${endDate}" pattern="dd/MM/yyyy"/></span>
 						</div>
 						<div id="monthDateValue" class="display-none">
-							<span id="monthDate"></span>
+							<span id="monthDate">Month</span>
 						</div>
 					</div>
 					<span id="today" class="cl-btn">Today</span>
+					<span class="cl-btn"><input class="week-picker week-input" value="Week"/>Week</span>
 					<input class="cl-btn pick-month" value="Month"  />
 
 				</div>
 				
+				<div class="filters">
+					<%-- <s:url value="/scheduler/staff-without-tasks" var="staffWithoutTasks"/>
+					<s:url value="/scheduler/rules-violated-tasks" var="rulesViolatedTasks"/>
+					<s:url value="/scheduler/leaves-tasks" var="onLeavesTasks"/> --%>
+					<s:url value="/scheduler/apply-filters" var="applyFilters"/>
+					
+					<span class="cl-btn btn-filter staff-without-tasks" data-url="${applyFilters}">Not assigned</span>
+					<span class="cl-btn location-btn open_locations_modal">Locations</span>
+					<span class="cl-btn btn-filter rules-violated-tasks" data-url="${applyFilters}">Rules violated tasks</span>
+					<span class="cl-btn btn-filter leaves-tasks" data-url="${applyFilters}">Leaves</span>
+				</div>
+				
 			</div>
-
+			
 			<div class="content-inner">
 				<div class="table-scroll-x">
 				<table class="simple-table">
@@ -262,7 +267,7 @@
 				<label class="lbl" for="monthly"><input id="monthly" type="radio" name="r1">Monthly</label>
 				<s:url value="/scheduler/run-engine" var="runAdvancedEngine"/>
 				<button id="runAdvancedEngine" data-url="${runAdvancedEngine}" class="btn btn-color">ok</button>
-				<span id="cancelAdvancedEngine" class="btn btn-red">Cancel</span>
+				<span class="cancel-modal btn btn-red">Cancel</span>
 			</form>
 		</div>
 	</div>
@@ -271,21 +276,33 @@
 <div class="modal-wrap modal-orangehead modal-info modal-locations">
 	<div class="modal-inner">
 		<div class="modal-header">
-			Select Locations <i class="close-modal deco-icon icon-close" role="close_form">&times;</i>
+			Select Locations <i class="cancel-modal close-modal deco-icon icon-close" role="close_form">&times;</i>
 		</div>
 		<div class="motal-content">
 			<form id="locationsForm" class="advanced-form" action="">
 				<c:forEach var="location" items="${locationList}">
 					<label class="lbl" for="l1"><input id="l1" type="checkbox" value="${location}">${location}</label>
 				</c:forEach>
-				<s:url value="/scheduler/filter-locations" var="filterLocations"/>
-				<button id="filter-locations" data-url="${filterLocations}" class="btn btn-color">ok</button>
-				<span id="cancel-filter-locations" class="btn btn-red">Cancel</span>
+				<%-- <s:url value="/scheduler/filter-locations" var="filterLocations"/> --%>
+				<button type="button" class="btn btn-color btn-filter" id="filter-locations" data-url="${applyFilters}">ok</button>
+				<span class="cancel-modal btn btn-red">Cancel</span>
 			</form>
 		</div>
 	</div>
 </div>
+<div class="modal-wrap modal-orangehead modal-info modal-approve">
+	<div class="modal-inner">
+		<div class="modal-header">
+			Approve Confirmation <i class="close-modal deco-icon icon-close" role="close_form">&times;</i>
+		</div>
+		<div class="motal-content">
+				<p>Do you want to approve schedule for selected period?</p>
+				<a href="" class="btn btn-color" id="confirmApproveSchedule" data-url="${approveSchedule}">ok</a>
+				<span class="cancel-modal btn btn-red close_modal">Cancel</span>
 
+		</div>
+	</div>
+</div>
 <!-- preloader -->
 <div class="preload-wrap">
 	<div class="preload">

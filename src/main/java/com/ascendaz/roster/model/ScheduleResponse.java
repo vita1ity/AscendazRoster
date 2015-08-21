@@ -92,34 +92,35 @@ public class ScheduleResponse implements Serializable{
 			reference = schedule.get(i).getStaff().getId();
 			location = null;
 			taskProfile = schedule.get(i).getTask();
-			if (taskProfile != null) {
-				location = taskProfile.getLocation().getLocation();
-			}
-			else {
-				locationSet = schedule.get(i).getStaff().getStaffLocationSet();
-				
-				
-				for (StaffLocation staffLocation: locationSet) {
-					effectDate = staffLocation.getEffectiveDate();
-					expireDate = staffLocation.getExpireDate();
-					type = staffLocation.getType();
-					
-					/*System.out.println(effectDate);
-					System.out.println(expireDate);
-					System.out.println(type);*/
-					
-					if (type.equalsIgnoreCase("assigned")) {
-						if (effectDate.compareTo(startDate) <= 0 && expireDate.compareTo(startDate) > 0) {
-							
-							location = staffLocation.getLocation().getLocation();
-							//System.out.println("Valid:" + location);
-							break;
-						} 
-					}
-					
-				
-				}
 			
+			locationSet = schedule.get(i).getStaff().getStaffLocationSet();
+			
+			
+			for (StaffLocation staffLocation: locationSet) {
+				effectDate = staffLocation.getEffectiveDate();
+				expireDate = staffLocation.getExpireDate();
+				type = staffLocation.getType();
+				
+				/*System.out.println(effectDate);
+				System.out.println(expireDate);
+				System.out.println(type);*/
+				
+				if (type.equalsIgnoreCase("assigned")) {
+					if (effectDate.compareTo(startDate) <= 0 && expireDate.compareTo(startDate) > 0) {
+						
+						location = staffLocation.getLocation().getLocation();
+						//System.out.println("Valid:" + location);
+						break;
+					} 
+				}
+				
+			
+			}
+			
+			
+			
+			if (location == null && taskProfile != null) {
+				location = taskProfile.getLocation().getLocation();
 			}
 			
 			LocalDate currentDate = new LocalDate(startDate);

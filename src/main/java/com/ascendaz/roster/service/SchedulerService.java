@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.ascendaz.roster.engine.RosterEngineMulti;
 import com.ascendaz.roster.exception.RosterEngineException;
+import com.ascendaz.roster.model.FilterRequestJson;
 import com.ascendaz.roster.model.Schedule;
 import com.ascendaz.roster.model.ScheduleResponse;
 import com.ascendaz.roster.model.Staff;
@@ -208,6 +209,24 @@ public class SchedulerService {
 			}
 		}
 		return leavesSchedule;
+	}
+
+
+	public List<ScheduleResponse> applyFilters(FilterRequestJson filterRequest,
+			List<ScheduleResponse> sessionSchedule) {
+		if (filterRequest.getLeaveTasks()) {
+			sessionSchedule = getLeavesTasks(sessionSchedule);
+		}
+		if (filterRequest.getLocationTasks()) {
+			sessionSchedule = getScheduleForLocations(sessionSchedule, filterRequest.getLocations());
+		}
+		if (filterRequest.getRulesViolated()) {
+			sessionSchedule = getRulesViolatedTasks(sessionSchedule);
+		}
+		if (filterRequest.getWithoutTasks()) {
+			sessionSchedule = getStaffWithoutTasks(sessionSchedule);
+		}
+		return sessionSchedule;
 	}
 
 }

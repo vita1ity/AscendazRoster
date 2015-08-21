@@ -1,6 +1,7 @@
 package com.ascendaz.roster.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ public class ConfigService {
 			rule = configRepository.getRuleByOption(option.getId());
 			resultList.add(rule);
 		}
+		Collections.sort(resultList);
 		return resultList;
 	}
 

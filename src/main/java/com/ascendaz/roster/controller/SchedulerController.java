@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.ascendaz.roster.exception.ErrorInfo;
 import com.ascendaz.roster.exception.RosterEngineException;
+import com.ascendaz.roster.model.FilterRequestJson;
 import com.ascendaz.roster.model.ScheduleResponse;
 import com.ascendaz.roster.model.attributes.Location;
 import com.ascendaz.roster.service.SchedulerService;
@@ -93,17 +94,17 @@ public class SchedulerController {
 	
 	
 	@RequestMapping(value = "/scheduler/approve-schedule", method = RequestMethod.GET)
-	public @ResponseBody boolean approveSchedule(HttpSession session) {
+	public @ResponseBody List<ScheduleResponse> approveSchedule(HttpSession session) {
 		@SuppressWarnings("unchecked")
 		List<ScheduleResponse> sessionSchedule = (List<ScheduleResponse>)session.getAttribute("schedule");
 		if (sessionSchedule == null) {
-			return true;
+			return null;
 		}
 		
 		List<ScheduleResponse> modifiedSchedule = schedulerService.setApprovedStatus(sessionSchedule);
 		session.removeAttribute("schedule");
 		session.setAttribute("schedule", modifiedSchedule);
-		return true;
+		return modifiedSchedule;
 		
 	}
 	
@@ -124,7 +125,7 @@ public class SchedulerController {
 		return schedule;
 	}
 	
-	@RequestMapping(value = "/scheduler/staff-without-tasks", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/scheduler/staff-without-tasks", method = RequestMethod.GET)
 	public @ResponseBody List<ScheduleResponse> getStaffWithoutTasks (HttpSession session){
 		@SuppressWarnings("unchecked")
 		List<ScheduleResponse> sessionSchedule = (List<ScheduleResponse>)session.getAttribute("schedule");
@@ -166,8 +167,22 @@ public class SchedulerController {
 		List<ScheduleResponse> schedule = schedulerService.getLeavesTasks(sessionSchedule);
 		
 		return schedule;
-	}
+	}*/
 	
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/scheduler/apply-filters", method = RequestMethod.POST)
+	public @ResponseBody List<ScheduleResponse> applyFilters(@RequestBody FilterRequestJson filterRequest, HttpSession session){
+
+		System.out.println("leaveTasks: " + filterRequest.getLeaveTasks());
+		System.out.println("locationTasks: " + filterRequest.getLocationTasks());
+		System.out.println("withoutTasks: " + filterRequest.getWithoutTasks());
+		System.out.println("rulesViolated: " + filterRequest.getRulesViolated());
+		System.out.println("locations: " + filterRequest.getLocations());
+		List<ScheduleResponse> sessionSchedule = (List<ScheduleResponse>)session.getAttribute("schedule");
+		List<ScheduleResponse> filteredSchedule = schedulerService.applyFilters(filterRequest, sessionSchedule);
+		
+		return filteredSchedule;
+	}
 	
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(RosterEngineException.class)

@@ -249,7 +249,8 @@ jQuery(document).ready(function ($) {
 
 	showHideModal('.open_login_modal','.modal-login');
 	showHideModal('.open_adv_options', '.modal-advanced');
-	showHideModal('.open_locations_modal', '.modal-locations');
+	
+	showHideModal('.show_approve_modal', '.modal-approve');
 
 	jQuery(document).on('click touchstart', '[role="toggle_forgot_password_form"]', function (e) {
 		e.preventDefault();
@@ -303,7 +304,7 @@ jQuery(document).ready(function ($) {
 				$("#monthDate").text(formatMonth);
 				
 				
-				$(this).datepicker("setDate", currentMonth);
+				//$(this).datepicker("setDate", currentMonth);
 				$("#ui-datepicker-div").removeClass("hide-calendar");
 				$("#ui-datepicker-div").removeClass('MonthDatePicker');
 				var startDate = new Date(year, n, 1);
@@ -379,14 +380,101 @@ jQuery(document).ready(function ($) {
 		});
 	});	
 
-	$(document).on('click', '#cancel-filter-locations', function (e) {
+	$(document).on('click', '.cancel-modal', function (e) {
 		$('.modal-wrap').removeClass('open');
 	});
 	
-	$(document).on('click', '#cancelAdvancedEngine', function (e) {
-		$('.modal-wrap').removeClass('open');
+	
+	
+	/*$(document).on('click', '.btn-filter', function(){
+		$(this).toggleClass('active-filter');
+	});*/
+	
+	
+	
+	$(document).on('click', '.open_locations_modal', function(){
+		$('.open_locations_modal').toggleClass('active-filter');
+		if ($('.open_locations_modal').hasClass("active-filter")) {
+			console.log("Locations is active: " + $('.open_locations_modal').hasClass("active-filter"));
+			$('.modal-locations').addClass('open');
+			//showHideModal('.open_locations_modal', '.modal-locations');
+		}
+		else {
+			var leaveTasks = $('.leaves-tasks').hasClass("active-filter");
+			var locationTasks = $('.open_locations_modal').hasClass("active-filter");
+			var withoutTasks = $('.staff-without-tasks').hasClass("active-filter");
+			var rulesViolated = $('.rules-violated-tasks').hasClass("active-filter");
+			
+			console.log("leaveTasks: " + leaveTasks);
+			console.log("locationTasks: " + locationTasks);
+			console.log("withoutTasks: " + withoutTasks);
+			console.log("rulesViolated: " + rulesViolated);
+			
+			var locations = [];
+			if (locationTasks) {
+				locations = $('#locationsForm input:checkbox:checked').map(function() {
+				    return this.value;
+				}).get();
+				console.log(locations);
+				$('.modal-wrap').removeClass('open');
+			}
+			if (leaveTasks || locationTasks || withoutTasks || rulesViolated) {
+				$("#runEngine").addClass("disabled");
+				$("#runAdvanced").addClass("disabled");
+				$("#approveSchedule").addClass("disabled");
+				
+			}
+			else {
+				$("#runEngine").addClass("disabled");
+				$("#runAdvanced").addClass("disabled");
+				$("#approveSchedule").addClass("disabled");
+			}
+			
+			var url = $('#filter-locations').data("url");
+			console.log(url);
+			
+			$.ajax({
+		        url:url,
+		        type: "POST",   
+		        dataType: "json",
+		        data: JSON.stringify({leaveTasks: leaveTasks, locationTasks: locationTasks, withoutTasks: withoutTasks, 
+		        	rulesViolated: rulesViolated, locations: locations}),
+		        contentType : 'application/json; charset=utf-8'
+		     
+			}).done (function(data) {
+				renderSchedule(data);
+			
+			}).fail (function(err) {
+			       console.error(err);
+			});
+		}
+		
+		
 	});
 	
+	/*$(document).on('click', '#approveSchedule', function (e) {
+		console.log("Approve schedule");
+		$("#dialog-confirm").html("Do you want to approve roster for the selected period?");
+
+	    // Define the Dialog and its properties.
+	    $("#dialog-confirm").dialog({
+	        resizable: false,
+	        modal: true,
+	        title: "Approval Confirmation",
+	        height: 250,
+	        width: 400,
+	        buttons: {
+	            "Yes": function () {
+	                $(this).dialog('close');
+	                
+	            },
+	                "No": function () {
+	                $(this).dialog('close');
+	                
+	            }
+	        }
+	    });
+	});*/
 	
 	
 });

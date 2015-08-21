@@ -223,6 +223,11 @@ $(document).on('click', '#runEngine', function (e) {
 	console.log(startDate);
 	console.log(endDate);
 	console.log(url);
+	if ($('#weekDateValue').hasClass("display-none")) {
+		alert("You should pick the week first!");
+
+		return;
+	}
 	$('.preload-wrap').show();
 	
 	$.ajax({
@@ -263,14 +268,17 @@ $(document).on('click', '#runAdvancedEngine', function (e) {
 		considerSalary = false;
 	}
 	if (monthly != null) {
-		var monthString = $('.pick-month').val();
-		if (monthString == "Month") {
+		var monthString = $('#monthDate').text();
+		//var monthString = $('.pick-month').val();
+		
+		if ($('#monthDateValue').hasClass("display-none")) {
 			alert("You should pick the month first!");
-			
+
 			return;
 		}
+		
 		monthString = monthString + " 01";
-		//console.log(monthString);
+		console.log(monthString);
 		var startDateObj = $.datepicker.parseDate("M yy dd", monthString);
 		
 		var year = startDateObj.getFullYear();
@@ -284,6 +292,11 @@ $(document).on('click', '#runAdvancedEngine', function (e) {
 		
 	}
 	else {
+		if ($('#weekDateValue').hasClass("display-none")) {
+			alert("You should pick the week first!");
+
+			return;
+		}
 		var startDate = $('#startDate').text();
 		var endDate = $('#endDate').text();
 	}
@@ -314,10 +327,10 @@ $(document).on('click', '#runAdvancedEngine', function (e) {
 	});
 });
 
-
-$(document).on('click', '#approveSchedule', function (e) {
+//function approveSchedule() {
+$(document).on('click', '#confirmApproveSchedule', function (e) {
 	e.preventDefault();
-	
+	$('.modal-wrap').removeClass('open');
 	var url = $(this).data("url");
 	console.log(url);
 	
@@ -326,12 +339,8 @@ $(document).on('click', '#approveSchedule', function (e) {
         type: "GET"
 	}).done (function(data) {
 		if (data) {
-			$('.tag-mark').each(function(i) {
-				$("#runEngine").addClass("disabled");
-				$("#runAdvanced").addClass("disabled");
-				$("#approveSchedule").addClass("disabled");
-				$(this).html("S");
-			});
+			renderSchedule(data);
+		
 		}
 	
 	}).fail (function(err) {
@@ -483,7 +492,17 @@ function renderSchedule(data) {
 	$("#scheduleTableBody").html(tableBody);
 }
 
+function disactivateFilters() {
+	
+	$('.open_locations_modal').removeClass('active-filter');
+	$('.staff-without-tasks').removeClass('active-filter');
+	$('.rules-violated-tasks').removeClass('active-filter');
+	$('.leaves-tasks').removeClass('active-filter');
+	
+}
+
 function getSchedule(startDate, endDate) {
+	disactivateFilters();
 	var url = $('#dateWeek').data("url");
 	console.log(url);
 	startDate = $.datepicker.formatDate('dd/mm/yy', startDate);
@@ -505,98 +524,159 @@ function getSchedule(startDate, endDate) {
 	});
 }
 
-$(document).on('click', '.staff-without-tasks', function (e) {
+/*$(document).on('click', '.staff-without-tasks', function (e) {
 	e.preventDefault();
-	
-	$("#runEngine").addClass("disabled");
-	$("#runAdvanced").addClass("disabled");
-	$("#approveSchedule").addClass("disabled");
-	
-	var url = $(this).data("url");
-	console.log(url);
-	
-	$.ajax({
-        url:url,
-        type: "GET"
-	}).done (function(data) {
-		renderSchedule(data);
-	
-	}).fail (function(err) {
-	       console.error(err);
-	});
+	$(this).toggleClass('active-filter');
+	if ($('.staff-without-tasks').hasClass("active-filter")) {
+		$("#runEngine").addClass("disabled");
+		$("#runAdvanced").addClass("disabled");
+		$("#approveSchedule").addClass("disabled");
+		
+		var url = $(this).data("url");
+		console.log(url);
+		
+		$.ajax({
+	        url:url,
+	        type: "GET"
+		}).done (function(data) {
+			renderSchedule(data);
+		
+		}).fail (function(err) {
+		       console.error(err);
+		});
+	}
+	else {
+		var schedule = $(this).data("schedule");
+		console.log(schedule);
+		renderSchedule(schedule);
+	}
 	
 });
 
 $(document).on('click', '#filter-locations', function (e) {
 	e.preventDefault();
+	//$('.open_locations_modal').toggleClass('active-filter');
+	//if ($('.open_locations_modal').hasClass("active-filter")) {
+		$("#runEngine").addClass("disabled");
+		$("#runAdvanced").addClass("disabled");
+		$("#approveSchedule").addClass("disabled");
+		
+		
+		var url = $(this).data("url");
+		console.log(url);
+		
+		
+		var checkedValues = $('#locationsForm input:checkbox:checked').map(function() {
+		    return this.value;
+		}).get();
+		console.log(checkedValues);
+		
+		$.ajax({
+	        url:url,
+	        type: "POST",
+	        data: JSON.stringify(checkedValues),
+	        contentType: "application/json; charset=utf-8"
+		}).done (function(data) {
+			renderSchedule(data);
 	
-	$("#runEngine").addClass("disabled");
-	$("#runAdvanced").addClass("disabled");
-	$("#approveSchedule").addClass("disabled");
-	
-	
-	var url = $(this).data("url");
-	console.log(url);
-	
-	
-	var checkedValues = $('#locationsForm input:checkbox:checked').map(function() {
-	    return this.value;
-	}).get();
-	console.log(checkedValues);
-	
-	$.ajax({
-        url:url,
-        type: "POST",
-        data: JSON.stringify(checkedValues),
-        contentType: "application/json; charset=utf-8"
-	}).done (function(data) {
-		renderSchedule(data);
-
-		$('.modal-wrap').removeClass('open');
-	
-	}).fail (function(err) {
-	       console.error(err);
-	});
-	
+			$('.modal-wrap').removeClass('open');
+		
+		}).fail (function(err) {
+		       console.error(err);
+		});
+	//}
 });
 
 $(document).on('click', '.rules-violated-tasks', function (e) {
 	e.preventDefault();
-	
-	$("#runEngine").addClass("disabled");
-	$("#runAdvanced").addClass("disabled");
-	$("#approveSchedule").addClass("disabled");
-	
-	var url = $(this).data("url");
-	console.log(url);
-	
-	$.ajax({
-        url:url,
-        type: "GET"
-	}).done (function(data) {
-		renderSchedule(data);
-	
-	}).fail (function(err) {
-	       console.error(err);
-	});
-	
+	$(this).toggleClass('active-filter');
+	if ($('.rules-violated-tasks').hasClass("active-filter")) {
+		$("#runEngine").addClass("disabled");
+		$("#runAdvanced").addClass("disabled");
+		$("#approveSchedule").addClass("disabled");
+		
+		var url = $(this).data("url");
+		console.log(url);
+		
+		$.ajax({
+	        url:url,
+	        type: "GET"
+		}).done (function(data) {
+			renderSchedule(data);
+		
+		}).fail (function(err) {
+		       console.error(err);
+		});
+	}
 });
-
-
 $(document).on('click', '.leaves-tasks', function (e) {
 	e.preventDefault();
+	$(this).toggleClass('active-filter');
+	if ($('.leaves-tasks').hasClass("active-filter")) {
+		$("#runEngine").addClass("disabled");
+		$("#runAdvanced").addClass("disabled");
+		$("#approveSchedule").addClass("disabled");
+		
+		
+		var url = $(this).data("url");
+		console.log(url);
+		
+		$.ajax({
+	        url:url,
+	        type: "GET"
+		}).done (function(data) {
+			renderSchedule(data);
+		
+		}).fail (function(err) {
+		       console.error(err);
+		});
+	}
+});*/
+
+
+$(document).on('click', '.btn-filter', function(){
+	$(this).toggleClass('active-filter');
+	var leaveTasks = $('.leaves-tasks').hasClass("active-filter");
+	var locationTasks = $('.open_locations_modal').hasClass("active-filter");
+	var withoutTasks = $('.staff-without-tasks').hasClass("active-filter");
+	var rulesViolated = $('.rules-violated-tasks').hasClass("active-filter");
 	
-	$("#runEngine").addClass("disabled");
-	$("#runAdvanced").addClass("disabled");
-	$("#approveSchedule").addClass("disabled");
+	console.log("leaveTasks: " + leaveTasks);
+	console.log("locationTasks: " + locationTasks);
+	console.log("withoutTasks: " + withoutTasks);
+	console.log("rulesViolated: " + rulesViolated);
 	
+	var locations = [];
+	if (locationTasks) {
+		locations = $('#locationsForm input:checkbox:checked').map(function() {
+		    return this.value;
+		}).get();
+		console.log(locations);
+		$('.modal-wrap').removeClass('open');
+	}
+	if (leaveTasks || locationTasks || withoutTasks || rulesViolated) {
+		$("#runEngine").addClass("disabled");
+		$("#runAdvanced").addClass("disabled");
+		$("#approveSchedule").addClass("disabled");
+		
+	}
+	else {
+		$("#runEngine").addClass("disabled");
+		$("#runAdvanced").addClass("disabled");
+		$("#approveSchedule").addClass("disabled");
+	}
 	
 	var url = $(this).data("url");
 	console.log(url);
 	
 	$.ajax({
         url:url,
-        type: "GET"
+        type: "POST",   
+        dataType: "json",
+        data: JSON.stringify({leaveTasks: leaveTasks, locationTasks: locationTasks, withoutTasks: withoutTasks, 
+        	rulesViolated: rulesViolated, locations: locations}),
+        contentType : 'application/json; charset=utf-8'
+     
 	}).done (function(data) {
 		renderSchedule(data);
 	
@@ -605,6 +685,7 @@ $(document).on('click', '.leaves-tasks', function (e) {
 	});
 	
 });
+
 
 $(document).on('click', '#today', function (e) {
 	e.preventDefault();
