@@ -88,7 +88,194 @@
 				
 			</div>
 			
-			<div class="content-inner">
+			<div class="content-inner ">
+				<div class="tbl-scroll cf">
+				<div class="fixed-part">
+					<table class="simple-table">
+						<thead>
+							<tr>
+									
+								<th>Name</th>
+								<th>Assigned location</th>
+								<th>Reference</th>
+							</tr>
+						</thead>
+						<tbody id="scheduleTableBody">
+							<tr>
+							<c:if test="${not empty schedule}">
+								<c:forEach var="s" items="${schedule}">
+									<tr>
+										<td>${s.name}</td>
+										<td>${s.location}</td>
+										<td>${s.reference}</td>
+									</tr>
+								</c:forEach>
+							</c:if>
+							</tr>
+						
+						</tbody>
+					</table>
+				</div>
+				<div class="table-scroll-x">
+				<table class="simple-table">
+					<thead id="scheduleTableHeader">
+					<tr>
+						<c:forEach var="day" items="${daysOfWeek}">
+							
+							<c:if test="${day == currentDay}">
+								<th class="today">${day}</th>	
+							</c:if>
+							<c:if test="${day != currentDay}">
+								<th>${day}</th>	
+							</c:if>
+						
+						</c:forEach>
+						
+					</tr>
+					</thead>
+					<tbody id="scheduleTableBodyScrollable">
+						<c:if test="${not empty schedule}">
+								<c:forEach var="s" items="${schedule}">
+									<tr>
+										<c:forEach var="task" items="${s.tasks}">
+											<c:set var="shift" scope="request" value="${task.shift}"/>
+											<td>
+												<c:if test="${task.status eq 'Draft'}">
+													
+													<c:set var="status" scope="request" value="D"/>	
+												</c:if>
+												<c:if test="${task.status eq 'Submitted'}">
+													<c:set var="status" scope="request" value="S"/>	
+												</c:if>
+												<c:if test="${not empty shift}">
+													<c:choose>
+													    <c:when test="${shift.shiftLetter == 'M'}">
+													    	<span data-tip class="table-tag yellow">D12 <span class="tag-mark">${status}</span>
+													    	<c:if test="${task.violated}">
+													    		<span class="left-tag">V</span>
+													    	</c:if>
+													    	
+													    		<span class="custom-tooltip">
+																	<strong>Location:</strong>${s.location}<br/>
+																	<strong>Shift:</strong>${shift.shift}<br/>
+																	<strong>Trainings:</strong> 
+																	<c:forEach var="training" items="${task.trainings}" varStatus="status">
+																		<c:if test="${not status.last}">
+																			${training},
+																		</c:if>
+																		<c:if test="${status.last}">
+																			${training}
+																		</c:if>   
+																	</c:forEach>
+																</span>
+															</span>
+													    </c:when>
+													    <c:when test="${shift.shiftLetter == 'A'}">
+													        <span data-tip class="table-tag green">A8 <span class="tag-mark">${status}</span>
+													        <c:if test="${task.violated}">
+													    		<span class="left-tag">V</span>
+													    	</c:if>
+													        	<span class="custom-tooltip">
+																	<strong>Location:</strong>${s.location}<br/>
+																	<strong>Shift:</strong>${shift.shift}<br/>
+																	<strong>Training:</strong> 
+																	<c:forEach var="training" items="${task.trainings}" varStatus="status">
+																		<c:if test="${not status.last}">
+																			${training},
+																		</c:if>
+																		<c:if test="${status.last}">
+																			${training}
+																		</c:if>   
+																	</c:forEach>
+																</span>
+													        </span>
+													    </c:when>
+													    <c:when test="${shift.shiftLetter == 'N'}">
+													    	<span data-tip class="table-tag purple">N12 <span class="tag-mark">${status}</span>
+														    	<c:if test="${task.violated}">
+														    		<span class="left-tag">V</span>
+														    	</c:if>
+													    		<span class="custom-tooltip">
+																	<strong>Location:</strong>${s.location}<br/>
+																	<strong>Shift:</strong>${shift.shift}<br/>
+																	<strong>Training:</strong> 
+																	<c:forEach var="training" items="${task.trainings}" varStatus="status">
+																		<c:if test="${not status.last}">
+																			${training},
+																		</c:if>
+																		<c:if test="${status.last}">
+																			${training}
+																		</c:if>   
+																	</c:forEach>
+																</span>
+													    	</span>
+													    </c:when>
+													    <c:when test="${shift.shiftLetter == 'L'}">
+													        <span data-tip class="table-tag pink">AL <span class="tag-mark">${status}</span>
+													        	<c:if test="${task.violated}">
+														    		<span class="left-tag">V</span>
+														    	</c:if>
+													        	<span class="custom-tooltip">
+																	<strong>Location:</strong>${s.location}<br/>
+																	<strong>Shift:</strong>${shift.shift}<br/>
+																	<strong>Training:</strong> 
+																	<c:forEach var="training" items="${task.trainings}" varStatus="status">
+																		<c:if test="${not status.last}">
+																			${training},
+																		</c:if>
+																		<c:if test="${status.last}">
+																			${training}
+																		</c:if>   
+																	</c:forEach>
+																</span>
+													        </span>
+													    </c:when>
+													    <c:when test="${shift.shiftLetter == 'O'}">
+													        <span data-tip class="table-tag black">OFF <span class="tag-mark">${status}</span>
+													        	<c:if test="${task.violated}">
+														    		<span class="left-tag">V</span>
+														    	</c:if>
+													        	<span class="custom-tooltip">
+																	<strong>Location:</strong>${s.location}<br/>
+																	<strong>Shift:</strong>${shift.shift}<br/>
+																	<strong>Training:</strong> 
+																	<c:forEach var="training" items="${task.trainings}" varStatus="status">
+																		<c:if test="${not status.last}">
+																			${training},
+																		</c:if>
+																		<c:if test="${status.last}">
+																			${training}
+																		</c:if>   
+																	</c:forEach>
+																</span>
+													        </span>
+													    </c:when>
+													    
+													</c:choose>
+													
+													
+												</c:if>
+												<c:if test="${empty shift}">
+													<span class="table-tag grey">NA</span>
+												</c:if>
+											</td>
+										</c:forEach>
+										
+									</tr>
+								</c:forEach>
+							</c:if>
+					
+					</tbody>
+				</table>
+				</div>
+				</div>
+			</div>
+			
+			
+			
+			
+			
+			<%-- <div class="content-inner">
 				<div class="table-scroll-x">
 				<table class="simple-table">
 					<thead id="scheduleTableHeader">
@@ -250,7 +437,7 @@
 						</tbody>
 					</table>
 				</div>
-			</div>
+			</div> --%>
 		</div>
 	</div>
 </main>

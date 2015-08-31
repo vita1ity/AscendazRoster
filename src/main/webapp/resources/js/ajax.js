@@ -352,9 +352,9 @@ $(document).on('click', '#confirmApproveSchedule', function (e) {
 function renderHeader(startDate, endDate) {
 	var tableHeader = "";
 	tableHeader += "<tr> \n";;
-	tableHeader += "<th>Name</th> \n";
+	/*tableHeader += "<th>Name</th> \n";
 	tableHeader += "<th>Assigned location</th> \n"
-	tableHeader += "<th>Reference</th> \n";
+	tableHeader += "<th>Reference</th> \n";*/
 	var startDateObj = $.datepicker.parseDate("dd/mm/yy", startDate);
 	var endDateObj = $.datepicker.parseDate("dd/mm/yy", endDate);
 	
@@ -390,6 +390,7 @@ function renderSchedule(data) {
 	var len = data.length;
 	if (len == 0) {
 		$("#scheduleTableBody").html(tableBody);
+		$("#scheduleTableBodyScrollable").html(tableBody);
 		return;
 	}
 	var staffName;
@@ -406,8 +407,14 @@ function renderSchedule(data) {
 		tableBody += "<td>" + location + "</td> \n";
 		reference = data[i].reference;
 		tableBody += "<td>" + reference + "</td> \n";
-		
+		tableBody += "</tr> \n";
+	}
+	$("#scheduleTableBody").html(tableBody);
+	
+	tableBody = "";
+	for (var i = 0; i < len; i++) {	
 		var tasks = data[i].tasks;
+		tableBody += "<tr> \n";
 		if (tasks != null) {
 			for (var j = 0; j < tasks.length; j++) {
 				var shift = tasks[j].shift;
@@ -489,7 +496,7 @@ function renderSchedule(data) {
 		$("#approveSchedule").addClass("disabled");
 		
 	}
-	$("#scheduleTableBody").html(tableBody);
+	$("#scheduleTableBodyScrollable").html(tableBody);
 }
 
 function disactivateFilters() {
