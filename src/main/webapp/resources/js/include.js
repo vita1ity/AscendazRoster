@@ -299,6 +299,7 @@ jQuery(document).ready(function ($) {
 				var currentMonth = new Date(year, n, 1);
 				
 				var formatMonth = $.datepicker.formatDate('M yy', currentMonth);
+				$("#dayValue").addClass("display-none");
 				$("#weekDateValue").addClass("display-none");
 				$("#monthDateValue").removeClass("display-none");
 				$("#monthDate").text(formatMonth);
@@ -353,6 +354,7 @@ jQuery(document).ready(function ($) {
 				
 				$("#weekDateValue").removeClass("display-none");
 				$("#monthDateValue").addClass("display-none");
+				$("#dayValue").addClass("display-none");
 				
 				$("#runEngine").removeClass("disabled");
 				$("#runAdvanced").removeClass("disabled");

@@ -9,6 +9,7 @@ import java.util.Set;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 
+import com.ascendaz.roster.model.attributes.Leave;
 import com.ascendaz.roster.model.attributes.Shift;
 import com.ascendaz.roster.model.attributes.Training;
 
@@ -20,6 +21,7 @@ public class ScheduleResponse implements Serializable{
 	private String name;
 	private String location;
 	private int reference;
+	
 	
 	private List<TaskResponse> tasks;
 	
@@ -167,6 +169,17 @@ public class ScheduleResponse implements Serializable{
 						//System.out.println("EQUAL:" + currentDate + ",   " + scheduleDate);
 						//assign attributes for the day
 						shift = schedule.get(i).getShift();
+						Leave leave = null;
+						if (shift != null && shift.getShiftLetter().equals("L")) {
+							//add leave
+							Set<StaffLeave> staffLeaves = schedule.get(i).getStaff().getStaffLeaveSet();
+							for (StaffLeave staffLeave: staffLeaves) {
+								if (staffLeave.getDate().equals(currentDate)) {
+									leave = staffLeave.getLeave();
+									break;
+								}
+							}
+						}
 						//System.out.println("SHIFT: " + shift.getShift());
 						TaskProfile task = schedule.get(i).getTask();
 						if (task != null) {
@@ -176,7 +189,9 @@ public class ScheduleResponse implements Serializable{
 							trainings = null;
 						}
 						boolean isViolated = schedule.get(i).isViolated();
-						taskResponse = new TaskResponse(currentDate, isViolated, status, shift, trainings);
+						taskResponse = new TaskResponse(currentDate, isViolated, status, shift, trainings, leave);
+						
+						
 						taskResponseList.add(taskResponse);
 						currentDate = currentDate.plusDays(1);
 						

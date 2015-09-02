@@ -13,9 +13,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.ascendaz.roster.model.StaffLeave;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "leave")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Leave implements Serializable{
 	
 	/**
@@ -27,7 +30,7 @@ public class Leave implements Serializable{
 	@Column(name="LEAVE_ID", nullable=false)
 	private int id;
 	
-	@Column(name="TYPE", nullable=false, length=2)
+	@Column(name="TYPE", nullable=false, length=5)
 	private String type;
 	
 	@Column(name="NAME", nullable=false, length=30)
@@ -37,6 +40,7 @@ public class Leave implements Serializable{
 	private int sequence;
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "leave")
+	@JsonBackReference
 	private Set<StaffLeave> staffLeaveSet = new HashSet<StaffLeave>();
 
 	public int getId() {

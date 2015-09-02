@@ -14,9 +14,12 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
 
 import com.ascendaz.roster.model.attributes.Leave;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "staff_leave")
+
 public class StaffLeave implements Serializable{
 	
 	/**
@@ -30,10 +33,12 @@ public class StaffLeave implements Serializable{
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "STAFF_ID", nullable = false)
+	@JsonBackReference
 	private Staff staff;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LEAVE_ID", nullable = false)
+	@JsonManagedReference
 	private Leave leave;
 	
 	@Column(name = "DATE", nullable = false)

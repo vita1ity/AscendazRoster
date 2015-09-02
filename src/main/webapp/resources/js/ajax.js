@@ -442,7 +442,8 @@ function renderSchedule(data) {
 						tableBody += "<td><span data-tip class=\"table-tag purple\">N12 <span class=\"tag-mark\">" + status + "</span> \n";
 					}
 					else if (shiftLetter == "L") {
-						tableBody += "<td><span data-tip class=\"table-tag pink\">AL <span class=\"tag-mark\">" + status + "</span> \n";
+						var leave = tasks[j].leave.type;
+						tableBody += "<td><span data-tip class=\"table-tag pink\">" + leave + "<span class=\"tag-mark\">" + status + "</span> \n";
 					}
 					else if (shiftLetter == "O") {
 						tableBody += "<td><span data-tip class=\"table-tag black\">OFF <span class=\"tag-mark\">" + status + "</span> \n";
@@ -701,8 +702,112 @@ $(document).on('click', '#today', function (e) {
 	$("#runEngine").addClass("disabled");
 	$("#runAdvanced").addClass("disabled");
 	$("#approveSchedule").addClass("disabled");
-
+	console.log(date);
+	var startDate = $.datepicker.formatDate("dd/mm/yy", date);
+	$("#dayDate").text(startDate);
+	$("#weekDateValue").addClass("display-none");
+	$("#monthDateValue").addClass("display-none");
+	$("#dayValue").removeClass("display-none");
 	getSchedule(date, date);
+});
+
+$(document).on('click', '#prev', function (e) {
+	e.preventDefault();
+	if (!$('#weekDateValue').hasClass("display-none")) {
+		var startStr = $('#startDate').text();
+		var endStr = $('#endDate').text();
+		/*console.log(startStr);
+		console.log(endStr);*/
+		var startDate = new Date($.datepicker.parseDate("dd/mm/yy", startStr));
+		var endDate = new Date($.datepicker.parseDate("dd/mm/yy", endStr));
+		/*console.log(startDate);
+		console.log(endDate);*/
+		startDate.setDate(startDate.getDate() - 7);
+		endDate.setDate(endDate.getDate() - 7);
+		/*console.log(startDate);
+		console.log(endDate);*/
+		var startDateFinal = $.datepicker.formatDate('dd/mm/yy', startDate);
+		var endDateFinal = $.datepicker.formatDate('dd/mm/yy', endDate);
+		$('#startDate').text(startDateFinal);
+		$('#endDate').text(endDateFinal);
+		getSchedule(startDate, endDate);
+		
+	}
+	else if (!$('#monthDateValue').hasClass("display-none")) {
+		var monthStr = $('#monthDate').text();
+		monthStr = monthStr + " 01";
+		console.log(monthStr);
+		
+		var startDateObj = $.datepicker.parseDate("M yy dd", monthStr);
+		
+		var year = startDateObj.getFullYear();
+		var month = startDateObj.getMonth();
+		startDateObj = new Date(year, month - 1, 1)
+		var endDateObj = new Date(year, month, 0)
+		var startDate = $.datepicker.formatDate('dd/mm/yy', startDateObj);
+		var endDate = $.datepicker.formatDate('dd/mm/yy', endDateObj);
+		console.log(startDate);
+		console.log(endDate);
+		var monthDateFinal = $.datepicker.formatDate('M yy', startDateObj);
+		$('#monthDate').text(monthDateFinal);
+		getSchedule(startDateObj, endDateObj);
+	}
+	else if (!$('#dayValue').hasClass("display-none")) {
+		var dayStr = $('#dayDate').text();
+		var dayDate = new Date($.datepicker.parseDate("dd/mm/yy", dayStr));
+		dayDate.setDate(dayDate.getDate() - 1);
+		var dayDateFinal = $.datepicker.formatDate('dd/mm/yy', dayDate);
+		$('#dayDate').text(dayDateFinal);
+		getSchedule(dayDate, dayDate);
+	}
+	
+});
+
+$(document).on('click', '#next', function (e) {
+	e.preventDefault();
+	if (!$('#weekDateValue').hasClass("display-none")) {
+		var startStr = $('#startDate').text();
+		var endStr = $('#endDate').text();
+		
+		var startDate = new Date($.datepicker.parseDate("dd/mm/yy", startStr));
+		var endDate = new Date($.datepicker.parseDate("dd/mm/yy", endStr));
+		startDate.setDate(startDate.getDate() + 7);
+		endDate.setDate(endDate.getDate() + 7);
+		var startDateFinal = $.datepicker.formatDate('dd/mm/yy', startDate);
+		var endDateFinal = $.datepicker.formatDate('dd/mm/yy', endDate);
+		$('#startDate').text(startDateFinal);
+		$('#endDate').text(endDateFinal);
+		getSchedule(startDate, endDate);
+		
+	}
+	else if (!$('#monthDateValue').hasClass("display-none")) {
+		var monthStr = $('#monthDate').text();
+		monthStr = monthStr + " 01";
+		console.log(monthStr);
+		
+		var startDateObj = $.datepicker.parseDate("M yy dd", monthStr);
+		
+		var year = startDateObj.getFullYear();
+		var month = startDateObj.getMonth();
+		startDateObj = new Date(year, month + 1, 1)
+		var endDateObj = new Date(year, month + 2, 0)
+		var startDate = $.datepicker.formatDate('dd/mm/yy', startDateObj);
+		var endDate = $.datepicker.formatDate('dd/mm/yy', endDateObj);
+		console.log(startDate);
+		console.log(endDate);
+		var monthDateFinal = $.datepicker.formatDate('M yy', startDateObj);
+		$('#monthDate').text(monthDateFinal);
+		getSchedule(startDateObj, endDateObj);
+	}
+	else if (!$('#dayValue').hasClass("display-none")) {
+		var dayStr = $('#dayDate').text();
+		var dayDate = new Date($.datepicker.parseDate("dd/mm/yy", dayStr));
+		dayDate.setDate(dayDate.getDate() + 1);
+		var dayDateFinal = $.datepicker.formatDate('dd/mm/yy', dayDate);
+		$('#dayDate').text(dayDateFinal);
+		getSchedule(dayDate, dayDate);
+	}
+	
 });
 
 

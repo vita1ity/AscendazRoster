@@ -59,6 +59,7 @@
 				<!-- <div id="dialog-confirm" class="cl-icon"></div> -->
 				<div class="date-filters">
 					<s:url value="/scheduler/get-schedule" var="getSchedule"/>
+					<span id="prev" class="cl-btn"><</span>
 					<div id="dateWeek" data-url="${getSchedule}" type="text" class="cl-inp"><!-- <input class="week-picker" type="text"> -->
 						<div id="weekDateValue">
 							<span id="startDate"><joda:format value="${startDate}" pattern="dd/MM/yyyy"/></span>
@@ -67,7 +68,11 @@
 						<div id="monthDateValue" class="display-none">
 							<span id="monthDate">Month</span>
 						</div>
+						<div id="dayValue" class="display-none">
+							<span id="dayDate">Day</span>
+						</div>
 					</div>
+					<span id="next" class="cl-btn">></span>
 					<span id="today" class="cl-btn">Today</span>
 					<span class="cl-btn"><input class="week-picker week-input" value="Week"/>Week</span>
 					<input class="cl-btn pick-month" value="Month"  />
@@ -89,7 +94,7 @@
 			</div>
 			
 			<div class="content-inner ">
-				<div class="tbl-scroll cf">
+				<div class="tbl-scroll cf vert-scroll">
 				<div class="fixed-part">
 					<table class="simple-table">
 						<thead>
@@ -211,7 +216,7 @@
 													    	</span>
 													    </c:when>
 													    <c:when test="${shift.shiftLetter == 'L'}">
-													        <span data-tip class="table-tag pink">AL <span class="tag-mark">${status}</span>
+													        <span data-tip class="table-tag pink">${task.leave.type} <span class="tag-mark">${status}</span>
 													        	<c:if test="${task.violated}">
 														    		<span class="left-tag">V</span>
 														    	</c:if>
@@ -465,11 +470,13 @@
 		<div class="modal-header">
 			Select Locations <i class="cancel-modal close-modal deco-icon icon-close" role="close_form">&times;</i>
 		</div>
-		<div class="motal-content">
+		<div class="modal-content">
 			<form id="locationsForm" class="advanced-form" action="">
-				<c:forEach var="location" items="${locationList}">
-					<label class="lbl" for="l1"><input id="l1" type="checkbox" value="${location}">${location}</label>
-				</c:forEach>
+				<div class="location-checkboxes">
+					<c:forEach var="location" items="${locationList}">
+						<label class="lbl" for="l1"><input id="l1" type="checkbox" value="${location}">${location}</label>
+					</c:forEach>
+				</div>
 				<%-- <s:url value="/scheduler/filter-locations" var="filterLocations"/> --%>
 				<button type="button" class="btn btn-color btn-filter" id="filter-locations" data-url="${applyFilters}">ok</button>
 				<span class="cancel-modal btn btn-red">Cancel</span>

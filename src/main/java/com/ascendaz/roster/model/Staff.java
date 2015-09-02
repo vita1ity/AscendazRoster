@@ -25,10 +25,12 @@ import com.ascendaz.roster.model.attributes.Designation;
 import com.ascendaz.roster.model.attributes.Gender;
 import com.ascendaz.roster.model.attributes.Skill;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "staff")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Staff implements Comparable<Staff>, Serializable{
 	
 	/**
@@ -99,7 +101,7 @@ public class Staff implements Comparable<Staff>, Serializable{
 	private Set<StaffTraining> staffTrainingSet = new HashSet<StaffTraining>();
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "staff")
-	@JsonIgnore
+	@JsonManagedReference
 	private Set<StaffLeave> staffLeaveSet = new HashSet<StaffLeave>();
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "staff")

@@ -256,7 +256,7 @@ public class EngineThread implements Runnable{
 									
 									staffAttributeName = option.getAttributeName();
 									taskAttributeName = reference.getAttributeName();
-									System.out.println(staffAttributeName + ", " + taskAttributeName);
+									//System.out.println(staffAttributeName + ", " + taskAttributeName);
 								}
 							}
 							log += "Rule: " + staffAttributeName + " " + criteria + " " + taskAttributeName + "\n";

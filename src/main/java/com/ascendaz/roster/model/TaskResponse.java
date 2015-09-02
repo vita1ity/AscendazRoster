@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.joda.time.LocalDate;
 
+import com.ascendaz.roster.model.attributes.Leave;
 import com.ascendaz.roster.model.attributes.Shift;
 import com.ascendaz.roster.model.attributes.Training;
 
@@ -20,6 +21,7 @@ public class TaskResponse implements Serializable{
 	private LocalDate date;
 	private Shift shift;
 	private Set<Training> trainings;
+	private Leave leave;
 	
 	public LocalDate getDate() {
 		return date;
@@ -34,6 +36,15 @@ public class TaskResponse implements Serializable{
 		this.violated = isViolated;
 		this.status = status;
 		this.trainings = trainings;
+	}
+	public TaskResponse(LocalDate date, boolean isViolated, String status, Shift shift, Set<Training> trainings, Leave leave) {
+		super();
+		this.date = date;
+		this.shift = shift;
+		this.violated = isViolated;
+		this.status = status;
+		this.trainings = trainings;
+		this.leave = leave;
 	}
 	public Shift getShift() {
 		return shift;
@@ -59,6 +70,13 @@ public class TaskResponse implements Serializable{
 	}
 	public void setViolated(boolean isViolated) {
 		this.violated = isViolated;
+	}
+	public Leave getLeave() {
+		return leave;
+	}
+
+	public void setLeave(Leave leave) {
+		this.leave = leave;
 	}
 	
 	@Override
