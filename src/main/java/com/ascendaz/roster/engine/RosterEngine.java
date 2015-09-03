@@ -449,7 +449,7 @@ public class RosterEngine {
 		}//days list end
 		
 		long end = System.currentTimeMillis();
-		System.out.println("PROCESS FINISHED. Time: " + (end - start));
+		System.out.println("PROCESS FINISHED. Time: " + (end - start) / 1000 + "s");
 		
 		return schedule;
 	

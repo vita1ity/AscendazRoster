@@ -11,6 +11,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.ascendaz.roster.exception.RosterEngineException;
 import com.ascendaz.roster.exception.RosterExceptionListener;
@@ -35,9 +38,14 @@ import com.ascendaz.roster.model.config.Rule;
 import com.ascendaz.roster.model.config.RuleType;
 import com.ascendaz.roster.model.config.SetupOption;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.core.util.StatusPrinter;
+
 public class EngineThread implements Runnable{
 	
 	private RosterExceptionListener listener;
+	
+	static Logger logger = LoggerFactory.getLogger(EngineThread.class);
 	
 	private CopyOnWriteArrayList<TaskProfile> taskList = null;
 	private CopyOnWriteArrayList<Staff> staffList = null;
@@ -46,6 +54,8 @@ public class EngineThread implements Runnable{
 	private final Shift leaveShift;
 	private final Shift dayOffShift;
 	private List<Schedule> schedule = new ArrayList<Schedule>();
+	
+	private int number;
 	
 	private String log = "";
 	
@@ -62,7 +72,18 @@ public class EngineThread implements Runnable{
 		this.listener = listener;
 	}
 
-	
+
+	public int getNumber() {
+		return number;
+	}
+
+
+
+	public void setNumber(int number) {
+		this.number = number;
+	}
+
+
 
 	public List<Schedule> getSchedule() {
 		return this.schedule;
@@ -75,11 +96,19 @@ public class EngineThread implements Runnable{
 	
 	@Override
 	public void run() {
+		
+		MDC.put("logFileName", "thread-" + number);
+
+		// assume SLF4J is bound to logback in the current environment
+	    LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+	    // print logback's internal status
+	    StatusPrinter.print(lc);
+
 		boolean error = true;
 		while (error) {
 			try {
 				
-				log += "THREAD STARTED: " + Thread.currentThread().getName() + "\n";
+				logger.debug("THREAD STARTED: " + Thread.currentThread().getName() + "\n");
 				
 				Schedule sch = null;
 				List<Schedule> softRuleViolated = null;
@@ -97,7 +126,7 @@ public class EngineThread implements Runnable{
 				}
 				
 				
-				log +="\n========================== CURRENT DATE: " + currentDate + " ============================ \n\n";
+				logger.debug("\n========================== CURRENT DATE: " + currentDate + " ============================ \n\n");
 				
 				
 				
@@ -108,7 +137,7 @@ public class EngineThread implements Runnable{
 				
 					taskProfile = taskIterator.next();
 					
-					log += "\n------------------Task: " + taskProfile + " --------------------\n\n";
+					logger.debug("\n------------------Task: " + taskProfile + " --------------------\n\n");
 					
 					softRuleViolated = new ArrayList<Schedule>();
 					violatedStaffIndexes = new ArrayList<Integer>();
@@ -123,8 +152,8 @@ public class EngineThread implements Runnable{
 					
 					if (effectDate.compareTo(currentDate) > 0 || expireDate.compareTo(currentDate) < 0) {
 						
-						log += "Task does not need to be peformed for current date. Current date: " + currentDate +
-								" task dates: from " + effectDate + " to " + expireDate + "\n";
+						logger.debug("Task does not need to be peformed for current date. Current date: " + currentDate +
+								" task dates: from " + effectDate + " to " + expireDate + "\n");
 						continue;
 						
 					}
@@ -135,7 +164,7 @@ public class EngineThread implements Runnable{
 					//0 is equal to all days of week
 					if (daysOfWeek.size() == 1 && daysOfWeek.get(0).getNumber() == 0) {
 						
-						log += "Task should be performed for the whole week\n";
+						logger.debug("Task should be performed for the whole week\n");
 								
 						isPerformedForCurrentDayOfWeek = true;
 					}
@@ -145,18 +174,18 @@ public class EngineThread implements Runnable{
 						for (DayOfWeek day: daysOfWeek) {
 							if (day.getNumber() == dayOfWeek) {
 								
-								log += "Task should be performed for the current day: " + dayOfWeek + "\n";
+								logger.debug("Task should be performed for the current day: " + dayOfWeek + "\n");
 								isPerformedForCurrentDayOfWeek = true;
 								break;
 							}
 							else {
 								
-								log += "Task should be performed for the day: " + day + "\n";
+								logger.debug("Task should be performed for the day: " + day + "\n");
 							}
 						}
 						if (!isPerformedForCurrentDayOfWeek) {
 							
-							log += "Task shouldn't be performed for the current day: " + dayOfWeek + "\n";
+							logger.debug("Task shouldn't be performed for the current day: " + dayOfWeek + "\n");
 							
 							continue;
 						}
@@ -174,7 +203,7 @@ public class EngineThread implements Runnable{
 							continue;
 						}
 						
-						log += "\n\n+++++++++++++++++++++++" + staff + "++++++++++++++++++++++++++++\n";
+						logger.debug("\n\n+++++++++++++++++++++++" + staff + "++++++++++++++++++++++++++++\n");
 						
 						char shiftForTheDay = '0';
 						
@@ -187,8 +216,8 @@ public class EngineThread implements Runnable{
 							
 							if (staffShift.checkExpired(currentDate)) {
 								
-								log += "Staff shieft is out of date. Current date: " + currentDate +
-										" shift effective date " + effectDate + " expire " + expireDate + "\n";
+								logger.debug("Staff shieft is out of date. Current date: " + currentDate +
+										" shift effective date " + effectDate + " expire " + expireDate + "\n");
 								continue;
 							}
 							
@@ -202,7 +231,7 @@ public class EngineThread implements Runnable{
 								shiftForTheDay = pattern.charAt(numOfDay);
 								if (shiftForTheDay == 'O') {
 									
-									log += "Staff has day off in the date: " + currentDate + "\n";
+									logger.debug("Staff has day off in the date: " + currentDate + "\n");
 									
 									sch = new Schedule(null, staff, currentDate, dayOffShift, "Draft", false);
 									schedule.add(sch);
@@ -222,11 +251,11 @@ public class EngineThread implements Runnable{
 							//if (sameDay) {
 							if (currentDate.equals(staffLeave.getDate())) {
 							
-								log += "Staff has annual leave today\n";
+								logger.debug("Staff has annual leave today\n");
 								
 								if (staffLeave.getStatus().equalsIgnoreCase("approved")) {
 									
-									log += "leave is approved\n";
+									logger.debug("leave is approved\n");
 									sch = new Schedule(null, staff, currentDate, leaveShift, "Draft", false);
 									schedule.add(sch);
 									isBusyStaff[index] = true;
@@ -256,10 +285,10 @@ public class EngineThread implements Runnable{
 									
 									staffAttributeName = option.getAttributeName();
 									taskAttributeName = reference.getAttributeName();
-									//System.out.println(staffAttributeName + ", " + taskAttributeName);
+									System.out.println(staffAttributeName + ", " + taskAttributeName);
 								}
 							}
-							log += "Rule: " + staffAttributeName + " " + criteria + " " + taskAttributeName + "\n";
+							logger.debug("Rule: " + staffAttributeName + " " + criteria + " " + taskAttributeName + "\n");
 							
 							//get attribute with given name
 							Class<?> staffClass = staff.getClass();
@@ -281,7 +310,7 @@ public class EngineThread implements Runnable{
 									taskObject = taskField.get(taskProfile);
 								}
 							
-								log += "STAFF OBJECT: " + staffObject + ", TASK OBJECT: " + taskObject + "\n";
+								logger.debug("STAFF OBJECT: " + staffObject + ", TASK OBJECT: " + taskObject + "\n");
 								
 								//skip this rule if task object doesn't have it specified
 								if (taskObject == null) {
@@ -290,22 +319,22 @@ public class EngineThread implements Runnable{
 								
 								//Shift attributes
 								else if (taskObject instanceof Shift) {
-									log += "staff and task type is Shift\n";
+									logger.debug("staff and task type is Shift\n");
 										
 									String taskShift = taskProfile.getShift().getShiftLetter();
 									char taskShiftCharacter = taskShift.charAt(0);
-									log += "staff shift: " + shiftForTheDay + "\n";
+									logger.debug("staff shift: " + shiftForTheDay + "\n");
 									if (!criteria.equals(Criteria.EQUAL)) {
 										throw new RosterEngineException("Invalid rule: only EQUALS applies to the Shift rule.\n"
 												+ "Currently selected rule: " + criteria.toString());
 									}
 									else if (taskShiftCharacter == shiftForTheDay) {
-										log += "Shift rule approved!\n";
+										logger.debug("Shift rule approved!\n");
 						
 										continue;
 									}
 									else {
-										log += "Shift rule not approved\n";
+										logger.debug("Shift rule not approved\n");
 						
 										continue staff;
 									}
@@ -315,7 +344,7 @@ public class EngineThread implements Runnable{
 								//Location attribute. 
 								else if (taskObject instanceof Location) {
 									
-									log += "Location rule\n";
+									logger.debug("Location rule\n");
 									
 									if (!(staffObject instanceof Collection)) {
 										throw new RosterEngineException("Task attribute type is Location. Staff should be of type Collection<StaffLocation>\n"
@@ -352,13 +381,13 @@ public class EngineThread implements Runnable{
 								
 								
 								if (processCriteria(criteria, taskObject, staffObject, currentDate)) {
-									log += "Staff satisfies the rule\n";
+									logger.debug("Staff satisfies the rule\n");
 									
 									continue;
 								}
 								
 								if (softRuleViolated.size() < numStaffLeft && rule.getType().equals(RuleType.Soft)) {
-									log += "Staff violates soft rule\n";
+									logger.debug("Staff violates soft rule\n");
 									
 									violatesSoftRule = true;
 									continue;
@@ -366,7 +395,7 @@ public class EngineThread implements Runnable{
 								//HARD rule
 								else {
 									//check next staff
-									log += "Staff doesn't satisfy the rule\n";
+									logger.debug("Staff doesn't satisfy the rule\n");
 									
 									continue staff;
 								}
@@ -393,11 +422,11 @@ public class EngineThread implements Runnable{
 						if (violatesSoftRule && numStaffLeft > softRuleViolated.size()) {
 							//add candidate as soft violation variant for this task and day
 							
-							log += "Schedule with soft rule violation added:\n";
-							log += "Task: " + taskProfile + "\n";
-							log += "Staff: " + staff + "\n";
-							log += "Day: " + currentDate + "\n";
-							log += "Shift: " + taskProfile.getShift() + "\n";
+							logger.debug("Schedule with soft rule violation added:\n");
+							logger.debug("Task: " + taskProfile + "\n");
+							logger.debug("Staff: " + staff + "\n");
+							logger.debug("Day: " + currentDate + "\n");
+							logger.debug("Shift: " + taskProfile.getShift() + "\n");
 							
 							violatedStaffIndexes.add(index); 
 							Schedule violatedSchedule = new Schedule(taskProfile, staff, currentDate, taskProfile.getShift(), "Draft", true);
@@ -406,11 +435,11 @@ public class EngineThread implements Runnable{
 						//candidate satisfies all rules 
 						else {
 							
-							log += "Schedule  added:\n";
-							log += "Task: " + taskProfile + "\n";
-							log += "Staff: " + staff + "\n";
-							log += "Day: " + currentDate + "\n";
-							log += "Shift: " + taskProfile.getShift() + "\n";
+							logger.debug("Schedule  added:\n");
+							logger.debug("Task: " + taskProfile + "\n");
+							logger.debug("Staff: " + staff + "\n");
+							logger.debug("Day: " + currentDate + "\n");
+							logger.debug("Shift: " + taskProfile.getShift() + "\n");
 							
 							sch = new Schedule(taskProfile, staff, currentDate, taskProfile.getShift(), "Draft", false);
 							schedule.add(sch);
@@ -433,11 +462,11 @@ public class EngineThread implements Runnable{
 						int i = 0;
 						for (Schedule violatedSch: softRuleViolated) {
 							
-							log += "Violated Schedule added:\n";
-							log += "Task: " + taskProfile + "\n";
-							log += "Staff: " + violatedSch.getStaff() + "\n";
-							log += "Day: " + currentDate + "\n";
-							log += "Shift: " + taskProfile.getShift() + "\n";
+							logger.debug("Violated Schedule added:\n");
+							logger.debug("Task: " + taskProfile + "\n");
+							logger.debug("Staff: " + violatedSch.getStaff() + "\n");
+							logger.debug("Day: " + currentDate + "\n");
+							logger.debug("Shift: " + taskProfile.getShift() + "\n");
 							
 							schedule.add(violatedSch);
 							isBusyStaff[violatedStaffIndexes.get(i)] = true;
@@ -449,23 +478,28 @@ public class EngineThread implements Runnable{
 					}
 					else {
 						
-						log += "There are no candidates for current task for the day\n";
-						log += "Task: " + taskProfile + "\n";
-						log += "Day: " + currentDate + "\n";
+						logger.debug("There are no candidates for current task for the day\n");
+						logger.debug("Task: " + taskProfile + "\n");
+						logger.debug("Day: " + currentDate + "\n");
 					}
 					
 					
 				}//task list end
 				error = false;
 			}
+			 
+
 			catch (RuntimeException e) {
-				System.out.println("RUNTIME EXCEPTION: " + e.getLocalizedMessage());
+				logger.debug("RUNTIME EXCEPTION: " + e.getLocalizedMessage() + ", " + e.getMessage() + "\n");
+				System.out.println("RUNTIME EXCEPTION: " + e.getLocalizedMessage() + ", " + e.getMessage());
 				error = true;
 				schedule = new ArrayList<Schedule>();
 				
 			}
 		}//while end
 		
+		logger.debug("ENGINE PROCESS COMPLETED\n");
+		MDC.remove("logFileName");
 	}
 	
 	//PRIVATE SUPPORT METHODS
@@ -490,7 +524,7 @@ public class EngineThread implements Runnable{
 					expiring = true;
 					expStaffObj = (Expiring)staffObj;
 					if (!expStaffObj.checkExpired(currentDate)) {
-						log += "Not expired item added: " + expStaffObj.getValueObject() + "\n";
+						logger.debug("Not expired item added: " + expStaffObj.getValueObject() + "\n");
 			
 						staffNotExpired.add(expStaffObj.getValueObject());
 					}
@@ -512,15 +546,15 @@ public class EngineThread implements Runnable{
 		
 		switch (criteria) {
 		case EQUAL:
-			log += "taskObject: " + taskObject + ", staffObject: " + staffObject + "\n";
+			logger.debug("taskObject: " + taskObject + ", staffObject: " + staffObject + "\n");
 			
 			if (taskObject instanceof CustomEquality && staffObject instanceof CustomEquality) {
 				CustomEquality taskAttr = (CustomEquality)taskObject;
 				CustomEquality staffAttr = (CustomEquality)staffObject;
-				log += "taskAttr: " + taskAttr + ", staffAttr: " + staffAttr + "\n";
+				logger.debug("taskAttr: " + taskAttr + ", staffAttr: " + staffAttr + "\n");
 				if (staffAttr.isEqual(taskAttr)) {
 			
-					log += "Staff value: " + staffObject + " is equal to Task value: " + taskObject + "(CUSTOM EQUALITY)\n";
+					logger.debug("Staff value: " + staffObject + " is equal to Task value: " + taskObject + "(CUSTOM EQUALITY)\n");
 			
 					return true;
 				}
@@ -530,7 +564,7 @@ public class EngineThread implements Runnable{
 				Attribute staffAttr = (Attribute)staffObject;
 				if (staffAttr.getValue().equals(taskAttr.getValue())) {
 			
-					log += "Staff value: " + staffObject + " is equal to Task value: " + taskObject + "\n";
+					logger.debug("Staff value: " + staffObject + " is equal to Task value: " + taskObject + "\n");
 			
 					return true;
 				}
@@ -541,7 +575,7 @@ public class EngineThread implements Runnable{
 				Comparable compTask = (Comparable) taskObject;
 				
 				if (compStaff.compareTo(compTask) == 0) {
-					log += "Staff value: " + staffObject + " is equal to Task value: " + taskObject + "\n";
+					logger.debug("Staff value: " + staffObject + " is equal to Task value: " + taskObject + "\n");
 			
 					return true;
 				}
@@ -550,16 +584,16 @@ public class EngineThread implements Runnable{
 			
 		case NOT_EQUAL:
 			
-			log += "taskObject: " + taskObject + ", staffObject: " + staffObject + "\n";
+			logger.debug("taskObject: " + taskObject + ", staffObject: " + staffObject + "\n");
 			
 			
 			if (taskObject instanceof CustomEquality && staffObject instanceof CustomEquality) {
 				CustomEquality taskAttr = (CustomEquality)taskObject;
 				CustomEquality staffAttr = (CustomEquality)staffObject;
-				log += "taskAttr: " + taskAttr + ", staffAttr: " + staffAttr + "\n";
+				logger.debug("taskAttr: " + taskAttr + ", staffAttr: " + staffAttr + "\n");
 				if (!staffAttr.isEqual(taskAttr)) {
 			
-					log += "Staff value: " + staffObject + " is not equal to Task value: " + taskObject + "(CUSTOM EQUALITY)\n";
+					logger.debug("Staff value: " + staffObject + " is not equal to Task value: " + taskObject + "(CUSTOM EQUALITY)\n");
 			
 					return true;
 				}
@@ -569,7 +603,7 @@ public class EngineThread implements Runnable{
 				Attribute taskAttr = (Attribute)taskObject;
 				Attribute staffAttr = (Attribute)staffObject;
 				if (!staffAttr.getValue().equals(taskAttr.getValue())) {
-					log += "Staff value: " + staffObject + " is not equal to Task value: " + taskObject + "\n";
+					logger.debug("Staff value: " + staffObject + " is not equal to Task value: " + taskObject + "\n");
 			
 					return true;
 				}
@@ -581,7 +615,7 @@ public class EngineThread implements Runnable{
 				Comparable compTask = (Comparable) taskObject;
 				
 				if (compStaff.compareTo(compTask) != 0) {
-					log += "Staff value: " + staffObject + " is equal to Task value: " + taskObject + "\n";
+					logger.debug("Staff value: " + staffObject + " is equal to Task value: " + taskObject + "\n");
 			
 					return true;
 				}
@@ -599,14 +633,14 @@ public class EngineThread implements Runnable{
 			if (taskObject instanceof Collection) {
 				Collection<?> taskCollection = (Collection)taskObject;
 				if (staffCollection.containsAll(taskCollection)) {
-					log += "Staff collection contains all objects from Task collection\n";
+					logger.debug("Staff collection contains all objects from Task collection\n");
 			
 					return true;
 				}
 			}
 			else {
 				if (staffCollection.contains(taskObject)) {
-					log += "Staff collection contains all objects from Task collection\n";
+					logger.debug("Staff collection contains all objects from Task collection\n");
 			
 					return true;
 				}
@@ -625,7 +659,7 @@ public class EngineThread implements Runnable{
 					
 					Comparable<Number> staffNumber = (Comparable<Number>) staffObject;
 					if (taskRange.checkInBetween(staffNumber)) {
-						log += "Staff attribute is in between task range\n";
+						logger.debug("Staff attribute is in between task range\n");
 		
 						return true;
 					}
@@ -648,7 +682,7 @@ public class EngineThread implements Runnable{
 				Comparable compTask = (Comparable) taskObject;
 				
 				if (compStaff.compareTo(compTask) >= 0) {
-					log += "Staff attribute is bigger than task attribute\n";
+					logger.debug("Staff attribute is bigger than task attribute\n");
 		
 					return true;
 				}
@@ -665,7 +699,7 @@ public class EngineThread implements Runnable{
 				Comparable compTask = (Comparable) taskObject;
 				
 				if (compStaff.compareTo(compTask) <= 0) {
-					log += "Staff attribute is smaller than task attribute\n";
+					logger.debug("Staff attribute is smaller than task attribute\n");
 		
 					return true;
 				}

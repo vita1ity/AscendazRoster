@@ -713,6 +713,9 @@ $(document).on('click', '#today', function (e) {
 
 $(document).on('click', '#prev', function (e) {
 	e.preventDefault();
+	$("#runEngine").removeClass("disabled");
+	$("#runAdvanced").removeClass("disabled");
+	$("#approveSchedule").removeClass("disabled");
 	if (!$('#weekDateValue').hasClass("display-none")) {
 		var startStr = $('#startDate').text();
 		var endStr = $('#endDate').text();
@@ -765,6 +768,9 @@ $(document).on('click', '#prev', function (e) {
 
 $(document).on('click', '#next', function (e) {
 	e.preventDefault();
+	$("#runEngine").removeClass("disabled");
+	$("#runAdvanced").removeClass("disabled");
+	$("#approveSchedule").removeClass("disabled");
 	if (!$('#weekDateValue').hasClass("display-none")) {
 		var startStr = $('#startDate').text();
 		var endStr = $('#endDate').text();

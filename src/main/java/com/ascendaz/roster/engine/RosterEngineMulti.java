@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.joda.time.LocalDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.ascendaz.roster.exception.RosterEngineException;
 import com.ascendaz.roster.exception.RosterExceptionListener;
@@ -17,6 +20,8 @@ import com.ascendaz.roster.model.attributes.Shift;
 import com.ascendaz.roster.model.config.Rule;
 
 public class RosterEngineMulti {
+	
+	static Logger logger = LoggerFactory.getLogger(RosterEngineMulti.class);
 	
 	private RosterExceptionListener listener = new RosterExceptionListener();
 	
@@ -56,7 +61,9 @@ public class RosterEngineMulti {
 		this.dayOffShift = dayOffShift;
 	}
 	public List<Schedule> processRules(LocalDate startDate, LocalDate endDate, boolean considerSalary) 
-			throws InterruptedException, RosterEngineException {
+			throws RosterEngineException {
+		
+		MDC.put("logFileName", "all-threads");
 		
 		long start = System.currentTimeMillis();
 		
@@ -74,24 +81,31 @@ public class RosterEngineMulti {
 		List<Thread> threads = new ArrayList<Thread>();
 		List<EngineThread> engineThreads = new ArrayList<EngineThread>();
 		LocalDate currentDate = startDate;
+		int i = 1;
 		while (currentDate.compareTo(endDate) <= 0) {
 			
 			
 			engineThread = new EngineThread(threadSafeTaskList, threadSafeStaffList, threadSafeRuleList, 
 					leaveShift, dayOffShift, currentDate, listener);
+			engineThread.setNumber(i);
 			thread = new Thread(engineThread);
 			threads.add(thread);
 			engineThreads.add(engineThread);
 	
 			thread.start();
-			
+			i++;
 			//get next day
 			currentDate = currentDate.plusDays(1);
 			
 		}//days list end
 		for (Thread t: threads) {
 			
-			t.join();
+			try {
+				t.join();
+			} catch (InterruptedException e) {
+				// Restore the interrupted status
+		        Thread.currentThread().interrupt();
+		    }
 		}
 		if (listener.isException()) {
 			throw new RosterEngineException(listener.getEx().getMessage());
@@ -104,7 +118,9 @@ public class RosterEngineMulti {
 		}
 		
 		long end = System.currentTimeMillis();
-		System.out.println("PROCESS FINISHED. Time: " + (end - start));
+		System.out.println("PROCESS FINISHED. Time: " + (end - start) / 1000 + "s");
+		logger.debug("PROCESS FINISHED. Time: " + (end - start) / 1000 + "s");
+		MDC.remove("logFileName");
 		
 		return schedule;
 	}

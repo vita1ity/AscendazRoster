@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.LocalDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,13 +25,18 @@ import com.ascendaz.roster.repository.SchedulerRepository;
 
 @Service("scheduleService")
 public class SchedulerService {
-
+	
 	@Autowired
 	private SchedulerRepository schedulerRepository;
 	
+	static Logger logger = LoggerFactory.getLogger(SchedulerService.class);
 	
 	public List<ScheduleResponse> processRules(LocalDate startDate, LocalDate endDate, boolean considerSalary) 
 			throws RosterEngineException, InterruptedException {
+		
+		MDC.put("logFileName", "process-rules");
+		
+		long start = System.currentTimeMillis();
 		
 		schedulerRepository.removeSchedule(startDate, endDate);
 		
@@ -66,6 +74,10 @@ public class SchedulerService {
 		}
 		
 		List<ScheduleResponse> response = ScheduleResponse.createScheduleResponse(schedule, startDate, endDate);
+		
+		long end = System.currentTimeMillis();
+		logger.debug("PROCESS RULES FINISHED. Time: " + (end - start) / 1000 + "s");
+		MDC.remove("logFileName");
 		
 		/*System.out.println();
 		System.out.println();

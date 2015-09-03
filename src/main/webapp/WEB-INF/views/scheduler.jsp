@@ -450,9 +450,9 @@
 <div class="modal-wrap modal-orangehead modal-info modal-advanced">
 	<div class="modal-inner">
 		<div class="modal-header">
-			Advanced options <i class="close-modal deco-icon icon-close" role="close_form">&times;</i>
+			Advanced options <i class="cancel-modal close-modal deco-icon icon-close" role="close_form">&times;</i>
 		</div>
-		<div class="motal-content">
+		<div class="modal-content">
 			<form class="advanced-form" action="">
 				<label class="lbl" for="sal"><input id="sal" type="checkbox" checked>Consider salary</label>
 				<label class="lbl" for="weekly"><input id="weekly" type="radio" name="r1" checked>Weekly</label>
@@ -462,6 +462,7 @@
 				<span class="cancel-modal btn btn-red">Cancel</span>
 			</form>
 		</div>
+		<div class="clean"></div>
 	</div>
 </div>
 
@@ -482,6 +483,7 @@
 				<span class="cancel-modal btn btn-red">Cancel</span>
 			</form>
 		</div>
+		<div class="clean"></div>
 	</div>
 </div>
 <div class="modal-wrap modal-orangehead modal-info modal-approve">
@@ -489,7 +491,7 @@
 		<div class="modal-header">
 			Approve Confirmation <i class="close-modal deco-icon icon-close" role="close_form">&times;</i>
 		</div>
-		<div class="motal-content">
+		<div class="modal-content">
 				<p>Do you want to approve schedule for selected period?</p>
 				<a href="" class="btn btn-color" id="confirmApproveSchedule" data-url="${approveSchedule}">ok</a>
 				<span class="cancel-modal btn btn-red close_modal">Cancel</span>
