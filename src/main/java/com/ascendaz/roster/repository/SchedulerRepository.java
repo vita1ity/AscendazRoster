@@ -1,6 +1,5 @@
 package com.ascendaz.roster.repository;
 
-import java.sql.Date;
 import java.util.List;
 
 import org.hibernate.HibernateException;
@@ -18,7 +17,6 @@ import com.ascendaz.roster.model.TaskProfile;
 import com.ascendaz.roster.model.attributes.Location;
 import com.ascendaz.roster.model.attributes.Shift;
 import com.ascendaz.roster.model.config.Rule;
-import com.ascendaz.roster.util.Util;
 
 @Repository("schedulerRepository")
 public class SchedulerRepository {
@@ -94,12 +92,12 @@ public class SchedulerRepository {
 		
 	}
 
-	public List<Schedule> getScheduleForWeek(LocalDate monday, LocalDate sunday) {
+	public List<Schedule> getScheduleForPeriod(LocalDate startDate, LocalDate endDate) {
 		String hqlQuery = "FROM Schedule "
-						+ "WHERE date between :monday and :sunday";
+						+ "WHERE date between :startDate and :endDate";
 		Query query = sessionFactory.getCurrentSession().createQuery(hqlQuery);
-		query.setParameter("monday", monday);
-		query.setParameter("sunday", sunday);
+		query.setParameter("startDate", startDate);
+		query.setParameter("endDate", endDate);
 		List<Schedule> schedule = query.list();
 		
 		return schedule;

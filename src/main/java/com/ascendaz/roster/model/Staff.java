@@ -10,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -29,7 +30,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
-@Table(name = "staff")
+@Table(name = "staff", indexes = {
+        @Index(columnList = "JOIN_DATE", name = "join_date_index"),
+        @Index(columnList = "RESIGN_DATE", name = "resign_date_index")
+})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Staff implements Comparable<Staff>, Serializable{
 	

@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -17,7 +18,10 @@ import com.ascendaz.roster.model.attributes.Training;
 import com.ascendaz.roster.model.attributes.interfaces.Expiring;
 
 @Entity
-@Table(name = "staff_training")
+@Table(name = "staff_training", indexes = {
+        @Index(columnList = "STAFF_ID", name = "staff_index"),
+        @Index(columnList = "TRAINING_ID", name = "training_index")
+})
 public class StaffTraining implements Expiring, Serializable{
 
 	/**

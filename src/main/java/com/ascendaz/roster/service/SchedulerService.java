@@ -94,7 +94,7 @@ public class SchedulerService {
 
 	public List<ScheduleResponse> getScheduleForPeriod(LocalDate startDate, LocalDate endDate) {
 	
-		List<Schedule> schedule = schedulerRepository.getScheduleForWeek(startDate, endDate);
+		List<Schedule> schedule = schedulerRepository.getScheduleForPeriod(startDate, endDate);
 		
 		//get all staff if schedule wasn't generated yet
 		if (schedule == null || schedule.size() == 0) {
@@ -117,6 +117,11 @@ public class SchedulerService {
 		}*/
 		
 		List<ScheduleResponse> scheduleResponse = ScheduleResponse.createScheduleResponse(schedule, startDate, endDate);
+		
+		/*for (ScheduleResponse sch: scheduleResponse) {
+			System.out.println(sch);
+		}*/
+	
 		return scheduleResponse;
 		
 	}

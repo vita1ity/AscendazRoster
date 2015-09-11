@@ -8,6 +8,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -19,7 +20,12 @@ import com.ascendaz.roster.model.attributes.Shift;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
-@Table(name = "schedule")
+@Table(name = "schedule", indexes = {
+        @Index(columnList = "DATE", name = "date_index"),
+        @Index(columnList = "STAFF_ID", name = "staff_index"),
+        @Index(columnList = "TASK_ID", name = "task_index"),
+        @Index(columnList = "SHIFT_ID", name = "shift_index")
+})
 public class Schedule implements Comparable<Schedule>, Serializable{
 	
 	/**

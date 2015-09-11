@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -19,7 +20,11 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
-@Table(name="staff_location")
+@Table(name="staff_location", indexes = {
+        @Index(columnList = "STAFF_ID", name = "staff_index"),
+        @Index(columnList = "LOCATION_ID", name = "location_index")
+})
+        
 public class StaffLocation implements Expiring, Serializable{
 
 	/**

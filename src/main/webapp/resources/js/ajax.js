@@ -529,6 +529,7 @@ function getSchedule(startDate, endDate) {
 	
 	}).fail (function(err) {
 	       console.error(err);
+	       
 	});
 }
 
