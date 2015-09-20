@@ -13,6 +13,7 @@
 	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js" type="text/javascript"></script>
 	<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js" type="text/javascript"></script>
+	<script src="<c:url value="/resources/js/jquery.fixedheadertable.js"/>" type="text/javascript"></script>
 	<script src="<c:url value="/resources/js/ajax.js"/>" type="text/javascript"></script>
 	<script src="<c:url value="/resources/js/include.js"/>" type="text/javascript"></script>
 	
@@ -93,7 +94,7 @@
 				
 			</div>
 			
-			<div class="content-inner ">
+			<%--  <div class="content-inner ">
 				<div class="tbl-scroll cf vert-scroll">
 				<div class="fixed-part">
 					<table class="simple-table">
@@ -274,15 +275,15 @@
 				</table>
 				</div>
 				</div>
-			</div>
+			</div>  --%>
 			
 			
 			
 			
 			
-			<%-- <div class="content-inner">
-				<div class="table-scroll-x">
-				<table class="simple-table">
+			  <div class="content-inner">
+				<!-- <div class="table-scroll-x"> -->
+				<table class="simple-table scrolltable">
 					<thead id="scheduleTableHeader">
 					<tr>
 						<th>Name</th>
@@ -441,8 +442,12 @@
 							
 						</tbody>
 					</table>
-				</div>
-			</div> --%>
+				<!-- </div> -->
+			</div>  
+			
+			
+			
+			
 		</div>
 	</div>
 </main>
@@ -454,9 +459,11 @@
 		</div>
 		<div class="modal-content">
 			<form class="advanced-form" action="">
-				<label class="lbl" for="sal"><input id="sal" type="checkbox" checked>Consider salary</label>
-				<label class="lbl" for="weekly"><input id="weekly" type="radio" name="r1" checked>Weekly</label>
-				<label class="lbl" for="monthly"><input id="monthly" type="radio" name="r1">Monthly</label>
+				<div class="option-labels">
+					<label class="lbl" for="sal"><input id="sal" type="checkbox" checked>Consider salary</label>
+					<label class="lbl" for="weekly"><input id="weekly" type="radio" name="r1" checked>Weekly</label>
+					<label class="lbl" for="monthly"><input id="monthly" type="radio" name="r1">Monthly</label>
+				</div>
 				<s:url value="/scheduler/run-engine" var="runAdvancedEngine"/>
 				<button id="runAdvancedEngine" data-url="${runAdvancedEngine}" class="btn btn-color">ok</button>
 				<span class="cancel-modal btn btn-red">Cancel</span>

@@ -236,8 +236,9 @@ $(document).on('click', '#runEngine', function (e) {
         data: {startDate: startDate, endDate: endDate, considerSalary: true}
         
     }).done (function(data) {
-    	renderHeader(startDate, endDate);
-    	renderSchedule(data);
+    	renderTable(startDate, endDate, data);
+    	/*renderHeader(startDate, endDate);
+    	renderSchedule(data);*/
     	$('.preload-wrap').hide();
 		alert("Roster successfully completed for the given period: \n " + startDate + " - " + endDate);
 	
@@ -311,8 +312,9 @@ $(document).on('click', '#runAdvancedEngine', function (e) {
         data: {startDate: startDate, endDate: endDate, considerSalary: considerSalary}
         //contentType: "application/json; charset=utf-8"
     }).done (function(data) {
-    	renderHeader(startDate, endDate);
-    	renderSchedule(data);
+    	renderTable(startDate, endDate, data);
+    	/*renderHeader(startDate, endDate);
+    	renderSchedule(data);*/
     	$('.preload-wrap').hide();
 		alert("Advanced Roster successfully completed for the given period: \n " + startDate + " - " + endDate);
 	
@@ -330,6 +332,46 @@ $(document).on('click', '#runAdvancedEngine', function (e) {
 //function approveSchedule() {
 $(document).on('click', '#confirmApproveSchedule', function (e) {
 	e.preventDefault();
+	
+	var startDate;
+	var endDate;
+	//get current date range
+	if (!$('#weekDateValue').hasClass("display-none")) {
+		var startStr = $('#startDate').text();
+		var endStr = $('#endDate').text();
+		
+		var startDateObj = new Date($.datepicker.parseDate("dd/mm/yy", startStr));
+		var endDateObj = new Date($.datepicker.parseDate("dd/mm/yy", endStr));
+		
+		startDate = $.datepicker.formatDate('dd/mm/yy', startDateObj);
+		endDate = $.datepicker.formatDate('dd/mm/yy', endDateObj);
+		
+	}
+	else if (!$('#monthDateValue').hasClass("display-none")) {
+		var monthStr = $('#monthDate').text();
+		monthStr = monthStr + " 01";
+		console.log(monthStr);
+		
+		var startDateObj = $.datepicker.parseDate("M yy dd", monthStr);
+		
+		var year = startDateObj.getFullYear();
+		var month = startDateObj.getMonth();
+		var endDateObj = new Date(year, month + 1, 0)
+		startDate = $.datepicker.formatDate('dd/mm/yy', startDateObj);
+		endDate = $.datepicker.formatDate('dd/mm/yy', endDateObj);
+		//console.log(startDate);
+		//console.log(endDate);
+		
+	}
+	else if (!$('#dayValue').hasClass("display-none")) {
+		var dayStr = $('#dayDate').text();
+		var dayDate = new Date($.datepicker.parseDate("dd/mm/yy", dayStr));
+		
+		startDate = $.datepicker.formatDate('dd/mm/yy', dayDate);
+		endDate = startDate;
+		
+	}
+	
 	$('.modal-wrap').removeClass('open');
 	var url = $(this).data("url");
 	console.log(url);
@@ -339,7 +381,8 @@ $(document).on('click', '#confirmApproveSchedule', function (e) {
         type: "GET"
 	}).done (function(data) {
 		if (data) {
-			renderSchedule(data);
+			renderTable(startDate, endDate, data);
+			//renderSchedule(data);
 		
 		}
 	
@@ -349,12 +392,24 @@ $(document).on('click', '#confirmApproveSchedule', function (e) {
 	
 });
 
-function renderHeader(startDate, endDate) {
-	var tableHeader = "";
-	tableHeader += "<tr> \n";;
-	/*tableHeader += "<th>Name</th> \n";
-	tableHeader += "<th>Assigned location</th> \n"
-	tableHeader += "<th>Reference</th> \n";*/
+function renderTable(startDate, endDate, data) {
+	
+	//remove scroll
+	$(".fht-table-wrapper").remove();
+	
+	//header
+	
+	var table = "";
+	table += "<table class=\"simple-table scrolltable\"> \n";
+	table += "<thead id=\"scheduleTableHeader\"> \n";
+	
+	
+	table += "<tr> \n";;
+	
+	table += "<th>Name</th> \n";
+	table += "<th>Assigned location</th> \n"
+	table += "<th>Reference</th> \n";
+	
 	var startDateObj = $.datepicker.parseDate("dd/mm/yy", startDate);
 	var endDateObj = $.datepicker.parseDate("dd/mm/yy", endDate);
 	
@@ -372,18 +427,349 @@ function renderHeader(startDate, endDate) {
 		
 		day = $.datepicker.formatDate("D", currentDate);
 		if (currentDateFormatted == today) {
-			tableHeader += "<th class=\"today\">" + dateName + "<br>" + day + "</th> \n";
+			table += "<th class=\"today\">" + dateName + " " + day + "</th> \n";
 		}
 		else {
-			tableHeader += "<th>" + dateName + "<br>" + day + "</th> \n";
+			table += "<th>" + dateName + " " + day + "</th> \n";
+		}
+		currentDate.setDate(currentDate.getDate() + 1)
+	}
+	table += "</tr> \n";
+	//$("#scheduleTableHeader").html(table);
+	table += "</thead> \n";
+	
+	//console.log(table);
+	
+	//body
+	
+	//var table = "";
+	table += "<tbody id=\"scheduleTableBody\"> \n";
+	
+	var len = data.length;
+	if (len == 0) {
+		table += "</tbody> \n";
+		table += "</table> \n";
+		$(".content-inner").html(table);
+		return;
+	}
+	var staffName;
+	var location;
+	var reference = "1";
+	
+	var isDraft = false;
+	
+	for (var i = 0; i < len; i++) {
+		table += "<tr> \n";
+		staffName = data[i].name;
+		table += "<td>" + staffName + "</td> \n";
+		location = data[i].location;
+		table += "<td>" + location + "</td> \n";
+		reference = data[i].reference;
+		table += "<td>" + reference + "</td> \n";
+		
+		var tasks = data[i].tasks;
+		if (tasks != null) {
+			for (var j = 0; j < tasks.length; j++) {
+				var shift = tasks[j].shift;
+				var NA = false;
+				if (shift != null) {
+					
+					var status = tasks[j].status;
+					if (status == "Submitted") {
+						
+						status = "S";
+					}
+					else {
+						isDraft = true;
+						status = "D";
+					}
+					
+					var shiftLetter = shift.shiftLetter;
+					if (shiftLetter == "M") {
+						table += "<td><span data-tip class=\"table-tag yellow\">D12 <span class=\"tag-mark\">" + status + "</span> \n";
+					}
+					else if (shiftLetter == "A") {
+						table += "<td><span data-tip class=\"table-tag green\">A8 <span class=\"tag-mark\">" + status + "</span> \n";
+					}
+					else if (shiftLetter == "N") {
+						table += "<td><span data-tip class=\"table-tag purple\">N12 <span class=\"tag-mark\">" + status + "</span> \n";
+					}
+					else if (shiftLetter == "L") {
+						var leave = tasks[j].leave.type;
+						table += "<td><span data-tip class=\"table-tag pink\">" + leave + "<span class=\"tag-mark\">" + status + "</span> \n";
+					}
+					else if (shiftLetter == "O") {
+						table += "<td><span data-tip class=\"table-tag black\">OFF <span class=\"tag-mark\">" + status + "</span> \n";
+					}
+					//unknown shift. Mark as not assigned.
+					else {
+						
+						table += "<td><span class=\"table-tag grey\">NA";
+						NA = true;
+						isDraft = true;
+					}
+				}
+				else {
+					
+					table += "<td><span class=\"table-tag grey\">NA";
+					NA = true;
+					isDraft = true;
+				}
+				
+				if (!NA) {
+					if (tasks[j].violated) {
+						table += "<span class=\"left-tag\">V</span> \n";
+					}
+					table += "<span class=\"custom-tooltip\"> \n";
+					table += "<strong>Location:</strong>" + location + " <br/> \n";
+					table += "<strong>Shift:</strong>" + shift.shift + " <br/> \n"; 
+					table += "<strong>Training:</strong> ";
+					var trainings = tasks[j].trainings;
+					if (trainings != null) {
+						var trainingsLen = trainings.length;
+						for (var k = 0; k < trainingsLen; k++) {
+							if (k != trainingsLen - 1) {
+								table += trainings[k].name + ", ";
+							}
+							else {
+								table += trainings[k].name;
+							}
+						}
+					}
+				}
+				table += "</span></td> \n";
+			}
+		}
+		table += "</tr> \n";
+	}
+	
+	if (!isDraft) {
+		
+		$("#runEngine").addClass("disabled");
+		$("#runAdvanced").addClass("disabled");
+		$("#approveSchedule").addClass("disabled");
+		
+	}
+	table += "</tbody> \n";
+	table += "</table> \n";
+	
+	//console.log(table);
+	
+	//$(".content-inner").append(table);
+	//$("#scheduleTableBody").html(table);
+	
+	//console.log($(".content-inner").html());
+	
+	$(".content-inner").html(table);
+	
+	setTimeout(function(){
+		if ($('.scrolltable').length){
+			$('.scrolltable').fixedHeaderTable({
+				footer: false,
+				cloneHeadToFoot: false,
+				fixedColumns: 3,
+				height:400
+			});
+		}
+	}, 300);
+	
+	
+	
+}
+/*function renderHeader(startDate, endDate) {
+	
+	//$('.scrolltable').fixedHeaderTable('destroy');
+	$(".fht-table-wrapper").remove();
+	
+	
+	var tableHeader = "";
+	tableHeader += "<table class=\"simple-table scrolltable\"> \n";
+	tableHeader += "<thead id=\"scheduleTableHeader\"> \n";
+	
+	
+	tableHeader += "<tr> \n";;
+	
+	tableHeader += "<th>Name</th> \n";
+	tableHeader += "<th>Assigned location</th> \n"
+	tableHeader += "<th>Reference</th> \n";
+	
+	var startDateObj = $.datepicker.parseDate("dd/mm/yy", startDate);
+	var endDateObj = $.datepicker.parseDate("dd/mm/yy", endDate);
+	
+	var dateName;
+	var day;
+	var currentDate = new Date(startDateObj);
+	var currentDateFormatted = $.datepicker.formatDate('dd/M/yy D', new Date(startDateObj));
+	var today = $.datepicker.formatDate('dd/M/yy D', new Date());
+	
+	while (currentDate <= endDateObj) {
+		
+		currentDateFormatted = $.datepicker.formatDate('dd/M/yy D', currentDate);
+		
+		dateName = $.datepicker.formatDate("M dd", currentDate);
+		
+		day = $.datepicker.formatDate("D", currentDate);
+		if (currentDateFormatted == today) {
+			tableHeader += "<th class=\"today\">" + dateName + " " + day + "</th> \n";
+		}
+		else {
+			tableHeader += "<th>" + dateName + " " + day + "</th> \n";
 		}
 		currentDate.setDate(currentDate.getDate() + 1)
 	}
 	tableHeader += "</tr> \n";
-	$("#scheduleTableHeader").html(tableHeader);
+	//$("#scheduleTableHeader").html(tableHeader);
+	tableHeader += "</thead> \n";
+	
+	//console.log(tableHeader);
+	
+	$(".content-inner").html(tableHeader);
+	
+	console.log($(".content-inner").html());
 }
 
 function renderSchedule(data) {
+	
+	//$('.scrolltable').fixedHeaderTable('destroy');
+	//table body
+	var tableBody = "";
+	tableBody += "<tbody id=\"scheduleTableBody\"> \n";
+	
+	var len = data.length;
+	if (len == 0) {
+		tableBody += "</tbody> \n";
+		tableBody += "</table> \n";
+		$("#scheduleTableBody").append(tableBody);
+		return;
+	}
+	var staffName;
+	var location;
+	var reference = "1";
+	
+	var isDraft = false;
+	
+	for (var i = 0; i < len; i++) {
+		tableBody += "<tr> \n";
+		staffName = data[i].name;
+		tableBody += "<td>" + staffName + "</td> \n";
+		location = data[i].location;
+		tableBody += "<td>" + location + "</td> \n";
+		reference = data[i].reference;
+		tableBody += "<td>" + reference + "</td> \n";
+		
+		var tasks = data[i].tasks;
+		if (tasks != null) {
+			for (var j = 0; j < tasks.length; j++) {
+				var shift = tasks[j].shift;
+				var NA = false;
+				if (shift != null) {
+					
+					var status = tasks[j].status;
+					if (status == "Submitted") {
+						
+						status = "S";
+					}
+					else {
+						isDraft = true;
+						status = "D";
+					}
+					
+					var shiftLetter = shift.shiftLetter;
+					if (shiftLetter == "M") {
+						tableBody += "<td><span data-tip class=\"table-tag yellow\">D12 <span class=\"tag-mark\">" + status + "</span> \n";
+					}
+					else if (shiftLetter == "A") {
+						tableBody += "<td><span data-tip class=\"table-tag green\">A8 <span class=\"tag-mark\">" + status + "</span> \n";
+					}
+					else if (shiftLetter == "N") {
+						tableBody += "<td><span data-tip class=\"table-tag purple\">N12 <span class=\"tag-mark\">" + status + "</span> \n";
+					}
+					else if (shiftLetter == "L") {
+						var leave = tasks[j].leave.type;
+						tableBody += "<td><span data-tip class=\"table-tag pink\">" + leave + "<span class=\"tag-mark\">" + status + "</span> \n";
+					}
+					else if (shiftLetter == "O") {
+						tableBody += "<td><span data-tip class=\"table-tag black\">OFF <span class=\"tag-mark\">" + status + "</span> \n";
+					}
+					//unknown shift. Mark as not assigned.
+					else {
+						
+						tableBody += "<td><span class=\"table-tag grey\">NA";
+						NA = true;
+						isDraft = true;
+					}
+				}
+				else {
+					
+					tableBody += "<td><span class=\"table-tag grey\">NA";
+					NA = true;
+					isDraft = true;
+				}
+				
+				if (!NA) {
+					if (tasks[j].violated) {
+						tableBody += "<span class=\"left-tag\">V</span> \n";
+					}
+					tableBody += "<span class=\"custom-tooltip\"> \n";
+					tableBody += "<strong>Location:</strong>" + location + " <br/> \n";
+					tableBody += "<strong>Shift:</strong>" + shift.shift + " <br/> \n"; 
+					tableBody += "<strong>Training:</strong> ";
+					var trainings = tasks[j].trainings;
+					if (trainings != null) {
+						var trainingsLen = trainings.length;
+						for (var k = 0; k < trainingsLen; k++) {
+							if (k != trainingsLen - 1) {
+								tableBody += trainings[k].name + ", ";
+							}
+							else {
+								tableBody += trainings[k].name;
+							}
+						}
+					}
+				}
+				tableBody += "</span></td> \n";
+			}
+		}
+		tableBody += "</tr> \n";
+	}
+	
+	if (!isDraft) {
+		
+		$("#runEngine").addClass("disabled");
+		$("#runAdvanced").addClass("disabled");
+		$("#approveSchedule").addClass("disabled");
+		
+	}
+	tableBody += "</tbody> \n";
+	tableBody += "</table> \n";
+	
+	console.log(tableBody);
+	
+	//$(".content-inner").append(tableBody);
+	//$("#scheduleTableBody").html(tableBody);
+	
+	console.log($(".content-inner").html());
+	
+	setTimeout(function(){
+		if ($('.scrolltable').length){
+			$('.scrolltable').fixedHeaderTable({
+				footer: false,
+				cloneHeadToFoot: false,
+				fixedColumns: 3,
+				height:400
+			});
+		}
+	}, 300);
+
+	
+	
+	$('.scrolltable').fixedHeaderTable({
+		footer: false,
+		cloneHeadToFoot: false,
+		fixedColumns: 3,
+		height:400
+	});
+	
 	
 	//table body
 	var tableBody = "";
@@ -498,7 +884,7 @@ function renderSchedule(data) {
 		
 	}
 	$("#scheduleTableBodyScrollable").html(tableBody);
-}
+}*/
 
 function disactivateFilters() {
 	
@@ -524,8 +910,9 @@ function getSchedule(startDate, endDate) {
         data: {startDate: startDate, endDate: endDate}
         	
 	}).done (function(data) {
-		renderHeader(startDate, endDate);
-		renderSchedule(data);
+		renderTable(startDate, endDate, data)
+		/*renderHeader(startDate, endDate);
+		renderSchedule(data);*/
 	
 	}).fail (function(err) {
 	       console.error(err);
@@ -645,6 +1032,46 @@ $(document).on('click', '.leaves-tasks', function (e) {
 
 $(document).on('click', '.btn-filter', function(){
 	$(this).toggleClass('active-filter');
+	
+	var startDate;
+	var endDate;
+	//get current date range
+	if (!$('#weekDateValue').hasClass("display-none")) {
+		var startStr = $('#startDate').text();
+		var endStr = $('#endDate').text();
+		
+		var startDateObj = new Date($.datepicker.parseDate("dd/mm/yy", startStr));
+		var endDateObj = new Date($.datepicker.parseDate("dd/mm/yy", endStr));
+		
+		startDate = $.datepicker.formatDate('dd/mm/yy', startDateObj);
+		endDate = $.datepicker.formatDate('dd/mm/yy', endDateObj);
+		
+	}
+	else if (!$('#monthDateValue').hasClass("display-none")) {
+		var monthStr = $('#monthDate').text();
+		monthStr = monthStr + " 01";
+		console.log(monthStr);
+		
+		var startDateObj = $.datepicker.parseDate("M yy dd", monthStr);
+		
+		var year = startDateObj.getFullYear();
+		var month = startDateObj.getMonth();
+		var endDateObj = new Date(year, month + 1, 0)
+		startDate = $.datepicker.formatDate('dd/mm/yy', startDateObj);
+		endDate = $.datepicker.formatDate('dd/mm/yy', endDateObj);
+		//console.log(startDate);
+		//console.log(endDate);
+		
+	}
+	else if (!$('#dayValue').hasClass("display-none")) {
+		var dayStr = $('#dayDate').text();
+		var dayDate = new Date($.datepicker.parseDate("dd/mm/yy", dayStr));
+		
+		startDate = $.datepicker.formatDate('dd/mm/yy', dayDate);
+		endDate = startDate;
+		
+	}
+	
 	var leaveTasks = $('.leaves-tasks').hasClass("active-filter");
 	var locationTasks = $('.open_locations_modal').hasClass("active-filter");
 	var withoutTasks = $('.staff-without-tasks').hasClass("active-filter");
@@ -670,9 +1097,9 @@ $(document).on('click', '.btn-filter', function(){
 		
 	}
 	else {
-		$("#runEngine").addClass("disabled");
-		$("#runAdvanced").addClass("disabled");
-		$("#approveSchedule").addClass("disabled");
+		$("#runEngine").removeClass("disabled");
+		$("#runAdvanced").removeClass("disabled");
+		$("#approveSchedule").removeClass("disabled");
 	}
 	
 	var url = $(this).data("url");
@@ -687,7 +1114,8 @@ $(document).on('click', '.btn-filter', function(){
         contentType : 'application/json; charset=utf-8'
      
 	}).done (function(data) {
-		renderSchedule(data);
+		renderTable(startDate, endDate, data);
+		//renderSchedule(data);
 	
 	}).fail (function(err) {
 	       console.error(err);

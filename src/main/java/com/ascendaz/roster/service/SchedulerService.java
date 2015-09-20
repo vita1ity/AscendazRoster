@@ -179,7 +179,7 @@ public class SchedulerService {
 			
 			String location = sr.getLocation();
 			for (String l: locations) {
-				if (location.equals(l)) {
+				if (location != null && location.equals(l)) {
 					
 					filteredLocationsSchedule.add(sr);
 					break;

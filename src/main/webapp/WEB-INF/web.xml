@@ -29,7 +29,7 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
   <session-config>
-    <session-timeout>30</session-timeout>
+    <session-timeout>120</session-timeout>
   </session-config>
   <filter>
     <filter-name>SpringOpenSessionInViewFilter</filter-name>
@@ -47,7 +47,4 @@
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
-  <session-config>
-		<session-timeout>120</session-timeout>
-	</session-config>
 </web-app>

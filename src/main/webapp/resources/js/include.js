@@ -402,6 +402,47 @@ jQuery(document).ready(function ($) {
 			//showHideModal('.open_locations_modal', '.modal-locations');
 		}
 		else {
+			
+			var startDate;
+			var endDate;
+			//get current date range
+			if (!$('#weekDateValue').hasClass("display-none")) {
+				var startStr = $('#startDate').text();
+				var endStr = $('#endDate').text();
+				
+				var startDateObj = new Date($.datepicker.parseDate("dd/mm/yy", startStr));
+				var endDateObj = new Date($.datepicker.parseDate("dd/mm/yy", endStr));
+				
+				startDate = $.datepicker.formatDate('dd/mm/yy', startDateObj);
+				endDate = $.datepicker.formatDate('dd/mm/yy', endDateObj);
+				
+			}
+			else if (!$('#monthDateValue').hasClass("display-none")) {
+				var monthStr = $('#monthDate').text();
+				monthStr = monthStr + " 01";
+				console.log(monthStr);
+				
+				var startDateObj = $.datepicker.parseDate("M yy dd", monthStr);
+				
+				var year = startDateObj.getFullYear();
+				var month = startDateObj.getMonth();
+				var endDateObj = new Date(year, month + 1, 0)
+				startDate = $.datepicker.formatDate('dd/mm/yy', startDateObj);
+				endDate = $.datepicker.formatDate('dd/mm/yy', endDateObj);
+				//console.log(startDate);
+				//console.log(endDate);
+				
+			}
+			else if (!$('#dayValue').hasClass("display-none")) {
+				var dayStr = $('#dayDate').text();
+				var dayDate = new Date($.datepicker.parseDate("dd/mm/yy", dayStr));
+				
+				startDate = $.datepicker.formatDate('dd/mm/yy', dayDate);
+				endDate = startDate;
+				
+			}
+			
+			
 			var leaveTasks = $('.leaves-tasks').hasClass("active-filter");
 			var locationTasks = $('.open_locations_modal').hasClass("active-filter");
 			var withoutTasks = $('.staff-without-tasks').hasClass("active-filter");
@@ -427,9 +468,9 @@ jQuery(document).ready(function ($) {
 				
 			}
 			else {
-				$("#runEngine").addClass("disabled");
-				$("#runAdvanced").addClass("disabled");
-				$("#approveSchedule").addClass("disabled");
+				$("#runEngine").removeClass("disabled");
+				$("#runAdvanced").removeClass("disabled");
+				$("#approveSchedule").removeClass("disabled");
 			}
 			
 			var url = $('#filter-locations').data("url");
@@ -444,7 +485,7 @@ jQuery(document).ready(function ($) {
 		        contentType : 'application/json; charset=utf-8'
 		     
 			}).done (function(data) {
-				renderSchedule(data);
+				renderTable(startDate, endDate, data);
 			
 			}).fail (function(err) {
 			       console.error(err);
@@ -477,6 +518,13 @@ jQuery(document).ready(function ($) {
 	        }
 	    });
 	});*/
-	
+	if($('.scrolltable').length){
+		$('.scrolltable').fixedHeaderTable({
+			footer: false,
+			cloneHeadToFoot: false,
+			fixedColumns: 3,
+			height:400
+		});
+	}
 	
 });
