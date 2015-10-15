@@ -133,6 +133,10 @@ public class ScheduleResponse implements Serializable{
 				
 			daysOfWeek: for (int j = 0; j < daysBetween; j++) {
 				
+				int year = currentDate.getYear();
+				int month = currentDate.getMonthOfYear();
+				int day = currentDate.getDayOfMonth();
+				
 				while (i < schedule.size() && schedule.get(i).getStaff().getName().equals(staffName)) {
 					
 					scheduleDate = new LocalDate(schedule.get(i).getDate());
@@ -142,7 +146,8 @@ public class ScheduleResponse implements Serializable{
 					
 					if (currentDate.compareTo(scheduleDate) < 0) {
 						// blank task
-						taskResponse = new TaskResponse(currentDate, false, status, null, null);
+						
+						taskResponse = new TaskResponse(year, month, day, false, status, null, null);
 						taskResponseList.add(taskResponse);
 						currentDate = currentDate.plusDays(1);
 						
@@ -153,7 +158,7 @@ public class ScheduleResponse implements Serializable{
 						i++;
 						if (i == schedule.size()) {
 							while (j < daysBetween) {
-								taskResponse = new TaskResponse(currentDate, false, status, null, null);
+								taskResponse = new TaskResponse(year, month, day, false, status, null, null);
 								taskResponseList.add(taskResponse);
 								++j;
 							}
@@ -189,7 +194,7 @@ public class ScheduleResponse implements Serializable{
 							trainings = null;
 						}
 						boolean isViolated = schedule.get(i).isViolated();
-						taskResponse = new TaskResponse(currentDate, isViolated, status, shift, trainings, leave);
+						taskResponse = new TaskResponse(year, month, day, isViolated, status, shift, trainings, leave);
 						
 						
 						taskResponseList.add(taskResponse);
@@ -200,7 +205,7 @@ public class ScheduleResponse implements Serializable{
 					
 				}
 				if (i < schedule.size() && !schedule.get(i).getStaff().getName().equals(staffName)) {
-					taskResponse = new TaskResponse(currentDate, false, status, null, null);
+					taskResponse = new TaskResponse(year, month, day, false, status, null, null);
 					taskResponseList.add(taskResponse);
 					--i;
 				}

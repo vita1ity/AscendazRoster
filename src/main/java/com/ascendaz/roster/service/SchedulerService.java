@@ -135,8 +135,21 @@ public class SchedulerService {
 			
 		}
 		List<TaskResponse> tasks = schedule.get(0).getTasks();
-		LocalDate startDate = tasks.get(0).getDate();
-		LocalDate endDate = tasks.get(tasks.size() - 1).getDate();
+		
+		/*LocalDate startDate = tasks.get(0).getDate();
+		LocalDate endDate = tasks.get(tasks.size() - 1).getDate();*/
+		
+		
+		int year = tasks.get(0).getYear();
+		int month = tasks.get(0).getMonth();
+		int day = tasks.get(0).getDay();
+		LocalDate startDate = new LocalDate(year, month, day);
+		
+		year = tasks.get(tasks.size() - 1).getYear();
+		month = tasks.get(tasks.size() - 1).getMonth();
+		day = tasks.get(tasks.size() - 1).getDay();
+		LocalDate endDate = new LocalDate(year, month, day);
+		
 		schedulerRepository.setApprovedStatus(startDate, endDate);
 		return schedule;
 	}

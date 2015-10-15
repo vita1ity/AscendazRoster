@@ -18,18 +18,23 @@ public class TaskResponse implements Serializable{
 	
 	private boolean violated;
 	private String status;
-	private LocalDate date;
+	
+	//private LocalDate date;
+	private int year;
+	private int month;
+	private int day;
+	
 	private Shift shift;
 	private Set<Training> trainings;
 	private Leave leave;
 	
-	public LocalDate getDate() {
+	/*public LocalDate getDate() {
 		return date;
 	}
 	public void setDate(LocalDate date) {
 		this.date = date;
-	}
-	public TaskResponse(LocalDate date, boolean isViolated, String status, Shift shift, Set<Training> trainings) {
+	}*/
+	/*public TaskResponse(LocalDate date, boolean isViolated, String status, Shift shift, Set<Training> trainings) {
 		super();
 		this.date = date;
 		this.shift = shift;
@@ -45,7 +50,32 @@ public class TaskResponse implements Serializable{
 		this.status = status;
 		this.trainings = trainings;
 		this.leave = leave;
+	}*/
+	
+	public TaskResponse(int year, int month, int day, boolean isViolated, String status, Shift shift, Set<Training> trainings) {
+		super();
+		this.year = year;
+		this.month = month;
+		this.day = day;
+		
+		this.shift = shift;
+		this.violated = isViolated;
+		this.status = status;
+		this.trainings = trainings;
 	}
+	public TaskResponse(int year, int month, int day, boolean isViolated, String status, Shift shift, Set<Training> trainings, Leave leave) {
+		super();
+		this.year = year;
+		this.month = month;
+		this.day = day;
+		
+		this.shift = shift;
+		this.violated = isViolated;
+		this.status = status;
+		this.trainings = trainings;
+		this.leave = leave;
+	}
+	
 	public Shift getShift() {
 		return shift;
 	}
@@ -79,11 +109,29 @@ public class TaskResponse implements Serializable{
 		this.leave = leave;
 	}
 	
-	@Override
-	public String toString() {
-		return "TaskResponse [date=" + date + ", shift=" + shift + ", trainings=" + trainings + "]";
+	public int getYear() {
+		return year;
+	}
+	public int getMonth() {
+		return month;
+	}
+	public int getDay() {
+		return day;
+	}
+	public void setYear(int year) {
+		this.year = year;
+	}
+	public void setMonth(int month) {
+		this.month = month;
+	}
+	public void setDay(int day) {
+		this.day = day;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return "TaskResponse [violated=" + violated + ", status=" + status + ", year=" + year + ", month=" + month
+				+ ", day=" + day + ", shift=" + shift + ", trainings=" + trainings + ", leave=" + leave + "]";
+	}
 	
 }
