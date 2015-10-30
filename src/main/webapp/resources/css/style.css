@@ -93,3 +93,87 @@
 . clear {
 	clean:both;
 }
+
+/*pager*/
+.pager{
+    margin: 20px 0;
+    text-align: center;
+    position: relative;
+}
+.pager_item{
+    display: inline-block;
+    vertical-align: top;
+     margin: 0 10px;
+}
+.current_page{
+    display: inline-block;
+    vertical-align: top;
+     margin: 0 10px;
+}
+.pager_item a, .pager_nav a{
+    display: block;
+    font-size: 15px;
+    font-family: arial;
+    padding: 4px 8px;
+    border: 2px solid #454545;
+    color: #303239;
+    font-weight: bold;
+}
+.current_page a{
+    display: block;
+    font-size: 15px;
+    font-family: arial;
+    padding: 4px 8px;
+    border: 2px solid #5DC270;
+    color: #303239;
+    font-weight: bold;
+}
+.pager_item a:hover, .pager_item.active a{
+    color: #fff !important;
+    background: #454545;
+   cursor:pointer;
+}
+.pager_nav{
+    position: relative;
+
+    text-align: center;
+    overflow: hidden;
+    white-space:nowrap;
+    cursor:pointer;
+    
+}
+.pager_nav a:before{
+    content:"";
+    display: inline-block;
+    position: absolute;
+    transition: all .3s;
+    width: 18px;
+    height: 14px;
+    top: 50%;
+    margin-top: -7px;
+    background-position: -85px -52px;
+}
+.pager_nav a{
+	cursor:pointer;
+}
+.pager_nav.prev a:before{
+    left: -40px;
+    -moz-transform: rotate(180deg); /* Для Firefox */
+    -ms-transform: rotate(180deg); /* Для IE */
+    -webkit-transform: rotate(180deg); /* Для Safari, Chrome, iOS */
+    -o-transform: rotate(180deg); /* Для Opera */
+    transform: rotate(180deg);
+}
+.pager_nav.next a:before{
+    right: -40px;
+}
+
+.pager_nav.prev:hover a:before{
+    left: 20px;
+}
+.pager_nav.next:hover a:before{
+    right: 20px;
+}
+
+
+

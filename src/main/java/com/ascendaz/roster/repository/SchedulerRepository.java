@@ -17,6 +17,7 @@ import com.ascendaz.roster.model.TaskProfile;
 import com.ascendaz.roster.model.attributes.Location;
 import com.ascendaz.roster.model.attributes.Shift;
 import com.ascendaz.roster.model.config.Rule;
+import com.ascendaz.roster.util.Constants;
 
 @Repository("schedulerRepository")
 public class SchedulerRepository {
@@ -31,12 +32,31 @@ public class SchedulerRepository {
 		List<TaskProfile> tasks = query.list();
 		return tasks;
 	}
+	public List<Staff> getActiveStaffForPage(LocalDate startDate, LocalDate endDate, int page) {
+		String hqlQuery = "FROM Staff " 
+						+ "WHERE joinDate <= :startDate AND resignDate >= :endDate "
+						+ "ORDER BY name";
+		Query query = sessionFactory.getCurrentSession().createQuery(hqlQuery);
+		query.setParameter("startDate", startDate);
+		query.setParameter("endDate", endDate);
+		
+		int firstRes = Constants.STAFF_PER_PAGE * (page - 1);
+		int lastRes = Constants.STAFF_PER_PAGE;
+		query.setFirstResult(firstRes);
+		query.setMaxResults(lastRes);
+		
+		List<Staff> staff = query.list();
+		return staff;
+		
+	}
+	
 	public List<Staff> getActiveStaff(LocalDate startDate, LocalDate endDate) {
 		String hqlQuery = "FROM Staff " 
 						+ "WHERE joinDate <= :startDate AND resignDate >= :endDate";
 		Query query = sessionFactory.getCurrentSession().createQuery(hqlQuery);
 		query.setParameter("startDate", startDate);
 		query.setParameter("endDate", endDate);
+		
 		List<Staff> staff = query.list();
 		return staff;
 		
@@ -92,10 +112,11 @@ public class SchedulerRepository {
 		
 	}
 
-	public List<Schedule> getScheduleForPeriod(LocalDate startDate, LocalDate endDate) {
+	public List<Schedule> getScheduleForPeriod(LocalDate startDate, LocalDate endDate, List<Integer> staff) {
 		String hqlQuery = "FROM Schedule "
-						+ "WHERE date between :startDate and :endDate";
+						+ "WHERE (staff.id IN (:staff)) AND (date BETWEEN :startDate AND :endDate)";
 		Query query = sessionFactory.getCurrentSession().createQuery(hqlQuery);
+		query.setParameterList("staff", staff);
 		query.setParameter("startDate", startDate);
 		query.setParameter("endDate", endDate);
 		List<Schedule> schedule = query.list();
@@ -151,6 +172,35 @@ public class SchedulerRepository {
 		Query query = sessionFactory.getCurrentSession().createQuery(hqlQuery);
 		List<Location> locations = query.list();
 		return locations;
+	}
+	public int getNumberOfStaff(LocalDate startDate, LocalDate endDate) {
+		String hqlQuery = "SELECT COUNT(*) FROM Staff " +
+						"WHERE joinDate <= :startDate AND resignDate >= :endDate";
+		Query query = sessionFactory.getCurrentSession().createQuery(hqlQuery);
+		query.setParameter("startDate", startDate);
+		query.setParameter("endDate", endDate);
+		Long count = (Long)query.uniqueResult();
+		
+		return count.intValue();
+	}
+	public List<Integer> getStaffForPage(LocalDate startDate, LocalDate endDate, int page) {
+		String hqlQuery = "SELECT id FROM Staff "
+				+ "WHERE joinDate <= :startDate AND resignDate >= :endDate "
+				+ "ORDER BY name";
+		Query query = sessionFactory.getCurrentSession().createQuery(hqlQuery);
+		int firstRes = Constants.STAFF_PER_PAGE * (page - 1);
+		int lastRes = Constants.STAFF_PER_PAGE;
+		query.setParameter("startDate", startDate);
+		query.setParameter("endDate", endDate);
+		query.setFirstResult(firstRes);
+		query.setMaxResults(lastRes);
+		
+		List<Integer> staff = query.list();
+		for (Integer id: staff) {
+			System.out.println("Staff: " + id);
+		}
+	
+		return staff;
 	}
 
 }	

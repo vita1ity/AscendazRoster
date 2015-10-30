@@ -59,7 +59,7 @@
 				</c:if>
 				<!-- <div id="dialog-confirm" class="cl-icon"></div> -->
 				<div class="date-filters">
-					<s:url value="/scheduler/get-schedule" var="getSchedule"/>
+					<s:url value="/scheduler/get-schedule?page=1" var="getSchedule"/>
 					<span id="prev" class="cl-btn"><</span>
 					<div id="dateWeek" data-url="${getSchedule}" type="text" class="cl-inp"><!-- <input class="week-picker" type="text"> -->
 						<div id="weekDateValue">
@@ -445,7 +445,43 @@
 				<!-- </div> -->
 			</div>  
 			
+			<input id="numOfPages" type="hidden" name="pages" value="${numberOfPages}">
+			<input id="currentPage" type="hidden" name="currentPage" value="${currentPage}">
+			<input id="startDisplayPage" type="hidden" name="startDisplayPage" value="${startDisplayPage}">
+			<input id="pageUrl" type="hidden" name="pageUrl" value=<c:url value="/scheduler/get-schedule?page=${currentPage}"/>>
 			
+		    <ul id="pager" class="pager">
+		   		 <c:if test="${(numberOfPages gt 10) && (currentPage > 10)}">
+					<c:url value="/scheduler/get-schedule?page=${currentPage - currentPage % 10 - 9}" var="page"/>
+					<li class="prev pager_nav pager_item" data-page="${page}"><a>Prev 10</a></li>
+				</c:if>
+				<c:if test="${currentPage != 1}">
+					<c:url value="/scheduler/get-schedule?page=${currentPage - 1}" var="page"/>
+					<li class="prev pager_nav pager_item" data-page="${page}"><a>Prev</a></li>
+			    </c:if>
+				
+				<c:forEach begin="${startDisplayPage}" end="${startDisplayPage + 9}" var="i">
+					
+					<c:choose>
+						<c:when test="${currentPage eq i}">
+							<li class="current_page"><a>${i}</a></li>
+						</c:when>
+						<c:otherwise>
+							<c:url value="/scheduler/get-schedule?page=${i}" var="page"/>
+							<li class="pager_item" data-page="${page}"><a>${i}</a></li>
+						</c:otherwise>
+					</c:choose>
+					
+				</c:forEach>
+				<c:if test="${currentPage lt numberOfPages}">
+					<c:url value="/scheduler/get-schedule?page=${currentPage + 1}" var="page"/>
+					<li class="next pager_nav pager_item" data-page="${page}"><a>Next</a></li>
+				</c:if>
+				<c:if test="${(currentPage / 10) lt (numberOfPages / 10)}">
+					<c:url value="/scheduler/get-schedule?page=${currentPage + 1 + (10 - currentPage % 10)}" var="page"/>
+					<li class="next pager_nav pager_item" data-page="${page}"><a>Next 10</a></li>
+				</c:if>
+			</ul>
 			
 			
 		</div>

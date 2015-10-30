@@ -58,13 +58,18 @@ public class SchedulerController {
 		daysOfWeek[5] = saturday.toString("MMM dd E");
 		daysOfWeek[6] = sunday.toString("MMM dd E");
 		
-		List<ScheduleResponse> schedule = schedulerService.getScheduleForPeriod(monday, sunday);
+		List<ScheduleResponse> schedule = schedulerService.getScheduleForPeriod(monday, sunday, 1);
 		
 		List<Location> locationList = schedulerService.getAllLocations();
 		model.addAttribute("locationList", locationList);
 		
 		model.addAttribute("schedule", schedule);
 		session.setAttribute("schedule", schedule);
+		
+		int numberOfPages = schedulerService.getNumberOfPages(monday, sunday);
+		model.addAttribute("numberOfPages", numberOfPages);
+		model.addAttribute("startDisplayPage", 1);
+		model.addAttribute("currentPage", 1);
 		
 		model.addAttribute("currentDay", now.toString("MMM dd E"));
 		model.addAttribute("startDate", monday);
@@ -112,13 +117,14 @@ public class SchedulerController {
 	
 	@RequestMapping(value = "/scheduler/get-schedule", method = RequestMethod.POST)
 	public @ResponseBody List<ScheduleResponse> getSchedule(@RequestParam(value="startDate", required=true) String startDate, 
-			@RequestParam(value="endDate", required=true) String endDate, HttpSession session){
+			@RequestParam(value="endDate", required=true) String endDate, @RequestParam(value="page", required=true) int page, HttpSession session){
 		DateTimeFormatter df = DateTimeFormat.forPattern("dd/MM/yyyy");
 		LocalDate startD = LocalDate.parse(startDate, df);
 		LocalDate endD = LocalDate.parse(endDate, df);
 
+		System.out.println("get schedule. page: " + page);
 		
-		List<ScheduleResponse> schedule = schedulerService.getScheduleForPeriod(startD, endD);
+		List<ScheduleResponse> schedule = schedulerService.getScheduleForPeriod(startD, endD, page);
 		session.removeAttribute("schedule");
 		session.setAttribute("schedule", schedule);
 		

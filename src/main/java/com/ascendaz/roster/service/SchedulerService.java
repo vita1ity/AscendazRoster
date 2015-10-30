@@ -22,6 +22,7 @@ import com.ascendaz.roster.model.attributes.Location;
 import com.ascendaz.roster.model.attributes.Shift;
 import com.ascendaz.roster.model.config.Rule;
 import com.ascendaz.roster.repository.SchedulerRepository;
+import com.ascendaz.roster.util.Constants;
 
 @Service("scheduleService")
 public class SchedulerService {
@@ -73,7 +74,15 @@ public class SchedulerService {
 			}
 		}
 		
-		List<ScheduleResponse> response = ScheduleResponse.createScheduleResponse(schedule, startDate, endDate);
+		List<Staff> pageStaff = schedulerRepository.getActiveStaffForPage(startDate, endDate, 1);
+		List<Schedule> pageSchedule = new ArrayList<Schedule>();
+		for (Schedule s: schedule) {
+			if (pageStaff.contains(s.getStaff())) {
+				pageSchedule.add(s);
+			}
+		}
+		
+		List<ScheduleResponse> response = ScheduleResponse.createScheduleResponse(pageSchedule, startDate, endDate, 1);
 		
 		long end = System.currentTimeMillis();
 		logger.debug("PROCESS RULES FINISHED. Time: " + (end - start) / 1000 + "s");
@@ -92,14 +101,17 @@ public class SchedulerService {
 	}
 
 
-	public List<ScheduleResponse> getScheduleForPeriod(LocalDate startDate, LocalDate endDate) {
+	public List<ScheduleResponse> getScheduleForPeriod(LocalDate startDate, LocalDate endDate, int page) {
 	
-		List<Schedule> schedule = schedulerRepository.getScheduleForPeriod(startDate, endDate);
+		//List<Staff> staffPage = schedulerRepository.getStaffForPage(page);
+		List<Integer> staffPage = schedulerRepository.getStaffForPage(startDate, endDate, page);
+		
+		List<Schedule> schedule = schedulerRepository.getScheduleForPeriod(startDate, endDate, staffPage);
 		
 		//get all staff if schedule wasn't generated yet
 		if (schedule == null || schedule.size() == 0) {
 			
-			List<Staff> staff = schedulerRepository.getActiveStaff(startDate, endDate);
+			List<Staff> staff = schedulerRepository.getActiveStaffForPage(startDate, endDate, page);
 			schedule = new ArrayList<Schedule>();
 			for (Staff s: staff) {
 				LocalDate currentDate = startDate;
@@ -116,7 +128,7 @@ public class SchedulerService {
 			System.out.println(sch);
 		}*/
 		
-		List<ScheduleResponse> scheduleResponse = ScheduleResponse.createScheduleResponse(schedule, startDate, endDate);
+		List<ScheduleResponse> scheduleResponse = ScheduleResponse.createScheduleResponse(schedule, startDate, endDate, page);
 		
 		/*for (ScheduleResponse sch: scheduleResponse) {
 			System.out.println(sch);
@@ -257,6 +269,23 @@ public class SchedulerService {
 			sessionSchedule = getStaffWithoutTasks(sessionSchedule);
 		}
 		return sessionSchedule;
+	}
+
+
+	public int getNumberOfPages(LocalDate startDate, LocalDate endDate) {
+		int staffNum = schedulerRepository.getNumberOfStaff(startDate, endDate);
+		int numPages = 0;
+		System.out.println("Staff num: " + staffNum);
+		if (staffNum % Constants.STAFF_PER_PAGE == 0) {
+			numPages = staffNum / Constants.STAFF_PER_PAGE;
+		}
+		else {
+			numPages = staffNum / Constants.STAFF_PER_PAGE + 1;
+		}
+		
+		System.out.println("Pages: " + numPages);
+		
+		return numPages;
 	}
 
 }

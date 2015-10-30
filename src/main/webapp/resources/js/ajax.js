@@ -1,36 +1,34 @@
 
 //login
 $(document).ready(function() {
-	$("#loginform").submit(function(e){
-		var username = $(this).find('.first').val();
-		//console.log(username);
-		var password = $(this).find('.last').val();
-		//console.log(password);
-		$.ajax({
-			   url: $(this).attr("action"),
-               type: "POST",
-               data: {username: username, password: password},
-        }).done (function(response) {
-        	//console.log(response);
-        	if (response == "success") {
-        		$("#msg").html("<span class=\"loginFormSuccess\">Login was successful!</span>");
-        		$(".display-none").removeClass("display-none");
-        		$(".modal-login").removeClass('open');
-        		$(".loginButton").addClass("notDisplayLogin");
-        		$("#loginUserSuccessMessage").html("<span class=\"loginFormSuccess\">User Login successfully</span>");
-        		//console.log("SUCCESS");
-        	}
-        	else {
-        		$("#msg").html("<span class=\"loginFormError\">Your login attempt was not successful</br> " +
-        				"Reason: Invalid username or password</span>");
-        		//console.log("FAIL");
-        	}
-        }).fail (function(err) {
-        	
-	    	   console.log(err);
-	    	});
-		 e.preventDefault();
-		});
+	var username = $(this).find('.first').val();
+	//console.log(username);
+	var password = $(this).find('.last').val();
+	//console.log(password);
+	$.ajax({
+		   url: $(this).attr("action"),
+           type: "POST",
+           data: {username: username, password: password},
+    }).done (function(response) {
+    	//console.log(response);
+    	if (response == "success") {
+    		$("#msg").html("<span class=\"loginFormSuccess\">Login was successful!</span>");
+    		$(".display-none").removeClass("display-none");
+    		$(".modal-login").removeClass('open');
+    		$(".loginButton").addClass("notDisplayLogin");
+    		$("#loginUserSuccessMessage").html("<span class=\"loginFormSuccess\">User Login successfully</span>");
+    		//console.log("SUCCESS");
+    	}
+    	else {
+    		$("#msg").html("<span class=\"loginFormError\">Your login attempt was not successful</br> " +
+    				"Reason: Invalid username or password</span>");
+    		//console.log("FAIL");
+    	}
+    }).fail (function(err) {
+    	
+    	   console.log(err);
+    	});
+	 
 });
 
 //modify button (get available and selected options)
@@ -571,9 +569,73 @@ function renderTable(startDate, endDate, data) {
 				height:400
 			});
 		}
-	}, 300);
+	}, 1);
 	
 	
+	//pager
+	
+	$('#currentPage').val(data[0].page);
+	var page = data[0].page;
+	var startDisplayPage = parseInt($('#startDisplayPage').val());
+	console.log("startDisplayPage: " + startDisplayPage);
+	//console.log(startDisplayPage / 10);
+	
+	if ((Math.floor((page - 1) / 10))  != (Math.floor(startDisplayPage / 10))) {
+		
+		startDisplayPage = Math.floor((page - 1) / 10) * 10 + 1;
+		$('#startDisplayPage').val(startDisplayPage);
+		console.log("start display page changed: " + startDisplayPage);
+	}
+	
+	$('#pageUrl').val("scheduler/get-schedule?page=" + data[0].page);
+	
+	console.log("Page url: " + $('#pageUrl').val());
+	
+	var pager = "";
+	
+	
+	console.log(page);
+	var numberOfPages = $("#numOfPages").val();
+	if ((numberOfPages > 10) && (page > 10)) {
+		//var pageUrl = "/roster/scheduler/get-schedule?page=" + (page - page % 10 - 9) + "";
+		var pageUrl = "/roster/scheduler/get-schedule?page=" + (startDisplayPage - 10) + "";
+		pager += "<li class=\"prev pager_nav pager_item\" data-page=\"" + pageUrl + "\"><a>Prev 10</a></li>\n";
+	}
+	if (page != 1) {
+		var pageUrl = "/roster/scheduler/get-schedule?page=" + (page - 1) + "";
+		pager += "<li class=\"prev pager_nav pager_item\" data-page=\"" + pageUrl + "\"><a>Prev</a></li>\n";
+	}
+	
+	console.log("pages: " + numberOfPages);
+	console.log("last display page: " + (startDisplayPage + 9));
+	var end;
+	if (startDisplayPage + 9 >= numberOfPages) {
+		end = numberOfPages;
+	}
+	else {
+		end = startDisplayPage + 9;
+	}
+	for (var i = startDisplayPage; i <= end; i++) {
+		if (i == page) {
+			pager += "<li class=\"current_page\"><a>" + i + "</a></li>";
+		}
+		else {
+			var pageUrl = "/roster/scheduler/get-schedule?page=" + i + "";
+			pager += "<li class=\"pager_item\" data-page=\"" + pageUrl + "\"><a>" + i + "</a></li>\n";
+		}
+	}
+	if (page != numberOfPages) {
+		var pageUrl = "/roster/scheduler/get-schedule?page=" + (page + 1) + "";
+		pager += "<li class=\"next pager_nav pager_item\" data-page=\"" + pageUrl + "\"><a>Next</a></li>\n";
+	}
+	
+	if (Math.floor(page / 10) < Math.floor(numberOfPages / 10)) {
+		//var pageUrl = "/roster/scheduler/get-schedule?page=" + (page + 1 + (10 - (page - 1) % 10 )) + "";
+		var pageUrl = "/roster/scheduler/get-schedule?page=" + (startDisplayPage + 10) + "";
+		pager += "<li class=\"next pager_nav pager_item\" data-page=\"" + pageUrl + "\"><a>Next 10</a></li>\n";
+	}
+	//console.log(pager);
+	$("#pager").html(pager);
 	
 }
 /*function renderHeader(startDate, endDate) {
@@ -895,9 +957,12 @@ function disactivateFilters() {
 	
 }
 
-function getSchedule(startDate, endDate) {
+function getSchedule(startDate, endDate, url) {
 	disactivateFilters();
-	var url = $('#dateWeek').data("url");
+	if (url == null) {
+		url = $('#dateWeek').data("url");
+	}
+	
 	console.log(url);
 	startDate = $.datepicker.formatDate('dd/mm/yy', startDate);
 	endDate = $.datepicker.formatDate('dd/mm/yy', endDate);
@@ -1137,7 +1202,7 @@ $(document).on('click', '#today', function (e) {
 	$("#weekDateValue").addClass("display-none");
 	$("#monthDateValue").addClass("display-none");
 	$("#dayValue").removeClass("display-none");
-	getSchedule(date, date);
+	getSchedule(date, date, null);
 });
 
 $(document).on('click', '#prev', function (e) {
@@ -1162,7 +1227,7 @@ $(document).on('click', '#prev', function (e) {
 		var endDateFinal = $.datepicker.formatDate('dd/mm/yy', endDate);
 		$('#startDate').text(startDateFinal);
 		$('#endDate').text(endDateFinal);
-		getSchedule(startDate, endDate);
+		getSchedule(startDate, endDate, null);
 		
 	}
 	else if (!$('#monthDateValue').hasClass("display-none")) {
@@ -1182,7 +1247,7 @@ $(document).on('click', '#prev', function (e) {
 		console.log(endDate);
 		var monthDateFinal = $.datepicker.formatDate('M yy', startDateObj);
 		$('#monthDate').text(monthDateFinal);
-		getSchedule(startDateObj, endDateObj);
+		getSchedule(startDateObj, endDateObj, null);
 	}
 	else if (!$('#dayValue').hasClass("display-none")) {
 		var dayStr = $('#dayDate').text();
@@ -1190,7 +1255,7 @@ $(document).on('click', '#prev', function (e) {
 		dayDate.setDate(dayDate.getDate() - 1);
 		var dayDateFinal = $.datepicker.formatDate('dd/mm/yy', dayDate);
 		$('#dayDate').text(dayDateFinal);
-		getSchedule(dayDate, dayDate);
+		getSchedule(dayDate, dayDate, null);
 	}
 	
 });
@@ -1212,7 +1277,7 @@ $(document).on('click', '#next', function (e) {
 		var endDateFinal = $.datepicker.formatDate('dd/mm/yy', endDate);
 		$('#startDate').text(startDateFinal);
 		$('#endDate').text(endDateFinal);
-		getSchedule(startDate, endDate);
+		getSchedule(startDate, endDate, null);
 		
 	}
 	else if (!$('#monthDateValue').hasClass("display-none")) {
@@ -1232,7 +1297,7 @@ $(document).on('click', '#next', function (e) {
 		console.log(endDate);
 		var monthDateFinal = $.datepicker.formatDate('M yy', startDateObj);
 		$('#monthDate').text(monthDateFinal);
-		getSchedule(startDateObj, endDateObj);
+		getSchedule(startDateObj, endDateObj, null);
 	}
 	else if (!$('#dayValue').hasClass("display-none")) {
 		var dayStr = $('#dayDate').text();
@@ -1240,10 +1305,49 @@ $(document).on('click', '#next', function (e) {
 		dayDate.setDate(dayDate.getDate() + 1);
 		var dayDateFinal = $.datepicker.formatDate('dd/mm/yy', dayDate);
 		$('#dayDate').text(dayDateFinal);
-		getSchedule(dayDate, dayDate);
+		getSchedule(dayDate, dayDate, null);
 	}
 	
 });
 
-
+$(document).on('click', '.pager_item', function (e) {
+	e.preventDefault();
+	var url = $(this).data("page");
+	console.log(url);
+	
+	var startDate;
+	var endDate;
+	//get current date range
+	if (!$('#weekDateValue').hasClass("display-none")) {
+		var startStr = $('#startDate').text();
+		var endStr = $('#endDate').text();
+		
+		startDate = new Date($.datepicker.parseDate("dd/mm/yy", startStr));
+		endDate = new Date($.datepicker.parseDate("dd/mm/yy", endStr));
+		
+	}
+	else if (!$('#monthDateValue').hasClass("display-none")) {
+		var monthStr = $('#monthDate').text();
+		monthStr = monthStr + " 01";
+		console.log(monthStr);
+		
+		startDate = $.datepicker.parseDate("M yy dd", monthStr);
+		
+		var year = startDate.getFullYear();
+		var month = startDate.getMonth();
+		endDate = new Date(year, month + 1, 0)
+		
+		
+	}
+	else if (!$('#dayValue').hasClass("display-none")) {
+		var dayStr = $('#dayDate').text();
+		var startDate = new Date($.datepicker.parseDate("dd/mm/yy", dayStr));
+		
+		endDate = startDate;
+		
+	}
+	
+	getSchedule(startDate, endDate, url);
+	
+});
 

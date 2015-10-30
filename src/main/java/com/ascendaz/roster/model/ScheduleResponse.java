@@ -22,6 +22,7 @@ public class ScheduleResponse implements Serializable{
 	private String location;
 	private int reference;
 	
+	private int page;
 	
 	private List<TaskResponse> tasks;
 	
@@ -59,7 +60,15 @@ public class ScheduleResponse implements Serializable{
 		this.tasks = tasks;
 	}
 	
-	public static List<ScheduleResponse> createScheduleResponse(List<Schedule> schedule, LocalDate startDate, LocalDate endDate) {
+	public int getPage() {
+		return page;
+	}
+
+	public void setPage(int page) {
+		this.page = page;
+	}
+
+	public static List<ScheduleResponse> createScheduleResponse(List<Schedule> schedule, LocalDate startDate, LocalDate endDate, int page) {
 		if (schedule == null || schedule.size() == 0) {
 			return null;
 		}
@@ -215,6 +224,7 @@ public class ScheduleResponse implements Serializable{
 				
 			} 
 			response = new ScheduleResponse(staffName, location, reference, taskResponseList);
+			response.setPage(page);
 			scheduleResponse.add(response);
 		}
 		
